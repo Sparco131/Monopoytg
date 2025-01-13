@@ -1,26 +1,3 @@
-from flask import Flask, jsonify, request
-from flask_cors import CORS
-import random
-
-app = Flask(__name__)
-CORS(app)  # Разрешить запросы с любого домена
-
-# Состояние игры
-players = {}
-game_board = [{"name": f"Клетка {i+1}", "owner": None, "price": 100, "houses": 0} for i in range(20)]
-current_player = 0
-player_order = []
-chance_cards = [
-    "Получи 200$",
-    "Перейди на старт",
-    "Заплати налоги 100$",
-    "Получи подарок 50$"
-]
-
-# Маршрут для отдачи статических файлов (HTML, CSS, JS)
-@app.route('/')
-def index():
-    return """
 <!DOCTYPE html>
 <html lang="ru">
 <head>
@@ -94,6 +71,15 @@ def index():
             font-size: 1rem;
             color: #333;
         }
+        #profile {
+            display: none;
+            background-color: #f1f1f1;
+            padding: 15px;
+            border-radius: 10px;
+            margin: 10px auto;
+            max-width: 90%;
+            text-align: left;
+        }
         @media (max-width: 600px) {
             h1 {
                 font-size: 1.5rem;
@@ -120,6 +106,16 @@ def index():
     <button id="buy-property">Купить клетку</button>
     <button id="build-house">Построить дом</button>
     <button id="trade">Предложить обмен</button>
+    <button id="view-profile">Профиль</button>
+
+    <div id="profile">
+        <h2>Профиль игрока</h2>
+        <p><strong>Деньги:</strong> <span id="profile-money">0</span></p>
+        <p><strong>Имущество:</strong></p>
+        <ul id="profile-properties"></ul>
+        <p><strong>Достижения:</strong></p>
+        <ul id="profile-achievements"></ul>
+    </div>
 
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <script>
@@ -135,6 +131,11 @@ def index():
         const buyPropertyButton = document.getElementById('buy-property');
         const buildHouseButton = document.getElementById('build-house');
         const tradeButton = document.getElementById('trade');
+        const viewProfileButton = document.getElementById('view-profile');
+        const profileSection = document.getElementById('profile');
+        const profileMoney = document.getElementById('profile-money');
+        const profileProperties = document.getElementById('profile-properties');
+        const profileAchievements = document.getElementById('profile-achievements');
 
         // Загрузка состояния игры
         function loadGame() {
@@ -187,6 +188,46 @@ def index():
             } else {
                 return '<i class="fas fa-coins"></i>';
             }
+        }
+
+        // Загрузка профиля игрока
+        function loadProfile() {
+            fetch('/profile')
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Ошибка сети');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    console.log('Данные профиля:', data);
+                    profileMoney.textContent = data.money;
+
+                    // Очистим списки
+                    profileProperties.innerHTML = '';
+                    profileAchievements.innerHTML = '';
+
+                    // Добавим имущество
+                    data.properties.forEach(property => {
+                        const li = document.createElement('li');
+                        li.textContent = `${property.name} (дома: ${property.houses})`;
+                        profileProperties.appendChild(li);
+                    });
+
+                    // Добавим достижения
+                    data.achievements.forEach(achievement => {
+                        const li = document.createElement('li');
+                        li.textContent = achievement;
+                        profileAchievements.appendChild(li);
+                    });
+
+                    // Покажем профиль
+                    profileSection.style.display = 'block';
+                })
+                .catch(error => {
+                    console.error('Ошибка загрузки профиля:', error);
+                    alert('Ошибка загрузки профиля. Проверь консоль.');
+                });
         }
 
         // Бросок кубика
@@ -273,110 +314,13 @@ def index():
                 });
         });
 
+        // Просмотр профиля
+        viewProfileButton.addEventListener('click', () => {
+            loadProfile();
+        });
+
         // Загрузка игры при старте
         loadGame();
     </script>
 </body>
 </html>
-    """
-
-# Маршрут для получения состояния игры
-@app.route('/game-status', methods=['GET'])
-def game_status():
-    user_id = 1  # Замени на реальный ID пользователя
-    if user_id not in players:
-        return jsonify({"error": "Игрок не найден"})
-
-    position = players[user_id]["position"]
-    cell = game_board[position]
-    return jsonify({
-        "money": players[user_id]["money"],
-        "position": position,
-        "cell": cell["name"],
-        "board": game_board
-    })
-
-# Маршрут для броска кубика
-@app.route('/roll-dice', methods=['POST'])
-def roll_dice():
-    user_id = 1  # Замени на реальный ID пользователя
-    if user_id not in players:
-        return jsonify({"error": "Игрок не найден"})
-
-    dice = random.randint(1, 6)
-    players[user_id]["position"] = (players[user_id]["position"] + dice) % len(game_board)
-    position = players[user_id]["position"]
-    cell = game_board[position]
-
-    # Обработка карточки "Шанс"
-    if cell["name"] == "Клетка 5":  # Пример клетки с шансом
-        card = random.choice(chance_cards)
-        if card == "Получи 200$":
-            players[user_id]["money"] += 200
-        elif card == "Перейди на старт":
-            players[user_id]["position"] = 0
-        elif card == "Заплати налоги 100$":
-            players[user_id]["money"] -= 100
-        elif card == "Получи подарок 50$":
-            players[user_id]["money"] += 50
-
-    return jsonify({
-        "dice": dice,
-        "cell": cell["name"],
-        "message": card if cell["name"] == "Клетка 5" else ""
-    })
-
-# Маршрут для покупки клетки
-@app.route('/buy-property', methods=['POST'])
-def buy_property():
-    user_id = 1  # Замени на реальный ID пользователя
-    if user_id not in players:
-        return jsonify({"error": "Игрок не найден"})
-
-    position = players[user_id]["position"]
-    cell = game_board[position]
-
-    if cell["owner"] is not None:
-        return jsonify({"message": "Эта клетка уже куплена."})
-
-    if players[user_id]["money"] < cell["price"]:
-        return jsonify({"message": "У тебя недостаточно денег."})
-
-    players[user_id]["money"] -= cell["price"]
-    cell["owner"] = user_id
-    return jsonify({"message": f"Ты купил {cell['name']}!"})
-
-# Маршрут для постройки дома
-@app.route('/build-house', methods=['POST'])
-def build_house():
-    user_id = 1  # Замени на реальный ID пользователя
-    if user_id not in players:
-        return jsonify({"error": "Игрок не найден"})
-
-    position = players[user_id]["position"]
-    cell = game_board[position]
-
-    if cell["owner"] != user_id:
-        return jsonify({"message": "Это не твоя клетка."})
-
-    if players[user_id]["money"] < 50:
-        return jsonify({"message": "У тебя недостаточно денег для постройки дома."})
-
-    players[user_id]["money"] -= 50
-    cell["houses"] += 1
-    return jsonify({"message": f"Ты построил дом на {cell['name']}."})
-
-# Маршрут для торговли
-@app.route('/trade', methods=['POST'])
-def trade():
-    user_id = 1  # Замени на реальный ID пользователя
-    if user_id not in players:
-        return jsonify({"error": "Игрок не найден"})
-
-    # Пример простой торговли
-    return jsonify({"message": "Торговля пока не реализована."})
-
-# Запуск сервера
-if __name__ == '__main__':
-    players[1] = {"name": "Игрок 1", "position": 0, "money": 1000}  # Пример игрока
-    app.run(debug=True)
