@@ -1,3 +1,26 @@
+from flask import Flask, jsonify, request
+from flask_cors import CORS
+import random
+
+app = Flask(__name__)
+CORS(app)  # Разрешить запросы с любого домена
+
+# Состояние игры
+players = {}
+game_board = [{"name": f"Клетка {i+1}", "owner": None, "price": 100, "houses": 0} for i in range(20)]
+current_player = 0
+player_order = []
+chance_cards = [
+    "Получи 200$",
+    "Перейди на старт",
+    "Заплати налоги 100$",
+    "Получи подарок 50$"
+]
+
+# Маршрут для отдачи статических файлов (HTML, CSS, JS)
+@app.route('/')
+def index():
+    return """
 <!DOCTYPE html>
 <html lang="ru">
 <head>
@@ -36,22 +59,31 @@
         .board {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
-            gap: 5px;
+            gap: 10px;
             margin: 10px auto;
             max-width: 100%;
         }
         .cell {
             border: 2px solid #8B4513;
-            padding: 10px;
-            background-color: #f9f9f9;
-            border-radius: 10px;
+            padding: 15px;
+            background: linear-gradient(135deg, #f9f9f9, #e0e0e0);
+            border-radius: 15px;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
             color: #333;
             font-size: 0.9rem;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .cell:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
         }
         .cell strong {
             font-size: 1rem;
             color: #8B4513;
+        }
+        .cell .icon {
+            font-size: 1.5rem;
+            margin-bottom: 10px;
         }
         #game-status {
             background-color: #f1f1f1;
@@ -78,6 +110,7 @@
             }
         }
     </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 </head>
 <body>
     <h1>Монополия</h1>
@@ -106,7 +139,12 @@
         // Загрузка состояния игры
         function loadGame() {
             fetch('/game-status')
-                .then(response => response.json())
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Ошибка сети');
+                    }
+                    return response.json();
+                })
                 .then(data => {
                     console.log('Данные от сервера:', data);
                     gameStatus.innerHTML = `
@@ -116,7 +154,10 @@
                     `;
                     renderBoard(data.board);
                 })
-                .catch(error => console.error('Ошибка загрузки данных:', error));
+                .catch(error => {
+                    console.error('Ошибка загрузки данных:', error);
+                    gameStatus.innerHTML = 'Ошибка загрузки данных. Проверь консоль.';
+                });
         }
 
         // Отрисовка игрового поля
@@ -126,6 +167,7 @@
                 const cellElement = document.createElement('div');
                 cellElement.className = 'cell';
                 cellElement.innerHTML = `
+                    <div class="icon">${getIcon(cell)}</div>
                     <strong>${cell.name}</strong><br>
                     Владелец: ${cell.owner || "Нет"}<br>
                     Дома: ${cell.houses}
@@ -134,56 +176,101 @@
             });
         }
 
+        // Получение иконки для клетки
+        function getIcon(cell) {
+            if (cell.name.includes("Старт")) {
+                return '<i class="fas fa-flag-checkered"></i>';
+            } else if (cell.name.includes("Тюрьма")) {
+                return '<i class="fas fa-lock"></i>';
+            } else if (cell.houses > 0) {
+                return '<i class="fas fa-home"></i>';
+            } else {
+                return '<i class="fas fa-coins"></i>';
+            }
+        }
+
         // Бросок кубика
         rollDiceButton.addEventListener('click', () => {
             console.log('Кнопка "Бросить кубик" нажата');
             fetch('/roll-dice', { method: 'POST' })
-                .then(response => response.json())
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Ошибка сети');
+                    }
+                    return response.json();
+                })
                 .then(data => {
                     console.log('Ответ сервера:', data);
                     alert(`Ты выбросил ${data.dice} и попал на клетку ${data.cell}`);
                     loadGame();
                 })
-                .catch(error => console.error('Ошибка:', error));
+                .catch(error => {
+                    console.error('Ошибка:', error);
+                    alert('Ошибка при броске кубика. Проверь консоль.');
+                });
         });
 
         // Покупка клетки
         buyPropertyButton.addEventListener('click', () => {
             console.log('Кнопка "Купить клетку" нажата');
             fetch('/buy-property', { method: 'POST' })
-                .then(response => response.json())
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Ошибка сети');
+                    }
+                    return response.json();
+                })
                 .then(data => {
                     console.log('Ответ сервера:', data);
                     alert(data.message);
                     loadGame();
                 })
-                .catch(error => console.error('Ошибка:', error));
+                .catch(error => {
+                    console.error('Ошибка:', error);
+                    alert('Ошибка при покупке клетки. Проверь консоль.');
+                });
         });
 
         // Постройка дома
         buildHouseButton.addEventListener('click', () => {
             console.log('Кнопка "Построить дом" нажата');
             fetch('/build-house', { method: 'POST' })
-                .then(response => response.json())
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Ошибка сети');
+                    }
+                    return response.json();
+                })
                 .then(data => {
                     console.log('Ответ сервера:', data);
                     alert(data.message);
                     loadGame();
                 })
-                .catch(error => console.error('Ошибка:', error));
+                .catch(error => {
+                    console.error('Ошибка:', error);
+                    alert('Ошибка при постройке дома. Проверь консоль.');
+                });
         });
 
         // Торговля
         tradeButton.addEventListener('click', () => {
             console.log('Кнопка "Предложить обмен" нажата');
             fetch('/trade', { method: 'POST' })
-                .then(response => response.json())
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Ошибка сети');
+                    }
+                    return response.json();
+                })
                 .then(data => {
                     console.log('Ответ сервера:', data);
                     alert(data.message);
                     loadGame();
                 })
-                .catch(error => console.error('Ошибка:', error));
+                .catch(error => {
+                    console.error('Ошибка:', error);
+                    alert('Ошибка при торговле. Проверь консоль.');
+                });
         });
 
         // Загрузка игры при старте
@@ -191,3 +278,105 @@
     </script>
 </body>
 </html>
+    """
+
+# Маршрут для получения состояния игры
+@app.route('/game-status', methods=['GET'])
+def game_status():
+    user_id = 1  # Замени на реальный ID пользователя
+    if user_id not in players:
+        return jsonify({"error": "Игрок не найден"})
+
+    position = players[user_id]["position"]
+    cell = game_board[position]
+    return jsonify({
+        "money": players[user_id]["money"],
+        "position": position,
+        "cell": cell["name"],
+        "board": game_board
+    })
+
+# Маршрут для броска кубика
+@app.route('/roll-dice', methods=['POST'])
+def roll_dice():
+    user_id = 1  # Замени на реальный ID пользователя
+    if user_id not in players:
+        return jsonify({"error": "Игрок не найден"})
+
+    dice = random.randint(1, 6)
+    players[user_id]["position"] = (players[user_id]["position"] + dice) % len(game_board)
+    position = players[user_id]["position"]
+    cell = game_board[position]
+
+    # Обработка карточки "Шанс"
+    if cell["name"] == "Клетка 5":  # Пример клетки с шансом
+        card = random.choice(chance_cards)
+        if card == "Получи 200$":
+            players[user_id]["money"] += 200
+        elif card == "Перейди на старт":
+            players[user_id]["position"] = 0
+        elif card == "Заплати налоги 100$":
+            players[user_id]["money"] -= 100
+        elif card == "Получи подарок 50$":
+            players[user_id]["money"] += 50
+
+    return jsonify({
+        "dice": dice,
+        "cell": cell["name"],
+        "message": card if cell["name"] == "Клетка 5" else ""
+    })
+
+# Маршрут для покупки клетки
+@app.route('/buy-property', methods=['POST'])
+def buy_property():
+    user_id = 1  # Замени на реальный ID пользователя
+    if user_id not in players:
+        return jsonify({"error": "Игрок не найден"})
+
+    position = players[user_id]["position"]
+    cell = game_board[position]
+
+    if cell["owner"] is not None:
+        return jsonify({"message": "Эта клетка уже куплена."})
+
+    if players[user_id]["money"] < cell["price"]:
+        return jsonify({"message": "У тебя недостаточно денег."})
+
+    players[user_id]["money"] -= cell["price"]
+    cell["owner"] = user_id
+    return jsonify({"message": f"Ты купил {cell['name']}!"})
+
+# Маршрут для постройки дома
+@app.route('/build-house', methods=['POST'])
+def build_house():
+    user_id = 1  # Замени на реальный ID пользователя
+    if user_id not in players:
+        return jsonify({"error": "Игрок не найден"})
+
+    position = players[user_id]["position"]
+    cell = game_board[position]
+
+    if cell["owner"] != user_id:
+        return jsonify({"message": "Это не твоя клетка."})
+
+    if players[user_id]["money"] < 50:
+        return jsonify({"message": "У тебя недостаточно денег для постройки дома."})
+
+    players[user_id]["money"] -= 50
+    cell["houses"] += 1
+    return jsonify({"message": f"Ты построил дом на {cell['name']}."})
+
+# Маршрут для торговли
+@app.route('/trade', methods=['POST'])
+def trade():
+    user_id = 1  # Замени на реальный ID пользователя
+    if user_id not in players:
+        return jsonify({"error": "Игрок не найден"})
+
+    # Пример простой торговли
+    return jsonify({"message": "Торговля пока не реализована."})
+
+# Запуск сервера
+if __name__ == '__main__':
+    players[1] = {"name": "Игрок 1", "position": 0, "money": 1000}  # Пример игрока
+    app.run(debug=True)
