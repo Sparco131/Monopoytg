@@ -1,132 +1,209 @@
-from flask import Flask, jsonify, request, render_template
-from flask_cors import CORS
-import random
-import logging
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Мини-Монополия</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            padding: 10px;
+            margin: 0;
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+        }
+        .board {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        .cell {
+            border: 1px solid #000;
+            padding: 10px;
+            text-align: center;
+            background-color: #f0f0f0;
+            border-radius: 5px;
+        }
+        .cell.start {
+            background-color: #aaffaa;
+        }
+        .cell.property {
+            background-color: #ffcc99;
+        }
+        .cell.jail {
+            background-color: #ffaaaa;
+        }
+        .player-info {
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        .actions button {
+            margin: 5px;
+            padding: 10px 20px;
+            font-size: 16px;
+            border: none;
+            border-radius: 5px;
+            background-color: #007bff;
+            color: #fff;
+            cursor: pointer;
+        }
+        .actions button:hover {
+            background-color: #0056b3;
+        }
+        .log {
+            width: 100%;
+            height: 100px;
+            border: 1px solid #000;
+            padding: 10px;
+            overflow-y: auto;
+            background-color: #f9f9f9;
+            border-radius: 5px;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Мини-Монополия</h1>
+    <div class="game-container">
+        <!-- Игровое поле -->
+        <div class="board">
+            <div class="cell start">Старт</div>
+            <div class="cell property">Улица 1</div>
+            <div class="cell property">Улица 2</div>
+            <div class="cell jail">Тюрьма</div>
+            <div class="cell property">Улица 3</div>
+            <div class="cell property">Улица 4</div>
+        </div>
 
-app = Flask(__name__)
-CORS(app)
+        <!-- Информация об игроке -->
+        <div class="player-info">
+            <h2>Игрок</h2>
+            <p>Деньги: $<span id="money">1500</span></p>
+            <p>Собственность: <span id="properties">Нет</span></p>
+            <p>Позиция: <span id="position">Старт</span></p>
+        </div>
 
-# Настройка логирования
-logging.basicConfig(level=logging.INFO)
+        <!-- Кнопки действий -->
+        <div class="actions">
+            <button onclick="rollDice()">Бросить кубик</button>
+            <button onclick="buyProperty()">Купить собственность</button>
+            <button onclick="buildHouse()">Построить дом</button>
+        </div>
 
-# Инициализация данных игры
-players = {}  # Словарь для хранения данных игроков
-board = [
-    {"name": "Старт", "owner": None, "houses": 0, "price": 0, "type": "start"},
-    {"name": "Улица 1", "owner": None, "houses": 0, "price": 200, "type": "property"},
-    {"name": "Улица 2", "owner": None, "houses": 0, "price": 200, "type": "property"},
-    {"name": "Тюрьма", "owner": None, "houses": 0, "price": 0, "type": "jail"},
-    {"name": "Улица 3", "owner": None, "houses": 0, "price": 300, "type": "property"},
-    {"name": "Улица 4", "owner": None, "houses": 0, "price": 300, "type": "property"},
-]
+        <!-- Лог событий -->
+        <div class="log" id="log">
+            <p>Добро пожаловать в игру!</p>
+        </div>
+    </div>
 
-# Создание игрока
-def create_player(player_id):
-    players[player_id] = {
-        "money": 1500,
-        "position": 0,
-        "properties": [],
-        "in_jail": False,
-        "jail_turns": 0,
-    }
+    <script>
+        // Инициализация данных игры
+        const board = [
+            { name: "Старт", type: "start", price: 0, owner: null, houses: 0 },
+            { name: "Улица 1", type: "property", price: 200, owner: null, houses: 0 },
+            { name: "Улица 2", type: "property", price: 200, owner: null, houses: 0 },
+            { name: "Тюрьма", type: "jail", price: 0, owner: null, houses: 0 },
+            { name: "Улица 3", type: "property", price: 300, owner: null, houses: 0 },
+            { name: "Улица 4", type: "property", price: 300, owner: null, houses: 0 },
+        ];
 
-# Главная страница
-@app.route('/')
-def index():
-    return render_template('index.html')  # Рендеринг HTML-файла
+        const player = {
+            money: 1500,
+            position: 0,
+            properties: [],
+            inJail: false,
+        };
 
-# Получить статус игры
-@app.route('/game-status/<player_id>', methods=['GET'])
-def game_status(player_id):
-    if player_id not in players:
-        create_player(player_id)
-    return jsonify({
-        "player": players[player_id],
-        "board": board,
-    })
+        // Элементы DOM
+        const moneyElement = document.getElementById("money");
+        const propertiesElement = document.getElementById("properties");
+        const positionElement = document.getElementById("position");
+        const logElement = document.getElementById("log");
 
-# Бросок кубика
-@app.route('/roll-dice/<player_id>', methods=['POST'])
-def roll_dice(player_id):
-    dice = random.randint(1, 6)
-    player = players[player_id]
-    
-    if player["in_jail"]:
-        player["jail_turns"] += 1
-        if player["jail_turns"] >= 3:
-            player["in_jail"] = False
-            player["jail_turns"] = 0
-            message = "Вы вышли из тюрьмы!"
-        else:
-            message = "Вы остаетесь в тюрьме."
-        return jsonify({"message": message})
-    
-    player["position"] = (player["position"] + dice) % len(board)
-    cell = board[player["position"]]
+        // Обновление информации об игроке
+        function updatePlayerInfo() {
+            moneyElement.textContent = player.money;
+            propertiesElement.textContent = player.properties.join(", ") || "Нет";
+            positionElement.textContent = board[player.position].name;
+        }
 
-    # Обработка событий на клетке
-    if cell["type"] == "jail":
-        player["in_jail"] = True
-        message = "Вы попали в тюрьму!"
-    elif cell["type"] == "property" and cell["owner"] is not None and cell["owner"] != player_id:
-        rent = cell["price"] * 0.1  # Арендная плата
-        player["money"] -= rent
-        players[cell["owner"]]["money"] += rent
-        message = f"Вы заплатили аренду: {rent}$"
-    else:
-        message = f"Вы попали на клетку: {cell['name']}"
+        // Добавление сообщения в лог
+        function addLogMessage(message) {
+            const p = document.createElement("p");
+            p.textContent = message;
+            logElement.appendChild(p);
+            logElement.scrollTop = logElement.scrollHeight;
+        }
 
-    return jsonify({
-        "dice": dice,
-        "cell": cell["name"],
-        "message": message,
-    })
+        // Бросок кубика
+        function rollDice() {
+            if (player.inJail) {
+                addLogMessage("Вы в тюрьме и не можете бросить кубик!");
+                return;
+            }
 
-# Покупка клетки
-@app.route('/buy-property/<player_id>', methods=['POST'])
-def buy_property(player_id):
-    player = players[player_id]
-    cell = board[player["position"]]
-    if cell["type"] == "property" and cell["owner"] is None and player["money"] >= cell["price"]:
-        cell["owner"] = player_id
-        player["money"] -= cell["price"]
-        player["properties"].append(cell["name"])
-        return jsonify({"message": f"Клетка '{cell['name']}' куплена!"})
-    else:
-        return jsonify({"message": "Покупка невозможна."})
+            const dice = Math.floor(Math.random() * 6) + 1;
+            player.position = (player.position + dice) % board.length;
+            const cell = board[player.position];
 
-# Постройка дома
-@app.route('/build-house/<player_id>', methods=['POST'])
-def build_house(player_id):
-    player = players[player_id]
-    cell = board[player["position"]]
-    if cell["owner"] == player_id and player["money"] >= 100:
-        cell["houses"] += 1
-        player["money"] -= 100
-        return jsonify({"message": "Дом построен!"})
-    else:
-        return jsonify({"message": "Постройка невозможна."})
+            addLogMessage(`Вы бросили кубик и выпало ${dice}. Вы на клетке: ${cell.name}`);
 
-# Торговля
-@app.route('/trade/<player_id>', methods=['POST'])
-def trade(player_id):
-    data = request.json
-    target_player_id = data["target_player"]
-    property_offer = data["property_offer"]
-    property_request = data["property_request"]
+            if (cell.type === "jail") {
+                player.inJail = true;
+                addLogMessage("Вы попали в тюрьму!");
+            } else if (cell.type === "property" && cell.owner !== null && cell.owner !== "player") {
+                const rent = cell.price * 0.1;
+                player.money -= rent;
+                addLogMessage(`Вы заплатили аренду: $${rent}`);
+            }
 
-    player = players[player_id]
-    target_player = players[target_player_id]
+            updatePlayerInfo();
+        }
 
-    if property_offer in player["properties"] and property_request in target_player["properties"]:
-        player["properties"].remove(property_offer)
-        target_player["properties"].append(property_offer)
-        target_player["properties"].remove(property_request)
-        player["properties"].append(property_request)
-        return jsonify({"message": "Обмен успешен!"})
-    else:
-        return jsonify({"message": "Обмен невозможен."})
+        // Покупка собственности
+        function buyProperty() {
+            const cell = board[player.position];
+            if (cell.type !== "property" || cell.owner !== null) {
+                addLogMessage("Покупка невозможна.");
+                return;
+            }
 
-# Запуск сервера
-if __name__ == '__main__':
-    app.run(debug=True)
+            if (player.money >= cell.price) {
+                cell.owner = "player";
+                player.money -= cell.price;
+                player.properties.push(cell.name);
+                addLogMessage(`Вы купили ${cell.name} за $${cell.price}`);
+            } else {
+                addLogMessage("Недостаточно денег для покупки.");
+            }
+
+            updatePlayerInfo();
+        }
+
+        // Постройка дома
+        function buildHouse() {
+            const cell = board[player.position];
+            if (cell.owner !== "player" || player.money < 100) {
+                addLogMessage("Постройка невозможна.");
+                return;
+            }
+
+            cell.houses += 1;
+            player.money -= 100;
+            addLogMessage(`Вы построили дом на ${cell.name} за $100`);
+            updatePlayerInfo();
+        }
+
+        // Инициализация игры
+        updatePlayerInfo();
+
+        // Интеграция с Telegram WebApp
+        Telegram.WebApp.ready();
+        Telegram.WebApp.expand(); // Раскрыть приложение на весь экран
+    </script>
+</body>
+</html>
