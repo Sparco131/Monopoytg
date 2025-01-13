@@ -31,6 +31,33 @@
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         }
 
+        .menu {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            align-items: center;
+            margin-top: 20px;
+        }
+
+        .menu button {
+            padding: 15px 30px;
+            font-size: 16px;
+            border: none;
+            border-radius: 10px;
+            background: linear-gradient(135deg, #2c3e50, #34495e);
+            color: white;
+            cursor: pointer;
+            font-weight: bold;
+            text-transform: uppercase;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .menu button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 10px rgba(0, 0, 0, 0.2);
+        }
+
         .board {
             position: relative;
             width: 90vw;
@@ -45,6 +72,7 @@
             display: grid;
             grid-template-columns: repeat(11, 1fr);
             grid-template-rows: repeat(11, 1fr);
+            display: none; /* Скрываем поле до выбора режима */
         }
 
         .cell {
@@ -144,6 +172,7 @@
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
             width: 100%;
             max-width: 600px;
+            display: none; /* Скрываем до начала игры */
         }
 
         .player-info p {
@@ -157,6 +186,7 @@
             gap: 10px;
             width: 100%;
             max-width: 600px;
+            display: none; /* Скрываем до начала игры */
         }
 
         .actions button {
@@ -190,6 +220,7 @@
             margin-top: 15px;
             font-size: 14px;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            display: none; /* Скрываем до начала игры */
         }
 
         .log p {
@@ -220,6 +251,7 @@
             background: #ddd;
             border-radius: 5px;
             margin: 10px 0;
+            display: none; /* Скрываем до начала игры */
         }
 
         .progress {
@@ -353,6 +385,12 @@
 <body>
     <h1>Мини-Монополия</h1>
 
+    <!-- Меню -->
+    <div class="menu" id="menu">
+        <button onclick="startGame('bot')">Играть против бота</button>
+        <button onclick="startGame('player')">Играть с другом</button>
+    </div>
+
     <!-- Игровое поле -->
     <div class="board" id="board">
         <!-- Клетки будут добавляться динамически -->
@@ -370,7 +408,7 @@
     </div>
 
     <!-- Информация об игроке -->
-    <div class="player-info">
+    <div class="player-info" id="playerInfo">
         <h2>Игрок: <span id="playerName"></span></h2>
         <p>Деньги: $<span id="money">1500</span></p>
         <p>Собственность: <span id="properties">Нет</span></p>
@@ -378,9 +416,10 @@
     </div>
 
     <!-- Кнопки действий -->
-    <div class="actions">
+    <div class="actions" id="actions">
         <button onclick="rollDice()">Бросить кубик</button>
         <button onclick="buyProperty()">Купить собственность</button>
+        <button onclick="startAuction()">Аукцион</button>
         <button onclick="endTurn()">Завершить ход</button>
     </div>
 
@@ -390,7 +429,7 @@
     </div>
 
     <!-- Индикатор хода -->
-    <div class="turn-indicator">
+    <div class="turn-indicator" id="turnIndicator">
         <div class="progress" id="turnProgress"></div>
     </div>
 
@@ -438,10 +477,7 @@
             { name: "Улица Шолохова", type: "property", price: 750, owner: null, houses: 0 },
         ];
 
-        let players = [
-            { username: "Игрок 1", money: 1500, position: 0, properties: [], inJail: false, color: "#e74c3c" },
-            { username: "Игрок 2", money: 1500, position: 0, properties: [], inJail: false, color: "#3498db" }
-        ];
+        let players = [];
         let currentPlayerIndex = 0;
 
         // Элементы DOM
@@ -459,6 +495,39 @@
         const modalType = document.getElementById("modalType");
         const modalPrice = document.getElementById("modalPrice");
         const modalOwner = document.getElementById("modalOwner");
+        const menuElement = document.getElementById("menu");
+        const playerInfoElement = document.getElementById("playerInfo");
+        const actionsElement = document.getElementById("actions");
+        const logElementDisplay = document.getElementById("log");
+        const turnIndicatorElement = document.getElementById("turnIndicator");
+
+        // Начало игры
+        function startGame(mode) {
+            // Скрываем меню
+            menuElement.style.display = "none";
+
+            // Инициализация игроков
+            players = [
+                { username: "Игрок 1", money: 1500, position: 0, properties: [], inJail: false, color: "#e74c3c" },
+            ];
+
+            if (mode === "bot") {
+                players.push({ username: "Бот", money: 1500, position: 0, properties: [], inJail: false, color: "#3498db" });
+            } else if (mode === "player") {
+                players.push({ username: "Игрок 2", money: 1500, position: 0, properties: [], inJail: false, color: "#3498db" });
+            }
+
+            // Показываем игровое поле и интерфейс
+            boardElement.style.display = "grid";
+            playerInfoElement.style.display = "block";
+            actionsElement.style.display = "flex";
+            logElementDisplay.style.display = "block";
+            turnIndicatorElement.style.display = "block";
+
+            // Рендер игрового поля
+            renderBoard();
+            updatePlayerInfo();
+        }
 
         // Рендер игрового поля
         function renderBoard() {
@@ -692,6 +761,40 @@
             updatePlayerInfo();
         }
 
+        // Аукцион
+        function startAuction() {
+            const currentPlayer = players[currentPlayerIndex];
+            const cell = board[currentPlayer.position];
+
+            if (cell.type !== "property" || cell.owner !== null) {
+                addLogMessage("🚫 Аукцион невозможен.");
+                return;
+            }
+
+            const auctionParticipants = players.filter(p => p.money >= cell.price);
+            if (auctionParticipants.length === 0) {
+                addLogMessage("🚫 Нет участников для аукциона.");
+                return;
+            }
+
+            let highestBid = cell.price;
+            let winner = auctionParticipants[0];
+
+            auctionParticipants.forEach(participant => {
+                const bid = Math.floor(Math.random() * (participant.money - cell.price + 1)) + cell.price;
+                if (bid > highestBid) {
+                    highestBid = bid;
+                    winner = participant;
+                }
+            });
+
+            cell.owner = winner.username;
+            winner.money -= highestBid;
+            winner.properties.push(cell.name);
+            addLogMessage(`💰 ${winner.username} выиграл аукцион за ${cell.name} за $${highestBid}`);
+            updatePlayerInfo();
+        }
+
         // Завершение хода
         function endTurn() {
             currentPlayerIndex = (currentPlayerIndex + 1) % players.length;
@@ -711,10 +814,6 @@
             logElement.appendChild(p);
             logElement.scrollTop = logElement.scrollHeight;
         }
-
-        // Инициализация игры
-        renderBoard();
-        updatePlayerInfo();
     </script>
 </body>
 </html>
