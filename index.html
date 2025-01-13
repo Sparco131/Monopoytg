@@ -1,4 +1,4 @@
-from flask import Flask, jsonify, request, send_from_directory
+from flask import Flask, jsonify, request
 from flask_cors import CORS
 import random
 
@@ -31,7 +31,7 @@ def index():
         body {
             font-family: 'Arial', sans-serif;
             text-align: center;
-            padding: 20px;
+            padding: 10px;
             margin: 0;
             background-image: url('https://i.imgur.com/3QZQZQz.jpg');
             background-size: cover;
@@ -40,29 +40,30 @@ def index():
             text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
         }
         h1 {
-            font-size: 3rem;
-            margin-bottom: 20px;
+            font-size: 2rem;
+            margin-bottom: 10px;
         }
         button {
-            padding: 10px 20px;
+            padding: 15px;
             font-size: 16px;
-            margin: 10px;
+            margin: 5px;
             background-color: #4CAF50;
             color: white;
             border: none;
-            border-radius: 5px;
+            border-radius: 10px;
             cursor: pointer;
-            transition: background-color 0.3s;
+            width: 90%;
+            max-width: 300px;
         }
         button:hover {
             background-color: #45a049;
         }
         .board {
             display: grid;
-            grid-template-columns: repeat(5, 1fr);
-            gap: 10px;
-            margin: 20px auto;
-            max-width: 600px;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 5px;
+            margin: 10px auto;
+            max-width: 100%;
         }
         .cell {
             border: 2px solid #8B4513;
@@ -71,17 +72,34 @@ def index():
             border-radius: 10px;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
             color: #333;
+            font-size: 0.9rem;
         }
         .cell strong {
-            font-size: 1.2rem;
+            font-size: 1rem;
             color: #8B4513;
         }
         #game-status {
             background-color: rgba(0, 0, 0, 0.7);
-            padding: 15px;
+            padding: 10px;
             border-radius: 10px;
-            margin: 20px auto;
-            max-width: 600px;
+            margin: 10px auto;
+            max-width: 90%;
+            font-size: 1rem;
+        }
+        @media (max-width: 600px) {
+            h1 {
+                font-size: 1.5rem;
+            }
+            .board {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            .cell {
+                font-size: 0.8rem;
+            }
+            button {
+                font-size: 14px;
+                padding: 10px;
+            }
         }
     </style>
 </head>
