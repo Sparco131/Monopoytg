@@ -419,6 +419,7 @@
     <div class="actions" id="actions">
         <button onclick="rollDice()">Бросить кубик</button>
         <button onclick="buyProperty()">Купить собственность</button>
+        <button onclick="buildHouse()">Построить дом</button>
         <button onclick="startAuction()">Аукцион</button>
         <button onclick="endTurn()">Завершить ход</button>
     </div>
@@ -645,6 +646,13 @@
                 handleCellAction(currentPlayer.position);
                 updatePlayerInfo();
                 updateMarkers();
+
+                // Если текущий игрок — бот, он делает ход
+                if (currentPlayer.username === "Бот") {
+                    setTimeout(() => {
+                        botDecision();
+                    }, 1000); // Задержка для имитации "думания" бота
+                }
             }, 500);
         }
 
@@ -675,7 +683,11 @@
                         "Вы получили $100!",
                         "Вы потеряли $50!",
                         "Перейдите на старт.",
-                        "Вы попали в тюрьму."
+                        "Вы попали в тюрьму.",
+                        "Получите $50 от каждого игрока.",
+                        "Пройдите вперед на 3 клетки.",
+                        "Ваша собственность подорожала! Получите $200.",
+                        "Заплатите $100 за ремонт дорог."
                     ];
                     const card = chanceCards[Math.floor(Math.random() * chanceCards.length)];
                     addLogMessage(`🎲 Шанс: ${card}`);
@@ -685,9 +697,24 @@
                     } else if (card === "Вы попали в тюрьму.") {
                         currentPlayer.inJail = true;
                     } else if (card.includes("получили")) {
-                        currentPlayer.money += parseInt(card.match(/\d+/)[0]);
+                        const amount = parseInt(card.match(/\d+/)[0]);
+                        currentPlayer.money += amount;
                     } else if (card.includes("потеряли")) {
-                        currentPlayer.money -= parseInt(card.match(/\d+/)[0]);
+                        const amount = parseInt(card.match(/\d+/)[0]);
+                        currentPlayer.money -= amount;
+                    } else if (card.includes("от каждого игрока")) {
+                        const amount = parseInt(card.match(/\d+/)[0]);
+                        players.forEach(player => {
+                            if (player !== currentPlayer) {
+                                player.money -= amount;
+                                currentPlayer.money += amount;
+                            }
+                        });
+                    } else if (card.includes("Пройдите вперед на")) {
+                        const steps = parseInt(card.match(/\d+/)[0]);
+                        currentPlayer.position = (currentPlayer.position + steps) % board.length;
+                        updateMarkers();
+                        handleCellAction(currentPlayer.position);
                     }
                     break;
                 case "community-chest":
@@ -695,7 +722,11 @@
                         "Вы получили $200!",
                         "Вы потеряли $100!",
                         "Перейдите на старт.",
-                        "Вы попали в тюрьму."
+                        "Вы попали в тюрьму.",
+                        "Получите $20 от каждого игрока.",
+                        "Ваш день рождения! Получите $10 от каждого игрока.",
+                        "Вы выиграли в лотерею! Получите $100.",
+                        "Заплатите $50 за обучение."
                     ];
                     const chestCard = communityChestCards[Math.floor(Math.random() * communityChestCards.length)];
                     addLogMessage(`🎲 Общественная казна: ${chestCard}`);
@@ -705,9 +736,19 @@
                     } else if (chestCard === "Вы попали в тюрьму.") {
                         currentPlayer.inJail = true;
                     } else if (chestCard.includes("получили")) {
-                        currentPlayer.money += parseInt(chestCard.match(/\d+/)[0]);
+                        const amount = parseInt(chestCard.match(/\d+/)[0]);
+                        currentPlayer.money += amount;
                     } else if (chestCard.includes("потеряли")) {
-                        currentPlayer.money -= parseInt(chestCard.match(/\d+/)[0]);
+                        const amount = parseInt(chestCard.match(/\d+/)[0]);
+                        currentPlayer.money -= amount;
+                    } else if (chestCard.includes("от каждого игрока")) {
+                        const amount = parseInt(chestCard.match(/\d+/)[0]);
+                        players.forEach(player => {
+                            if (player !== currentPlayer) {
+                                player.money -= amount;
+                                currentPlayer.money += amount;
+                            }
+                        });
                     }
                     break;
                 case "jail":
@@ -736,12 +777,13 @@
         // Расчет аренды
         function calculateRent(cell) {
             if (cell.type === "railroad") {
-                return 25 * cell.houses;
+                return 25 * (cell.owner ? 1 : 0);
             } else if (cell.type === "utility") {
-                return 10 * cell.houses;
-            } else {
-                return cell.price * 0.1; // 10% от стоимости
+                return 10 * (cell.owner ? 1 : 0);
+            } else if (cell.type === "property") {
+                return cell.price * 0.1 * (cell.houses + 1);
             }
+            return 0;
         }
 
         // Покупка собственности
@@ -758,6 +800,28 @@
             currentPlayer.money -= cell.price;
             currentPlayer.properties.push(cell.name);
             addLogMessage(`💰 Вы купили ${cell.name} за $${cell.price}`);
+            updatePlayerInfo();
+        }
+
+        // Постройка дома
+        function buildHouse() {
+            const currentPlayer = players[currentPlayerIndex];
+            const cell = board[currentPlayer.position];
+
+            if (cell.type !== "property" || cell.owner !== currentPlayer.username) {
+                addLogMessage("🚫 Вы не можете построить дом здесь.");
+                return;
+            }
+
+            const houseCost = cell.price * 0.5; // Стоимость дома — 50% от стоимости клетки
+            if (currentPlayer.money < houseCost) {
+                addLogMessage("🚫 У вас недостаточно денег для постройки дома.");
+                return;
+            }
+
+            cell.houses += 1;
+            currentPlayer.money -= houseCost;
+            addLogMessage(`🏠 Вы построили дом на ${cell.name}. Стоимость: $${houseCost}`);
             updatePlayerInfo();
         }
 
@@ -800,6 +864,44 @@
             currentPlayerIndex = (currentPlayerIndex + 1) % players.length;
             addLogMessage(`🔄 Ход переходит к ${players[currentPlayerIndex].username}`);
             updatePlayerInfo();
+
+            // Если текущий игрок — бот, он делает ход
+            if (players[currentPlayerIndex].username === "Бот") {
+                setTimeout(() => {
+                    rollDice();
+                }, 1000); // Задержка для имитации "думания" бота
+            }
+        }
+
+        // Решение бота
+        function botDecision() {
+            const bot = players[currentPlayerIndex];
+            if (bot.username !== "Бот") return; // Проверяем, что это действительно бот
+
+            const cell = board[bot.position];
+
+            // Решение: покупать ли собственность
+            if (cell.type === "property" && cell.owner === null && bot.money >= cell.price) {
+                buyProperty();
+                addLogMessage("🤖 Бот купил собственность.");
+            }
+
+            // Решение: строить ли дом
+            if (cell.type === "property" && cell.owner === bot.username && bot.money >= cell.price * 0.5) {
+                buildHouse();
+                addLogMessage("🤖 Бот построил дом.");
+            }
+
+            // Решение: участвовать ли в аукционе
+            if (cell.type === "property" && cell.owner === null && bot.money >= cell.price) {
+                startAuction();
+                addLogMessage("🤖 Бот участвует в аукционе.");
+            }
+
+            // Завершаем ход бота
+            setTimeout(() => {
+                endTurn();
+            }, 1000); // Задержка перед завершением хода
         }
 
         // Завершение игры
