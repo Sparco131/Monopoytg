@@ -31,106 +31,38 @@
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         }
 
-        .auth-form, .lobby, .game-interface {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-            margin-bottom: 20px;
-            width: 100%;
-            max-width: 800px;
-            background-color: #ffffff;
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        }
-
-        .auth-form input, .lobby input {
-            padding: 10px;
-            font-size: 16px;
-            border: 2px solid #2c3e50;
-            border-radius: 10px;
-            width: 100%;
-            box-sizing: border-box;
-        }
-
-        .auth-form button, .lobby button, .actions button {
-            padding: 15px;
-            font-size: 16px;
-            border: none;
-            border-radius: 10px;
-            background-color: #2c3e50;
-            color: white;
-            cursor: pointer;
-            font-weight: bold;
-            text-transform: uppercase;
-            transition: background-color 0.2s ease;
-            width: 100%;
-            box-sizing: border-box;
-        }
-
-        .auth-form button:hover, .lobby button:hover, .actions button:hover {
-            background-color: #34495e;
-        }
-
-        .session-list {
-            display: flex;
-            flex-direction: column;
-            gap: 5px;
-            width: 100%;
-        }
-
-        .session-item {
-            padding: 10px;
-            background-color: #ffffff;
-            border: 2px solid #2c3e50;
-            border-radius: 10px;
-            cursor: pointer;
-            transition: background-color 0.2s ease;
-            text-align: center;
-        }
-
-        .session-item:hover {
-            background-color: #f0f0f0;
-        }
-
-        /* Игровое поле */
         .board {
             position: relative;
-            width: 100%;
-            height: auto;
+            width: 90vw;
+            height: 90vw;
+            max-width: 400px;
+            max-height: 400px;
             border: 10px solid #2c3e50;
             border-radius: 20px;
             margin-bottom: 20px;
             background-color: #f0e6d6;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: space-between;
-            align-items: center;
-            padding: 10px;
+            display: grid;
+            grid-template-columns: repeat(11, 1fr);
+            grid-template-rows: repeat(11, 1fr);
         }
 
         .cell {
-            width: 22%;
-            height: 80px;
-            border: 2px solid #2c3e50;
-            text-align: center;
-            background-color: #ffffff;
-            border-radius: 10px;
-            font-size: 12px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-            transition: transform 0.2s ease;
-            cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
+            text-align: center;
+            font-size: 10px;
             padding: 5px;
             box-sizing: border-box;
-            margin: 5px;
+            border: 1px solid #2c3e50;
+            background-color: #ffffff;
+            cursor: pointer;
+            transition: transform 0.2s ease;
         }
 
         .cell:hover {
-            transform: scale(1.05);
+            transform: scale(1.1);
         }
 
         .cell.start {
@@ -173,6 +105,19 @@
             color: white;
         }
 
+        .center-area {
+            grid-column: 4 / 9;
+            grid-row: 4 / 9;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #f0e6d6;
+            border: 2px dashed #2c3e50;
+            border-radius: 10px;
+            font-size: 14px;
+            color: #2c3e50;
+        }
+
         .player-info {
             margin-bottom: 15px;
             text-align: center;
@@ -183,7 +128,7 @@
             border: 2px solid #2c3e50;
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
             width: 100%;
-            max-width: 800px;
+            max-width: 400px;
         }
 
         .player-info p {
@@ -196,20 +141,30 @@
             flex-direction: column;
             gap: 8px;
             width: 100%;
-            max-width: 800px;
+            max-width: 400px;
         }
 
         .actions button {
-            background-color: #e67e22;
+            padding: 15px;
+            font-size: 16px;
+            border: none;
+            border-radius: 10px;
+            background-color: #2c3e50;
+            color: white;
+            cursor: pointer;
+            font-weight: bold;
+            text-transform: uppercase;
+            transition: background-color 0.2s ease;
+            width: 100%;
         }
 
         .actions button:hover {
-            background-color: #d35400;
+            background-color: #34495e;
         }
 
         .log {
             width: 100%;
-            max-width: 800px;
+            max-width: 400px;
             height: 100px;
             border: 2px solid #2c3e50;
             padding: 10px;
@@ -225,61 +180,6 @@
             color: #2c3e50;
         }
 
-        .modal {
-            display: none;
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background-color: white;
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            z-index: 1000;
-            width: 90%;
-            max-width: 400px;
-        }
-
-        .modal-overlay {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.5);
-            z-index: 999;
-        }
-
-        .modal-content {
-            text-align: center;
-        }
-
-        .modal-close {
-            margin-top: 10px;
-            padding: 5px 10px;
-            background-color: #e74c3c;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-        }
-
-        .modal-close:hover {
-            background-color: #c0392b;
-        }
-
-        .dice {
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background-color: white;
-            padding: 10px;
-            border-radius: 5px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-        }
-
         .player-marker {
             font-size: 16px;
             font-weight: bold;
@@ -291,6 +191,8 @@
             display: flex;
             align-items: center;
             justify-content: center;
+            position: absolute;
+            transform: translate(-50%, -50%);
         }
 
         @media (max-width: 600px) {
@@ -299,14 +201,7 @@
             }
 
             .cell {
-                width: 45%;
-                height: 60px;
-                font-size: 10px;
-            }
-
-            .board {
-                width: 95vw;
-                height: auto;
+                font-size: 8px;
             }
         }
     </style>
@@ -314,62 +209,30 @@
 <body>
     <h1>Мини-Монополия</h1>
 
-    <!-- Форма авторизации -->
-    <div class="auth-form" id="authForm">
-        <input type="text" id="username" placeholder="Имя игрока" required>
-        <button onclick="login()">Войти</button>
+    <!-- Игровое поле -->
+    <div class="board" id="board">
+        <!-- Клетки будут добавляться динамически -->
+        <div class="center-area">Кубики</div>
     </div>
 
-    <!-- Лобби (скрыто по умолчанию) -->
-    <div class="lobby" id="lobby" style="display: none;">
-        <h2>Лобби</h2>
-        <button onclick="createSession()">Создать новую сессию</button>
-        <button onclick="showGameHistory()">История игр</button>
-        <div class="session-list" id="sessionList">
-            <!-- Список сессий будет здесь -->
-        </div>
+    <!-- Информация об игроке -->
+    <div class="player-info">
+        <h2>Игрок: <span id="playerName"></span></h2>
+        <p>Деньги: $<span id="money">1500</span></p>
+        <p>Собственность: <span id="properties">Нет</span></p>
+        <p>Позиция: <span id="position">Старт</span></p>
     </div>
 
-    <!-- Игровой интерфейс (скрыт по умолчанию) -->
-    <div id="gameInterface" style="display: none;">
-        <div class="board" id="board">
-            <!-- Клетки будут добавляться динамически -->
-        </div>
-
-        <div class="player-info">
-            <h2>Игрок: <span id="playerName"></span></h2>
-            <p>Деньги: $<span id="money">1500</span></p>
-            <p>Собственность: <span id="properties">Нет</span></p>
-            <p>Позиция: <span id="position">Старт</span></p>
-        </div>
-
-        <div class="actions">
-            <!-- Кнопки будут добавляться динамически -->
-        </div>
-
-        <div class="log" id="log">
-            <p>Добро пожаловать в игру!</p>
-        </div>
+    <!-- Кнопки действий -->
+    <div class="actions">
+        <button onclick="rollDice()">Бросить кубик</button>
+        <button onclick="buyProperty()">Купить собственность</button>
+        <button onclick="endTurn()">Завершить ход</button>
     </div>
 
-    <!-- Модальное окно для описания клетки -->
-    <div class="modal-overlay" id="modalOverlay"></div>
-    <div class="modal" id="modal">
-        <div class="modal-content">
-            <h2 id="modalTitle"></h2>
-            <p id="modalDescription"></p>
-            <button class="modal-close" onclick="closeModal()">Закрыть</button>
-        </div>
-    </div>
-
-    <!-- Модальное окно для истории игр -->
-    <div class="modal-overlay" id="historyOverlay" style="display: none;"></div>
-    <div class="modal" id="historyModal" style="display: none;">
-        <div class="modal-content">
-            <h2>История игр</h2>
-            <div id="historyList"></div>
-            <button class="modal-close" onclick="closeHistoryModal()">Закрыть</button>
-        </div>
+    <!-- Лог событий -->
+    <div class="log" id="log">
+        <p>Добро пожаловать в игру!</p>
     </div>
 
     <script>
@@ -397,128 +260,39 @@
             { name: "Улица 12", type: "property", price: 700, owner: null, houses: 0 },
         ];
 
-        const chanceCards = [
-            "Получите $100!",
-            "Заплатите штраф $50.",
-            "Перейдите на старт.",
-            "Перейдите в тюрьму.",
-            "Получите $200 от каждого игрока.",
-            "Заплатите $100 за ремонт дорог."
-        ];
-
-        const RENT_RATES = {
-            property: 0.1,
-            railroad: 0.2,
-            utility: 0.15,
-        };
-
-        let players = [];
+        let players = [{ username: "Игрок 1", money: 1500, position: 0, properties: [], inJail: false }];
         let currentPlayerIndex = 0;
-        let currentSessionId = null;
 
         // Элементы DOM
-        const authForm = document.getElementById("authForm");
-        const lobby = document.getElementById("lobby");
-        const gameInterface = document.getElementById("gameInterface");
-        const sessionList = document.getElementById("sessionList");
+        const boardElement = document.getElementById("board");
         const playerNameElement = document.getElementById("playerName");
         const moneyElement = document.getElementById("money");
         const propertiesElement = document.getElementById("properties");
         const positionElement = document.getElementById("position");
         const logElement = document.getElementById("log");
-        const modal = document.getElementById("modal");
-        const modalOverlay = document.getElementById("modalOverlay");
-        const modalTitle = document.getElementById("modalTitle");
-        const modalDescription = document.getElementById("modalDescription");
-        const boardElement = document.getElementById("board");
-        const historyModal = document.getElementById("historyModal");
-        const historyOverlay = document.getElementById("historyOverlay");
-        const historyList = document.getElementById("historyList");
-
-        // Логин игрока
-        function login() {
-            const username = document.getElementById("username").value.trim();
-            if (!username) {
-                alert("Введите имя игрока!");
-                return;
-            }
-
-            players.push({ username, money: 1500, position: 0, properties: [], inJail: false });
-            authForm.style.display = "none";
-            lobby.style.display = "block";
-            loadSessions();
-        }
-
-        // Загрузка списка сессий
-        function loadSessions() {
-            const sessions = JSON.parse(localStorage.getItem("sessions")) || [];
-            sessionList.innerHTML = "";
-
-            if (sessions.length === 0) {
-                sessionList.innerHTML = "<p>Нет активных сессий.</p>";
-                return;
-            }
-
-            sessions.forEach(session => {
-                const sessionItem = document.createElement("div");
-                sessionItem.className = "session-item";
-                sessionItem.textContent = `Сессия #${session.id} (Игроков: ${session.players.length})`;
-                sessionItem.onclick = () => joinSession(session.id);
-                sessionList.appendChild(sessionItem);
-            });
-        }
-
-        // Создание новой сессии
-        function createSession() {
-            const sessionId = Date.now().toString();
-            const newSession = {
-                id: sessionId,
-                players: players,
-                board: JSON.parse(JSON.stringify(board)),
-                currentPlayerIndex: 0
-            };
-
-            const sessions = JSON.parse(localStorage.getItem("sessions")) || [];
-            sessions.push(newSession);
-            localStorage.setItem("sessions", JSON.stringify(sessions));
-
-            currentSessionId = sessionId;
-            lobby.style.display = "none";
-            gameInterface.style.display = "block";
-            renderBoard();
-            updatePlayerInfo();
-            addLogMessage(`Создана новая сессия #${sessionId}`);
-        }
-
-        // Присоединение к сессии
-        function joinSession(sessionId) {
-            const sessions = JSON.parse(localStorage.getItem("sessions")) || [];
-            const session = sessions.find(s => s.id === sessionId);
-
-            if (!session) {
-                alert("Сессия не найдена!");
-                return;
-            }
-
-            session.players.push(...players);
-            localStorage.setItem("sessions", JSON.stringify(sessions));
-
-            currentSessionId = sessionId;
-            lobby.style.display = "none";
-            gameInterface.style.display = "block";
-            renderBoard();
-            updatePlayerInfo();
-            addLogMessage(`Вы присоединились к сессии #${sessionId}`);
-        }
 
         // Рендер игрового поля
         function renderBoard() {
-            boardElement.innerHTML = "";
             board.forEach((cell, index) => {
                 const cellElement = document.createElement("div");
                 cellElement.className = `cell ${cell.type}`;
                 cellElement.textContent = cell.name;
-                cellElement.onclick = () => showCellDescription(cell.name, `Тип: ${cell.type}, Цена: $${cell.price}`);
+
+                // Расположение клеток по краям
+                if (index < 10) {
+                    cellElement.style.gridColumn = `${index + 1} / ${index + 2}`;
+                    cellElement.style.gridRow = "1 / 2";
+                } else if (index < 20) {
+                    cellElement.style.gridColumn = "11 / 12";
+                    cellElement.style.gridRow = `${index - 9} / ${index - 8}`;
+                } else if (index < 30) {
+                    cellElement.style.gridColumn = `${30 - index} / ${31 - index}`;
+                    cellElement.style.gridRow = "11 / 12";
+                } else {
+                    cellElement.style.gridColumn = "1 / 2";
+                    cellElement.style.gridRow = `${40 - index} / ${41 - index}`;
+                }
+
                 boardElement.appendChild(cellElement);
             });
         }
@@ -530,71 +304,18 @@
             moneyElement.textContent = currentPlayer.money;
             propertiesElement.textContent = currentPlayer.properties.join(", ") || "Нет";
             positionElement.textContent = board[currentPlayer.position].name;
-            updateActions();
-        }
-
-        // Добавление сообщения в лог
-        function addLogMessage(message) {
-            const p = document.createElement("p");
-            p.textContent = message;
-            logElement.appendChild(p);
-            logElement.scrollTop = logElement.scrollHeight;
-        }
-
-        // Функция для броска двух кубиков
-        function rollTwoDice() {
-            const dice1 = Math.floor(Math.random() * 6) + 1;
-            const dice2 = Math.floor(Math.random() * 6) + 1;
-            return { dice1, dice2, isDouble: dice1 === dice2 };
         }
 
         // Бросок кубика
         function rollDice() {
             const currentPlayer = players[currentPlayerIndex];
-
-            if (currentPlayer.inJail) {
-                addLogMessage("Вы в тюрьме. Используйте 'Оплатить штраф' или 'Попытаться выбросить дубль'.");
-                return;
-            }
-
-            const { dice1, dice2, isDouble } = rollTwoDice();
+            const dice1 = Math.floor(Math.random() * 6) + 1;
+            const dice2 = Math.floor(Math.random() * 6) + 1;
             const total = dice1 + dice2;
-            animateDiceRoll(dice1, dice2);
-            setTimeout(() => {
-                currentPlayer.position = (currentPlayer.position + total) % board.length;
-                animatePlayerMovement(currentPlayer, currentPlayer.position);
-                const cell = board[currentPlayer.position];
 
-                addLogMessage(`Вы бросили кубики: ${dice1} и ${dice2}. Вы на клетке: ${cell.name}`);
-
-                if (cell.type === "jail") {
-                    currentPlayer.inJail = true;
-                    addLogMessage("Вы попали в тюрьму!");
-                } else if (cell.type === "property" && cell.owner !== null && cell.owner !== currentPlayer.username) {
-                    const rent = calculateRent(cell);
-                    currentPlayer.money -= rent;
-                    addLogMessage(`Вы заплатили аренду: $${rent}`);
-                } else if (cell.type === "tax") {
-                    currentPlayer.money -= cell.price;
-                    addLogMessage(`Вы заплатили налог: $${cell.price}`);
-                } else if (cell.type === "chance") {
-                    drawChanceCard();
-                }
-
-                updatePlayerInfo();
-            }, 1000);
-        }
-
-        // Расчет аренды
-        function calculateRent(cell) {
-            if (cell.type === "property") {
-                return cell.price * RENT_RATES.property * (cell.houses + 1);
-            } else if (cell.type === "railroad") {
-                return cell.price * RENT_RATES.railroad;
-            } else if (cell.type === "utility") {
-                return cell.price * RENT_RATES.utility;
-            }
-            return 0;
+            currentPlayer.position = (currentPlayer.position + total) % board.length;
+            addLogMessage(`Вы бросили кубики: ${dice1} и ${dice2}. Вы на клетке: ${board[currentPlayer.position].name}`);
+            updatePlayerInfo();
         }
 
         // Покупка собственности
@@ -602,18 +323,8 @@
             const currentPlayer = players[currentPlayerIndex];
             const cell = board[currentPlayer.position];
 
-            if (cell.type !== "property") {
-                addLogMessage("Эта клетка не является собственностью.");
-                return;
-            }
-
-            if (cell.owner !== null) {
-                addLogMessage("Эта собственность уже куплена.");
-                return;
-            }
-
-            if (currentPlayer.money < cell.price) {
-                addLogMessage("Недостаточно денег для покупки.");
+            if (cell.type !== "property" || cell.owner !== null || currentPlayer.money < cell.price) {
+                addLogMessage("Покупка невозможна.");
                 return;
             }
 
@@ -624,203 +335,24 @@
             updatePlayerInfo();
         }
 
-        // Постройка дома
-        function buildHouse() {
-            const currentPlayer = players[currentPlayerIndex];
-            const cell = board[currentPlayer.position];
-
-            if (cell.owner !== currentPlayer.username || currentPlayer.money < 100) {
-                addLogMessage("Постройка невозможна.");
-                return;
-            }
-
-            cell.houses += 1;
-            currentPlayer.money -= 100;
-            addLogMessage(`Вы построили дом на ${cell.name} за $100`);
-            updatePlayerInfo();
-        }
-
         // Завершение хода
         function endTurn() {
             currentPlayerIndex = (currentPlayerIndex + 1) % players.length;
-            updatePlayerInfo();
             addLogMessage(`Ход переходит к ${players[currentPlayerIndex].username}`);
-        }
-
-        // Карта шанса
-        function drawChanceCard() {
-            const currentPlayer = players[currentPlayerIndex];
-            const randomIndex = Math.floor(Math.random() * chanceCards.length);
-            const card = chanceCards[randomIndex];
-            addLogMessage(`Карта шанса: ${card}`);
-
-            if (card.includes("Получите")) {
-                const amount = parseInt(card.match(/\d+/)[0]);
-                currentPlayer.money += amount;
-            } else if (card.includes("Заплатите")) {
-                const amount = parseInt(card.match(/\d+/)[0]);
-                currentPlayer.money -= amount;
-            } else if (card.includes("Перейдите на старт")) {
-                currentPlayer.position = 0;
-            } else if (card.includes("Перейдите в тюрьму")) {
-                currentPlayer.position = 3;
-                currentPlayer.inJail = true;
-            }
-
             updatePlayerInfo();
         }
 
-        // Показ описания клетки
-        function showCellDescription(title, description) {
-            modalTitle.textContent = title;
-            modalDescription.textContent = description;
-            modal.style.display = "block";
-            modalOverlay.style.display = "block";
+        // Добавление сообщения в лог
+        function addLogMessage(message) {
+            const p = document.createElement("p");
+            p.textContent = message;
+            logElement.appendChild(p);
+            logElement.scrollTop = logElement.scrollHeight;
         }
 
-        // Закрытие модального окна
-        function closeModal() {
-            modal.style.display = "none";
-            modalOverlay.style.display = "none";
-        }
-
-        // Функция для выхода из тюрьмы путем оплаты штрафа
-        function payJailFine() {
-            const currentPlayer = players[currentPlayerIndex];
-            if (!currentPlayer.inJail) {
-                addLogMessage("Вы не в тюрьме!");
-                return;
-            }
-
-            const fine = 50;
-            if (currentPlayer.money >= fine) {
-                currentPlayer.money -= fine;
-                currentPlayer.inJail = false;
-                addLogMessage(`Вы заплатили штраф $${fine} и вышли из тюрьмы.`);
-            } else {
-                addLogMessage("У вас недостаточно денег для оплаты штрафа.");
-            }
-
-            updatePlayerInfo();
-        }
-
-        // Функция для выхода из тюрьмы путем броска дублей
-        function tryEscapeJail() {
-            const currentPlayer = players[currentPlayerIndex];
-            if (!currentPlayer.inJail) {
-                addLogMessage("Вы не в тюрьме!");
-                return;
-            }
-
-            const { dice1, dice2, isDouble } = rollTwoDice();
-            addLogMessage(`Вы бросили кубики: ${dice1} и ${dice2}`);
-
-            if (isDouble) {
-                currentPlayer.inJail = false;
-                addLogMessage("Вы выбросили дубль и вышли из тюрьмы!");
-            } else {
-                addLogMessage("Дубль не выпал. Вы остаетесь в тюрьме.");
-            }
-
-            updatePlayerInfo();
-        }
-
-        // Обновление кнопок действий
-        function updateActions() {
-            const currentPlayer = players[currentPlayerIndex];
-            const actionsDiv = document.querySelector(".actions");
-            actionsDiv.innerHTML = "";
-
-            if (currentPlayer.inJail) {
-                const payButton = document.createElement("button");
-                payButton.textContent = "Оплатить штраф ($50)";
-                payButton.onclick = payJailFine;
-                actionsDiv.appendChild(payButton);
-
-                const escapeButton = document.createElement("button");
-                escapeButton.textContent = "Попытаться выбросить дубль";
-                escapeButton.onclick = tryEscapeJail;
-                actionsDiv.appendChild(escapeButton);
-            } else {
-                const rollButton = document.createElement("button");
-                rollButton.textContent = "Бросить кубик";
-                rollButton.onclick = rollDice;
-                actionsDiv.appendChild(rollButton);
-
-                const buyButton = document.createElement("button");
-                buyButton.textContent = "Купить собственность";
-                buyButton.onclick = buyProperty;
-                actionsDiv.appendChild(buyButton);
-
-                const buildButton = document.createElement("button");
-                buildButton.textContent = "Построить дом";
-                buildButton.onclick = buildHouse;
-                actionsDiv.appendChild(buildButton);
-
-                const endTurnButton = document.createElement("button");
-                endTurnButton.textContent = "Завершить ход";
-                endTurnButton.onclick = endTurn;
-                actionsDiv.appendChild(endTurnButton);
-            }
-        }
-
-        // Анимация броска кубиков
-        function animateDiceRoll(dice1, dice2) {
-            const diceElement = document.createElement("div");
-            diceElement.className = "dice";
-            diceElement.textContent = `${dice1} + ${dice2}`;
-            document.body.appendChild(diceElement);
-
-            setTimeout(() => {
-                diceElement.remove();
-            }, 1000);
-        }
-
-        // Анимация перемещения игрока
-        function animatePlayerMovement(player, newPosition) {
-            const playerElement = document.createElement("div");
-            playerElement.className = "player-marker";
-            playerElement.textContent = player.username[0];
-            boardElement.children[player.position].appendChild(playerElement);
-
-            setTimeout(() => {
-                playerElement.remove();
-                boardElement.children[newPosition].appendChild(playerElement);
-            }, 500);
-        }
-
-        // Показ истории игр
-        function showGameHistory() {
-            const history = JSON.parse(localStorage.getItem("gameHistory")) || [];
-            historyList.innerHTML = "";
-
-            if (history.length === 0) {
-                historyList.innerHTML = "<p>История игр пуста.</p>";
-            } else {
-                history.forEach((game, index) => {
-                    const gameItem = document.createElement("div");
-                    gameItem.className = "session-item";
-                    gameItem.textContent = `Игра #${index + 1}: ${game.winner} победил с $${game.money}`;
-                    historyList.appendChild(gameItem);
-                });
-            }
-
-            historyModal.style.display = "block";
-            historyOverlay.style.display = "block";
-        }
-
-        // Закрытие модального окна истории
-        function closeHistoryModal() {
-            historyModal.style.display = "none";
-            historyOverlay.style.display = "none";
-        }
-
-        // Сохранение истории игры
-        function saveGameHistory(winner, money) {
-            const history = JSON.parse(localStorage.getItem("gameHistory")) || [];
-            history.push({ winner, money });
-            localStorage.setItem("gameHistory", JSON.stringify(history));
-        }
+        // Инициализация игры
+        renderBoard();
+        updatePlayerInfo();
     </script>
 </body>
 </html>
