@@ -1,326 +1,83 @@
-<!DOCTYPE html>
-<html lang="ru">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Монополия</title>
-    <style>
-        body {
-            font-family: 'Arial', sans-serif;
-            text-align: center;
-            padding: 10px;
-            margin: 0;
-            background-color: white;
-            color: #333;
-        }
-        h1 {
-            font-size: 2rem;
-            margin-bottom: 10px;
-            color: #4CAF50;
-        }
-        button {
-            padding: 15px;
-            font-size: 16px;
-            margin: 5px;
-            background-color: #4CAF50;
-            color: white;
-            border: none;
-            border-radius: 10px;
-            cursor: pointer;
-            width: 90%;
-            max-width: 300px;
-        }
-        button:hover {
-            background-color: #45a049;
-        }
-        .board {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 10px;
-            margin: 10px auto;
-            max-width: 100%;
-        }
-        .cell {
-            border: 2px solid #8B4513;
-            padding: 15px;
-            background: linear-gradient(135deg, #f9f9f9, #e0e0e0);
-            border-radius: 15px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            color: #333;
-            font-size: 0.9rem;
-            transition: transform 0.2s, box-shadow 0.2s;
-        }
-        .cell:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
-        }
-        .cell strong {
-            font-size: 1rem;
-            color: #8B4513;
-        }
-        .cell .icon {
-            font-size: 1.5rem;
-            margin-bottom: 10px;
-        }
-        #game-status {
-            background-color: #f1f1f1;
-            padding: 10px;
-            border-radius: 10px;
-            margin: 10px auto;
-            max-width: 90%;
-            font-size: 1rem;
-            color: #333;
-        }
-        #profile {
-            display: none;
-            background-color: #f1f1f1;
-            padding: 15px;
-            border-radius: 10px;
-            margin: 10px auto;
-            max-width: 90%;
-            text-align: left;
-        }
-        @media (max-width: 600px) {
-            h1 {
-                font-size: 1.5rem;
-            }
-            .board {
-                grid-template-columns: repeat(2, 1fr);
-            }
-            .cell {
-                font-size: 0.8rem;
-            }
-            button {
-                font-size: 14px;
-                padding: 10px;
-            }
-        }
-    </style>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-</head>
-<body>
-    <h1>Монополия</h1>
-    <div id="game-status">Загрузка...</div>
-    <div class="board" id="board"></div>
-    <button id="roll-dice">Бросить кубик</button>
-    <button id="buy-property">Купить клетку</button>
-    <button id="build-house">Построить дом</button>
-    <button id="trade">Предложить обмен</button>
-    <button id="view-profile">Профиль</button>
+from flask import Flask, jsonify, request, render_template
+from flask_cors import CORS
 
-    <div id="profile">
-        <h2>Профиль игрока</h2>
-        <p><strong>Деньги:</strong> <span id="profile-money">0</span></p>
-        <p><strong>Имущество:</strong></p>
-        <ul id="profile-properties"></ul>
-        <p><strong>Достижения:</strong></p>
-        <ul id="profile-achievements"></ul>
-    </div>
+app = Flask(__name__)
+CORS(app)  # Разрешить запросы с любого домена
 
-    <script src="https://telegram.org/js/telegram-web-app.js"></script>
-    <script>
-        const tg = window.Telegram.WebApp;
+# Пример данных игры
+game_data = {
+    "money": 1500,
+    "position": 0,
+    "cell": "Старт",
+    "board": [
+        {"name": "Старт", "owner": None, "houses": 0},
+        {"name": "Улица 1", "owner": None, "houses": 0},
+        {"name": "Улица 2", "owner": None, "houses": 0},
+        {"name": "Тюрьма", "owner": None, "houses": 0},
+    ]
+}
 
-        // Инициализация
-        tg.ready();
-        tg.expand();
+# Пример данных профиля
+profile_data = {
+    "money": 1500,
+    "properties": [
+        {"name": "Улица 1", "houses": 0},
+        {"name": "Улица 2", "houses": 1}
+    ],
+    "achievements": ["Первый дом", "Покупка клетки"]
+}
 
-        const gameStatus = document.getElementById('game-status');
-        const board = document.getElementById('board');
-        const rollDiceButton = document.getElementById('roll-dice');
-        const buyPropertyButton = document.getElementById('buy-property');
-        const buildHouseButton = document.getElementById('build-house');
-        const tradeButton = document.getElementById('trade');
-        const viewProfileButton = document.getElementById('view-profile');
-        const profileSection = document.getElementById('profile');
-        const profileMoney = document.getElementById('profile-money');
-        const profileProperties = document.getElementById('profile-properties');
-        const profileAchievements = document.getElementById('profile-achievements');
+# Главная страница
+@app.route('/')
+def index():
+    return render_template('index.html')  # Рендеринг HTML-файла
 
-        // Загрузка состояния игры
-        function loadGame() {
-            fetch('/game-status')
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error('Ошибка сети');
-                    }
-                    return response.json();
-                })
-                .then(data => {
-                    console.log('Данные от сервера:', data);
-                    gameStatus.innerHTML = `
-                        <p>Деньги: ${data.money}</p>
-                        <p>Позиция: ${data.position}</p>
-                        <p>Клетка: ${data.cell}</p>
-                    `;
-                    renderBoard(data.board);
-                })
-                .catch(error => {
-                    console.error('Ошибка загрузки данных:', error);
-                    gameStatus.innerHTML = 'Ошибка загрузки данных. Проверь консоль.';
-                });
-        }
+# Маршрут для получения статуса игры
+@app.route('/game-status', methods=['GET'])
+def game_status():
+    return jsonify(game_data)
 
-        // Отрисовка игрового поля
-        function renderBoard(boardData) {
-            board.innerHTML = '';
-            boardData.forEach((cell, index) => {
-                const cellElement = document.createElement('div');
-                cellElement.className = 'cell';
-                cellElement.innerHTML = `
-                    <div class="icon">${getIcon(cell)}</div>
-                    <strong>${cell.name}</strong><br>
-                    Владелец: ${cell.owner || "Нет"}<br>
-                    Дома: ${cell.houses}
-                `;
-                board.appendChild(cellElement);
-            });
-        }
+# Маршрут для броска кубика
+@app.route('/roll-dice', methods=['POST'])
+def roll_dice():
+    import random
+    dice = random.randint(1, 6)
+    game_data["position"] = (game_data["position"] + dice) % len(game_data["board"])
+    game_data["cell"] = game_data["board"][game_data["position"]]["name"]
+    return jsonify({"dice": dice, "cell": game_data["cell"]})
 
-        // Получение иконки для клетки
-        function getIcon(cell) {
-            if (cell.name.includes("Старт")) {
-                return '<i class="fas fa-flag-checkered"></i>';
-            } else if (cell.name.includes("Тюрьма")) {
-                return '<i class="fas fa-lock"></i>';
-            } else if (cell.houses > 0) {
-                return '<i class="fas fa-home"></i>';
-            } else {
-                return '<i class="fas fa-coins"></i>';
-            }
-        }
+# Маршрут для покупки клетки
+@app.route('/buy-property', methods=['POST'])
+def buy_property():
+    cell = game_data["board"][game_data["position"]]
+    if cell["owner"] is None:
+        cell["owner"] = "Игрок"
+        game_data["money"] -= 200  # Пример стоимости клетки
+        return jsonify({"message": "Клетка куплена!"})
+    else:
+        return jsonify({"message": "Клетка уже занята."})
 
-        // Загрузка профиля игрока
-        function loadProfile() {
-            fetch('/profile')
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error('Ошибка сети');
-                    }
-                    return response.json();
-                })
-                .then(data => {
-                    console.log('Данные профиля:', data);
-                    profileMoney.textContent = data.money;
+# Маршрут для постройки дома
+@app.route('/build-house', methods=['POST'])
+def build_house():
+    cell = game_data["board"][game_data["position"]]
+    if cell["owner"] == "Игрок":
+        cell["houses"] += 1
+        game_data["money"] -= 100  # Пример стоимости дома
+        return jsonify({"message": "Дом построен!"})
+    else:
+        return jsonify({"message": "Вы не владеете этой клеткой."})
 
-                    // Очистим списки
-                    profileProperties.innerHTML = '';
-                    profileAchievements.innerHTML = '';
+# Маршрут для торговли (заглушка)
+@app.route('/trade', methods=['POST'])
+def trade():
+    return jsonify({"message": "Торговля пока не реализована."})
 
-                    // Добавим имущество
-                    data.properties.forEach(property => {
-                        const li = document.createElement('li');
-                        li.textContent = `${property.name} (дома: ${property.houses})`;
-                        profileProperties.appendChild(li);
-                    });
+# Маршрут для получения профиля игрока
+@app.route('/profile', methods=['GET'])
+def profile():
+    return jsonify(profile_data)
 
-                    // Добавим достижения
-                    data.achievements.forEach(achievement => {
-                        const li = document.createElement('li');
-                        li.textContent = achievement;
-                        profileAchievements.appendChild(li);
-                    });
-
-                    // Покажем профиль
-                    profileSection.style.display = 'block';
-                })
-                .catch(error => {
-                    console.error('Ошибка загрузки профиля:', error);
-                    alert('Ошибка загрузки профиля. Проверь консоль.');
-                });
-        }
-
-        // Бросок кубика
-        rollDiceButton.addEventListener('click', () => {
-            console.log('Кнопка "Бросить кубик" нажата');
-            fetch('/roll-dice', { method: 'POST' })
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error('Ошибка сети');
-                    }
-                    return response.json();
-                })
-                .then(data => {
-                    console.log('Ответ сервера:', data);
-                    alert(`Ты выбросил ${data.dice} и попал на клетку ${data.cell}`);
-                    loadGame();
-                })
-                .catch(error => {
-                    console.error('Ошибка:', error);
-                    alert('Ошибка при броске кубика. Проверь консоль.');
-                });
-        });
-
-        // Покупка клетки
-        buyPropertyButton.addEventListener('click', () => {
-            console.log('Кнопка "Купить клетку" нажата');
-            fetch('/buy-property', { method: 'POST' })
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error('Ошибка сети');
-                    }
-                    return response.json();
-                })
-                .then(data => {
-                    console.log('Ответ сервера:', data);
-                    alert(data.message);
-                    loadGame();
-                })
-                .catch(error => {
-                    console.error('Ошибка:', error);
-                    alert('Ошибка при покупке клетки. Проверь консоль.');
-                });
-        });
-
-        // Постройка дома
-        buildHouseButton.addEventListener('click', () => {
-            console.log('Кнопка "Построить дом" нажата');
-            fetch('/build-house', { method: 'POST' })
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error('Ошибка сети');
-                    }
-                    return response.json();
-                })
-                .then(data => {
-                    console.log('Ответ сервера:', data);
-                    alert(data.message);
-                    loadGame();
-                })
-                .catch(error => {
-                    console.error('Ошибка:', error);
-                    alert('Ошибка при постройке дома. Проверь консоль.');
-                });
-        });
-
-        // Торговля
-        tradeButton.addEventListener('click', () => {
-            console.log('Кнопка "Предложить обмен" нажата');
-            fetch('/trade', { method: 'POST' })
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error('Ошибка сети');
-                    }
-                    return response.json();
-                })
-                .then(data => {
-                    console.log('Ответ сервера:', data);
-                    alert(data.message);
-                    loadGame();
-                })
-                .catch(error => {
-                    console.error('Ошибка:', error);
-                    alert('Ошибка при торговле. Проверь консоль.');
-                });
-        });
-
-        // Просмотр профиля
-        viewProfileButton.addEventListener('click', () => {
-            loadProfile();
-        });
-
-        // Загрузка игры при старте
-        loadGame();
-    </script>
-</body>
-</html>
+# Запуск сервера
+if __name__ == '__main__':
+    app.run(debug=True)
