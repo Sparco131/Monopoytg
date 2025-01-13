@@ -10,7 +10,8 @@
             font-family: 'Roboto', sans-serif;
             margin: 0;
             padding: 10px;
-            background: linear-gradient(135deg, #f0e6d6, #d4c9b8);
+            background: url('https://i.postimg.cc/K4B26YjP/background.jpg') no-repeat center center fixed;
+            background-size: cover;
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -24,7 +25,7 @@
             margin: 10px 0;
             text-transform: uppercase;
             font-weight: bold;
-            background-color: #ffffff;
+            background-color: rgba(255, 255, 255, 0.8);
             padding: 15px 30px;
             border-radius: 15px;
             text-align: center;
@@ -67,7 +68,7 @@
             border: 10px solid #2c3e50;
             border-radius: 20px;
             margin-bottom: 20px;
-            background-color: #ffffff;
+            background-color: rgba(255, 255, 255, 0.9);
             box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
             display: grid;
             grid-template-columns: repeat(11, 1fr);
@@ -84,7 +85,7 @@
             padding: 5px;
             box-sizing: border-box;
             border: 1px solid #2c3e50;
-            background-color: #ffffff;
+            background-color: rgba(255, 255, 255, 0.9);
             cursor: pointer;
             transition: transform 0.2s ease, box-shadow 0.2s ease;
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
@@ -116,7 +117,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            background-color: #ffffff;
+            background-color: rgba(255, 255, 255, 0.9);
             border: 2px dashed #2c3e50;
             border-radius: 15px;
             font-size: 14px;
@@ -143,9 +144,9 @@
             font-size: 20px;
             font-weight: bold;
             color: #2c3e50;
-            animation: roll 0.5s ease-out;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
             position: relative;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            animation: roll 0.5s ease-out;
         }
 
         .dice .dot {
@@ -156,16 +157,41 @@
             position: absolute;
         }
 
+        /* Анимация броска кубиков */
         @keyframes roll {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
+            0% { transform: rotate(0deg) scale(1); }
+            50% { transform: rotate(180deg) scale(1.2); }
+            100% { transform: rotate(360deg) scale(1); }
         }
+
+        /* Расположение точек на кубиках */
+        .dice[data-value="1"] .dot:nth-child(1) { top: 50%; left: 50%; transform: translate(-50%, -50%); }
+        .dice[data-value="2"] .dot:nth-child(1) { top: 20%; left: 20%; }
+        .dice[data-value="2"] .dot:nth-child(2) { bottom: 20%; right: 20%; }
+        .dice[data-value="3"] .dot:nth-child(1) { top: 20%; left: 20%; }
+        .dice[data-value="3"] .dot:nth-child(2) { top: 50%; left: 50%; transform: translate(-50%, -50%); }
+        .dice[data-value="3"] .dot:nth-child(3) { bottom: 20%; right: 20%; }
+        .dice[data-value="4"] .dot:nth-child(1) { top: 20%; left: 20%; }
+        .dice[data-value="4"] .dot:nth-child(2) { top: 20%; right: 20%; }
+        .dice[data-value="4"] .dot:nth-child(3) { bottom: 20%; left: 20%; }
+        .dice[data-value="4"] .dot:nth-child(4) { bottom: 20%; right: 20%; }
+        .dice[data-value="5"] .dot:nth-child(1) { top: 20%; left: 20%; }
+        .dice[data-value="5"] .dot:nth-child(2) { top: 20%; right: 20%; }
+        .dice[data-value="5"] .dot:nth-child(3) { top: 50%; left: 50%; transform: translate(-50%, -50%); }
+        .dice[data-value="5"] .dot:nth-child(4) { bottom: 20%; left: 20%; }
+        .dice[data-value="5"] .dot:nth-child(5) { bottom: 20%; right: 20%; }
+        .dice[data-value="6"] .dot:nth-child(1) { top: 20%; left: 20%; }
+        .dice[data-value="6"] .dot:nth-child(2) { top: 20%; right: 20%; }
+        .dice[data-value="6"] .dot:nth-child(3) { top: 50%; left: 20%; transform: translateY(-50%); }
+        .dice[data-value="6"] .dot:nth-child(4) { top: 50%; right: 20%; transform: translateY(-50%); }
+        .dice[data-value="6"] .dot:nth-child(5) { bottom: 20%; left: 20%; }
+        .dice[data-value="6"] .dot:nth-child(6) { bottom: 20%; right: 20%; }
 
         .player-info {
             margin-bottom: 15px;
             text-align: center;
             font-size: 16px;
-            background-color: #ffffff;
+            background-color: rgba(255, 255, 255, 0.9);
             padding: 15px;
             border-radius: 15px;
             border: 2px solid #2c3e50;
@@ -215,7 +241,7 @@
             border: 2px solid #2c3e50;
             padding: 10px;
             overflow-y: auto;
-            background-color: #ffffff;
+            background-color: rgba(255, 255, 255, 0.9);
             border-radius: 10px;
             margin-top: 15px;
             font-size: 14px;
