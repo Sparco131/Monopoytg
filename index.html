@@ -20,7 +20,7 @@
 
         h1 {
             color: #2c3e50;
-            font-size: 28px;
+            font-size: 24px;
             margin: 10px 0;
             text-transform: uppercase;
             font-weight: bold;
@@ -54,7 +54,7 @@
         }
 
         .auth-form button, .lobby button, .actions button {
-            padding: 10px;
+            padding: 15px;
             font-size: 16px;
             border: none;
             border-radius: 10px;
@@ -96,9 +96,8 @@
         /* Игровое поле */
         .board {
             position: relative;
-            width: 90vw;
-            max-width: 800px;
-            height: 60vh;
+            width: 100%;
+            height: auto;
             border: 10px solid #2c3e50;
             border-radius: 20px;
             margin-bottom: 20px;
@@ -113,7 +112,7 @@
 
         .cell {
             width: 22%;
-            height: 22%;
+            height: 80px;
             border: 2px solid #2c3e50;
             text-align: center;
             background-color: #ffffff;
@@ -127,10 +126,11 @@
             justify-content: center;
             padding: 5px;
             box-sizing: border-box;
+            margin: 5px;
         }
 
         .cell:hover {
-            transform: scale(1.1);
+            transform: scale(1.05);
         }
 
         .cell.start {
@@ -300,13 +300,13 @@
 
             .cell {
                 width: 45%;
-                height: 45%;
+                height: 60px;
                 font-size: 10px;
             }
 
             .board {
                 width: 95vw;
-                height: 70vh;
+                height: auto;
             }
         }
     </style>
@@ -324,6 +324,7 @@
     <div class="lobby" id="lobby" style="display: none;">
         <h2>Лобби</h2>
         <button onclick="createSession()">Создать новую сессию</button>
+        <button onclick="showGameHistory()">История игр</button>
         <div class="session-list" id="sessionList">
             <!-- Список сессий будет здесь -->
         </div>
@@ -358,6 +359,16 @@
             <h2 id="modalTitle"></h2>
             <p id="modalDescription"></p>
             <button class="modal-close" onclick="closeModal()">Закрыть</button>
+        </div>
+    </div>
+
+    <!-- Модальное окно для истории игр -->
+    <div class="modal-overlay" id="historyOverlay" style="display: none;"></div>
+    <div class="modal" id="historyModal" style="display: none;">
+        <div class="modal-content">
+            <h2>История игр</h2>
+            <div id="historyList"></div>
+            <button class="modal-close" onclick="closeHistoryModal()">Закрыть</button>
         </div>
     </div>
 
@@ -420,6 +431,9 @@
         const modalTitle = document.getElementById("modalTitle");
         const modalDescription = document.getElementById("modalDescription");
         const boardElement = document.getElementById("board");
+        const historyModal = document.getElementById("historyModal");
+        const historyOverlay = document.getElementById("historyOverlay");
+        const historyList = document.getElementById("historyList");
 
         // Логин игрока
         function login() {
@@ -773,6 +787,39 @@
                 playerElement.remove();
                 boardElement.children[newPosition].appendChild(playerElement);
             }, 500);
+        }
+
+        // Показ истории игр
+        function showGameHistory() {
+            const history = JSON.parse(localStorage.getItem("gameHistory")) || [];
+            historyList.innerHTML = "";
+
+            if (history.length === 0) {
+                historyList.innerHTML = "<p>История игр пуста.</p>";
+            } else {
+                history.forEach((game, index) => {
+                    const gameItem = document.createElement("div");
+                    gameItem.className = "session-item";
+                    gameItem.textContent = `Игра #${index + 1}: ${game.winner} победил с $${game.money}`;
+                    historyList.appendChild(gameItem);
+                });
+            }
+
+            historyModal.style.display = "block";
+            historyOverlay.style.display = "block";
+        }
+
+        // Закрытие модального окна истории
+        function closeHistoryModal() {
+            historyModal.style.display = "none";
+            historyOverlay.style.display = "none";
+        }
+
+        // Сохранение истории игры
+        function saveGameHistory(winner, money) {
+            const history = JSON.parse(localStorage.getItem("gameHistory")) || [];
+            history.push({ winner, money });
+            localStorage.setItem("gameHistory", JSON.stringify(history));
         }
     </script>
 </body>
