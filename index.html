@@ -1,9 +1,13 @@
 from flask import Flask, jsonify, request, render_template
 from flask_cors import CORS
 import random
+import logging
 
 app = Flask(__name__)
 CORS(app)
+
+# Настройка логирования
+logging.basicConfig(level=logging.INFO)
 
 # Инициализация данных игры
 players = {}  # Словарь для хранения данных игроков
@@ -23,6 +27,7 @@ def create_player(player_id):
         "position": 0,
         "properties": [],
         "in_jail": False,
+        "jail_turns": 0,
     }
 
 # Главная страница
@@ -45,6 +50,17 @@ def game_status(player_id):
 def roll_dice(player_id):
     dice = random.randint(1, 6)
     player = players[player_id]
+    
+    if player["in_jail"]:
+        player["jail_turns"] += 1
+        if player["jail_turns"] >= 3:
+            player["in_jail"] = False
+            player["jail_turns"] = 0
+            message = "Вы вышли из тюрьмы!"
+        else:
+            message = "Вы остаетесь в тюрьме."
+        return jsonify({"message": message})
+    
     player["position"] = (player["position"] + dice) % len(board)
     cell = board[player["position"]]
 
