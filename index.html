@@ -34,9 +34,9 @@
         .board {
             position: relative;
             width: 90vw;
+            max-width: 600px;
             height: 90vw;
-            max-width: 400px;
-            max-height: 400px;
+            max-height: 600px;
             border: 10px solid #2c3e50;
             border-radius: 20px;
             margin-bottom: 20px;
@@ -53,7 +53,7 @@
             justify-content: center;
             text-align: center;
             font-size: 10px;
-            padding: 5px;
+            padding: 3px;
             box-sizing: border-box;
             border: 1px solid #2c3e50;
             background-color: #ffffff;
@@ -116,6 +116,33 @@
             border-radius: 10px;
             font-size: 14px;
             color: #2c3e50;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .dice-container {
+            display: flex;
+            gap: 10px;
+        }
+
+        .dice {
+            width: 30px;
+            height: 30px;
+            background-color: white;
+            border: 2px solid #2c3e50;
+            border-radius: 5px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            font-weight: bold;
+            color: #2c3e50;
+            animation: roll 0.5s ease-out;
+        }
+
+        @keyframes roll {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
         }
 
         .player-info {
@@ -128,7 +155,7 @@
             border: 2px solid #2c3e50;
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
             width: 100%;
-            max-width: 400px;
+            max-width: 600px;
         }
 
         .player-info p {
@@ -141,7 +168,7 @@
             flex-direction: column;
             gap: 8px;
             width: 100%;
-            max-width: 400px;
+            max-width: 600px;
         }
 
         .actions button {
@@ -164,7 +191,7 @@
 
         .log {
             width: 100%;
-            max-width: 400px;
+            max-width: 600px;
             height: 100px;
             border: 2px solid #2c3e50;
             padding: 10px;
@@ -212,7 +239,13 @@
     <!-- Игровое поле -->
     <div class="board" id="board">
         <!-- Клетки будут добавляться динамически -->
-        <div class="center-area">Кубики</div>
+        <div class="center-area">
+            <div class="dice-container">
+                <div class="dice" id="dice1">1</div>
+                <div class="dice" id="dice2">1</div>
+            </div>
+            Кубики
+        </div>
     </div>
 
     <!-- Информация об игроке -->
@@ -239,25 +272,37 @@
         // Инициализация данных игры
         const board = [
             { name: "Старт", type: "start", price: 0, owner: null, houses: 0 },
-            { name: "Улица 1", type: "property", price: 200, owner: null, houses: 0 },
-            { name: "Улица 2", type: "property", price: 200, owner: null, houses: 0 },
+            { name: "Улица Пушкина", type: "property", price: 200, owner: null, houses: 0 },
+            { name: "Улица Лермонтова", type: "property", price: 200, owner: null, houses: 0 },
             { name: "Железная дорога 1", type: "railroad", price: 200, owner: null },
-            { name: "Улица 3", type: "property", price: 300, owner: null, houses: 0 },
-            { name: "Налог", type: "tax", price: 100, owner: null },
-            { name: "Улица 4", type: "property", price: 300, owner: null, houses: 0 },
+            { name: "Улица Гоголя", type: "property", price: 300, owner: null, houses: 0 },
+            { name: "Налог на роскошь", type: "tax", price: 100, owner: null },
+            { name: "Улица Толстого", type: "property", price: 300, owner: null, houses: 0 },
             { name: "Шанс", type: "chance", price: 0, owner: null },
-            { name: "Улица 5", type: "property", price: 400, owner: null, houses: 0 },
-            { name: "Улица 6", type: "property", price: 400, owner: null, houses: 0 },
+            { name: "Улица Достоевского", type: "property", price: 400, owner: null, houses: 0 },
+            { name: "Улица Чехова", type: "property", price: 400, owner: null, houses: 0 },
             { name: "Тюрьма", type: "jail", price: 0, owner: null },
-            { name: "Улица 7", type: "property", price: 500, owner: null, houses: 0 },
+            { name: "Улица Тургенева", type: "property", price: 500, owner: null, houses: 0 },
             { name: "Коммунальная услуга", type: "utility", price: 150, owner: null },
-            { name: "Улица 8", type: "property", price: 500, owner: null, houses: 0 },
-            { name: "Улица 9", type: "property", price: 600, owner: null, houses: 0 },
+            { name: "Улица Некрасова", type: "property", price: 500, owner: null, houses: 0 },
+            { name: "Улица Блока", type: "property", price: 600, owner: null, houses: 0 },
             { name: "Железная дорога 2", type: "railroad", price: 200, owner: null },
-            { name: "Улица 10", type: "property", price: 600, owner: null, houses: 0 },
+            { name: "Улица Есенина", type: "property", price: 600, owner: null, houses: 0 },
             { name: "Общественная казна", type: "community-chest", price: 0, owner: null },
-            { name: "Улица 11", type: "property", price: 700, owner: null, houses: 0 },
-            { name: "Улица 12", type: "property", price: 700, owner: null, houses: 0 },
+            { name: "Улица Маяковского", type: "property", price: 700, owner: null, houses: 0 },
+            { name: "Улица Пастернака", type: "property", price: 700, owner: null, houses: 0 },
+            { name: "Парковка", type: "tax", price: 50, owner: null },
+            { name: "Улица Грибоедова", type: "property", price: 250, owner: null, houses: 0 },
+            { name: "Улица Куприна", type: "property", price: 350, owner: null, houses: 0 },
+            { name: "Улица Бунина", type: "property", price: 450, owner: null, houses: 0 },
+            { name: "Улица Ахматовой", type: "property", price: 550, owner: null, houses: 0 },
+            { name: "Улица Цветаевой", type: "property", price: 650, owner: null, houses: 0 },
+            { name: "Улица Шолохова", type: "property", price: 750, owner: null, houses: 0 },
+            // Новые клетки
+            { name: "Улица Твардовского", type: "property", price: 800, owner: null, houses: 0 },
+            { name: "Улица Булгакова", type: "property", price: 850, owner: null, houses: 0 },
+            { name: "Улица Солженицына", type: "property", price: 900, owner: null, houses: 0 },
+            { name: "Улица Набокова", type: "property", price: 950, owner: null, houses: 0 },
         ];
 
         let players = [{ username: "Игрок 1", money: 1500, position: 0, properties: [], inJail: false }];
@@ -270,6 +315,8 @@
         const propertiesElement = document.getElementById("properties");
         const positionElement = document.getElementById("position");
         const logElement = document.getElementById("log");
+        const dice1Element = document.getElementById("dice1");
+        const dice2Element = document.getElementById("dice2");
 
         // Рендер игрового поля
         function renderBoard() {
@@ -278,19 +325,19 @@
                 cellElement.className = `cell ${cell.type}`;
                 cellElement.textContent = cell.name;
 
-                // Расположение клеток по краям
-                if (index < 10) {
+                // Расположение клеток по периметру прямоугольника
+                if (index < 8) {
                     cellElement.style.gridColumn = `${index + 1} / ${index + 2}`;
                     cellElement.style.gridRow = "1 / 2";
-                } else if (index < 20) {
-                    cellElement.style.gridColumn = "11 / 12";
-                    cellElement.style.gridRow = `${index - 9} / ${index - 8}`;
-                } else if (index < 30) {
-                    cellElement.style.gridColumn = `${30 - index} / ${31 - index}`;
-                    cellElement.style.gridRow = "11 / 12";
+                } else if (index < 16) {
+                    cellElement.style.gridColumn = "9 / 10";
+                    cellElement.style.gridRow = `${index - 7} / ${index - 6}`;
+                } else if (index < 24) {
+                    cellElement.style.gridColumn = `${24 - index} / ${25 - index}`;
+                    cellElement.style.gridRow = "9 / 10";
                 } else {
                     cellElement.style.gridColumn = "1 / 2";
-                    cellElement.style.gridRow = `${40 - index} / ${41 - index}`;
+                    cellElement.style.gridRow = `${32 - index} / ${33 - index}`;
                 }
 
                 boardElement.appendChild(cellElement);
@@ -308,11 +355,22 @@
 
         // Бросок кубика
         function rollDice() {
-            const currentPlayer = players[currentPlayerIndex];
             const dice1 = Math.floor(Math.random() * 6) + 1;
             const dice2 = Math.floor(Math.random() * 6) + 1;
             const total = dice1 + dice2;
 
+            // Анимация броска
+            dice1Element.textContent = dice1;
+            dice2Element.textContent = dice2;
+            dice1Element.style.animation = "roll 0.5s ease-out";
+            dice2Element.style.animation = "roll 0.5s ease-out";
+
+            setTimeout(() => {
+                dice1Element.style.animation = "";
+                dice2Element.style.animation = "";
+            }, 500);
+
+            const currentPlayer = players[currentPlayerIndex];
             currentPlayer.position = (currentPlayer.position + total) % board.length;
             addLogMessage(`Вы бросили кубики: ${dice1} и ${dice2}. Вы на клетке: ${board[currentPlayer.position].name}`);
             updatePlayerInfo();
