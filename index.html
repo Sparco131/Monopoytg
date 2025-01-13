@@ -33,13 +33,13 @@ def index():
             text-align: center;
             padding: 10px;
             margin: 0;
-            background-color: white; /* Белый фон */
-            color: #333; /* Темный текст для контраста */
+            background-color: white;
+            color: #333;
         }
         h1 {
             font-size: 2rem;
             margin-bottom: 10px;
-            color: #4CAF50; /* Зеленый цвет для заголовка */
+            color: #4CAF50;
         }
         button {
             padding: 15px;
@@ -66,18 +66,18 @@ def index():
         .cell {
             border: 2px solid #8B4513;
             padding: 10px;
-            background-color: #f9f9f9; /* Светло-серый фон для клеток */
+            background-color: #f9f9f9;
             border-radius: 10px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Легкая тень */
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
             color: #333;
             font-size: 0.9rem;
         }
         .cell strong {
             font-size: 1rem;
-            color: #8B4513; /* Коричневый цвет для заголовков клеток */
+            color: #8B4513;
         }
         #game-status {
-            background-color: #f1f1f1; /* Светло-серый фон для статуса */
+            background-color: #f1f1f1;
             padding: 10px;
             border-radius: 10px;
             margin: 10px auto;
@@ -111,14 +111,13 @@ def index():
     <button id="build-house">Построить дом</button>
     <button id="trade">Предложить обмен</button>
 
-    <!-- Подключение Telegram Web App API -->
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <script>
         const tg = window.Telegram.WebApp;
 
         // Инициализация
-        tg.ready(); // Сообщаем Telegram, что приложение готово
-        tg.expand(); // Разворачиваем приложение на весь экран
+        tg.ready();
+        tg.expand();
 
         const gameStatus = document.getElementById('game-status');
         const board = document.getElementById('board');
@@ -132,7 +131,7 @@ def index():
             fetch('/game-status')
                 .then(response => response.json())
                 .then(data => {
-                    console.log('Данные от сервера:', data); // Отладка
+                    console.log('Данные от сервера:', data);
                     gameStatus.innerHTML = `
                         <p>Деньги: ${data.money}</p>
                         <p>Позиция: ${data.position}</p>
@@ -160,11 +159,11 @@ def index():
 
         // Бросок кубика
         rollDiceButton.addEventListener('click', () => {
-            console.log('Кнопка "Бросить кубик" нажата'); // Отладка
+            console.log('Кнопка "Бросить кубик" нажата');
             fetch('/roll-dice', { method: 'POST' })
                 .then(response => response.json())
                 .then(data => {
-                    console.log('Ответ сервера:', data); // Отладка
+                    console.log('Ответ сервера:', data);
                     alert(`Ты выбросил ${data.dice} и попал на клетку ${data.cell}`);
                     loadGame();
                 })
@@ -173,11 +172,11 @@ def index():
 
         // Покупка клетки
         buyPropertyButton.addEventListener('click', () => {
-            console.log('Кнопка "Купить клетку" нажата'); // Отладка
+            console.log('Кнопка "Купить клетку" нажата');
             fetch('/buy-property', { method: 'POST' })
                 .then(response => response.json())
                 .then(data => {
-                    console.log('Ответ сервера:', data); // Отладка
+                    console.log('Ответ сервера:', data);
                     alert(data.message);
                     loadGame();
                 })
@@ -186,11 +185,11 @@ def index():
 
         // Постройка дома
         buildHouseButton.addEventListener('click', () => {
-            console.log('Кнопка "Построить дом" нажата'); // Отладка
+            console.log('Кнопка "Построить дом" нажата');
             fetch('/build-house', { method: 'POST' })
                 .then(response => response.json())
                 .then(data => {
-                    console.log('Ответ сервера:', data); // Отладка
+                    console.log('Ответ сервера:', data);
                     alert(data.message);
                     loadGame();
                 })
@@ -199,11 +198,11 @@ def index():
 
         // Торговля
         tradeButton.addEventListener('click', () => {
-            console.log('Кнопка "Предложить обмен" нажата'); // Отладка
+            console.log('Кнопка "Предложить обмен" нажата');
             fetch('/trade', { method: 'POST' })
                 .then(response => response.json())
                 .then(data => {
-                    console.log('Ответ сервера:', data); // Отладка
+                    console.log('Ответ сервера:', data);
                     alert(data.message);
                     loadGame();
                 })
