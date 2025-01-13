@@ -7,10 +7,10 @@
     <style>
         /* Общие стили */
         body {
-            font-family: Arial, sans-serif;
+            font-family: 'Arial', sans-serif;
             margin: 0;
             padding: 10px;
-            background-color: #f4f4f4;
+            background-color: #f0e6d2;
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -19,9 +19,63 @@
         }
 
         h1 {
-            color: #333;
-            font-size: 24px;
+            color: #2c3e50;
+            font-size: 28px;
             margin: 10px 0;
+            text-transform: uppercase;
+            font-weight: bold;
+        }
+
+        .auth-form, .lobby, .game-interface {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-bottom: 20px;
+            width: 100%;
+            max-width: 300px;
+        }
+
+        .auth-form input, .lobby input {
+            padding: 10px;
+            font-size: 16px;
+            border: 2px solid #2c3e50;
+            border-radius: 10px;
+        }
+
+        .auth-form button, .lobby button, .actions button {
+            padding: 10px;
+            font-size: 16px;
+            border: none;
+            border-radius: 10px;
+            background-color: #3498db;
+            color: white;
+            cursor: pointer;
+            font-weight: bold;
+            text-transform: uppercase;
+            transition: background-color 0.2s ease;
+        }
+
+        .auth-form button:hover, .lobby button:hover, .actions button:hover {
+            background-color: #2980b9;
+        }
+
+        .session-list {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .session-item {
+            padding: 10px;
+            background-color: #ffffff;
+            border: 2px solid #2c3e50;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+        }
+
+        .session-item:hover {
+            background-color: #f0f0f0;
         }
 
         .board {
@@ -34,34 +88,49 @@
         }
 
         .cell {
-            border: 1px solid #000;
+            border: 2px solid #2c3e50;
             padding: 10px;
             text-align: center;
-            background-color: #f0f0f0;
-            border-radius: 5px;
+            background-color: #ffffff;
+            border-radius: 10px;
             font-size: 14px;
+            box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.1);
+            transition: transform 0.2s ease;
+        }
+
+        .cell:hover {
+            transform: scale(1.05);
         }
 
         .cell.start {
-            background-color: #aaffaa;
+            background-color: #27ae60;
+            color: white;
         }
 
         .cell.property {
-            background-color: #ffcc99;
+            background-color: #3498db;
+            color: white;
         }
 
         .cell.jail {
-            background-color: #ffaaaa;
+            background-color: #e74c3c;
+            color: white;
         }
 
         .player-info {
             margin-bottom: 15px;
             text-align: center;
             font-size: 16px;
+            background-color: #ffffff;
+            padding: 10px;
+            border-radius: 10px;
+            border: 2px solid #2c3e50;
+            box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.1);
         }
 
         .player-info p {
             margin: 5px 0;
+            color: #2c3e50;
         }
 
         .actions {
@@ -73,63 +142,98 @@
         }
 
         .actions button {
-            padding: 10px;
-            font-size: 16px;
-            border: none;
-            border-radius: 5px;
-            background-color: #007bff;
-            color: #fff;
-            cursor: pointer;
+            background-color: #e67e22;
         }
 
         .actions button:hover {
-            background-color: #0056b3;
+            background-color: #d35400;
         }
 
         .log {
             width: 100%;
             max-width: 300px;
             height: 100px;
-            border: 1px solid #000;
+            border: 2px solid #2c3e50;
             padding: 10px;
             overflow-y: auto;
-            background-color: #f9f9f9;
-            border-radius: 5px;
+            background-color: #ffffff;
+            border-radius: 10px;
             margin-top: 15px;
             font-size: 14px;
         }
 
         .log p {
             margin: 0;
+            color: #2c3e50;
+        }
+
+        .cell.start::before {
+            content: "🏁";
+            font-size: 20px;
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        .cell.property::before {
+            content: "🏠";
+            font-size: 20px;
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        .cell.jail::before {
+            content: "🚓";
+            font-size: 20px;
+            display: block;
+            margin-bottom: 5px;
         }
     </style>
 </head>
 <body>
     <h1>Мини-Монополия</h1>
-    <div class="board">
-        <div class="cell start">Старт</div>
-        <div class="cell property">Улица 1</div>
-        <div class="cell property">Улица 2</div>
-        <div class="cell jail">Тюрьма</div>
-        <div class="cell property">Улица 3</div>
-        <div class="cell property">Улица 4</div>
+
+    <!-- Форма авторизации -->
+    <div class="auth-form" id="authForm">
+        <input type="text" id="username" placeholder="Имя игрока" required>
+        <button onclick="login()">Войти</button>
     </div>
 
-    <div class="player-info">
-        <h2>Игрок</h2>
-        <p>Деньги: $<span id="money">1500</span></p>
-        <p>Собственность: <span id="properties">Нет</span></p>
-        <p>Позиция: <span id="position">Старт</span></p>
+    <!-- Лобби (скрыто по умолчанию) -->
+    <div class="lobby" id="lobby" style="display: none;">
+        <h2>Лобби</h2>
+        <button onclick="createSession()">Создать новую сессию</button>
+        <div class="session-list" id="sessionList">
+            <!-- Список сессий будет здесь -->
+        </div>
     </div>
 
-    <div class="actions">
-        <button onclick="rollDice()">Бросить кубик</button>
-        <button onclick="buyProperty()">Купить собственность</button>
-        <button onclick="buildHouse()">Построить дом</button>
-    </div>
+    <!-- Игровой интерфейс (скрыт по умолчанию) -->
+    <div id="gameInterface" style="display: none;">
+        <div class="board">
+            <div class="cell start">Старт</div>
+            <div class="cell property">Улица 1</div>
+            <div class="cell property">Улица 2</div>
+            <div class="cell jail">Тюрьма</div>
+            <div class="cell property">Улица 3</div>
+            <div class="cell property">Улица 4</div>
+        </div>
 
-    <div class="log" id="log">
-        <p>Добро пожаловать в игру!</p>
+        <div class="player-info">
+            <h2>Игрок: <span id="playerName"></span></h2>
+            <p>Деньги: $<span id="money">1500</span></p>
+            <p>Собственность: <span id="properties">Нет</span></p>
+            <p>Позиция: <span id="position">Старт</span></p>
+        </div>
+
+        <div class="actions">
+            <button onclick="rollDice()">Бросить кубик</button>
+            <button onclick="buyProperty()">Купить собственность</button>
+            <button onclick="buildHouse()">Построить дом</button>
+        </div>
+
+        <div class="log" id="log">
+            <p>Добро пожаловать в игру!</p>
+        </div>
     </div>
 
     <script>
@@ -143,18 +247,102 @@
             { name: "Улица 4", type: "property", price: 300, owner: null, houses: 0 },
         ];
 
-        const player = {
+        let player = {
+            username: "",
             money: 1500,
             position: 0,
             properties: [],
             inJail: false,
         };
 
+        let currentSessionId = null;
+
         // Элементы DOM
+        const authForm = document.getElementById("authForm");
+        const lobby = document.getElementById("lobby");
+        const gameInterface = document.getElementById("gameInterface");
+        const sessionList = document.getElementById("sessionList");
+        const playerNameElement = document.getElementById("playerName");
         const moneyElement = document.getElementById("money");
         const propertiesElement = document.getElementById("properties");
         const positionElement = document.getElementById("position");
         const logElement = document.getElementById("log");
+
+        // Логин игрока
+        function login() {
+            const username = document.getElementById("username").value.trim();
+            if (!username) {
+                alert("Введите имя игрока!");
+                return;
+            }
+
+            player.username = username;
+            authForm.style.display = "none";
+            lobby.style.display = "block";
+            loadSessions();
+        }
+
+        // Загрузка списка сессий
+        function loadSessions() {
+            const sessions = JSON.parse(localStorage.getItem("sessions")) || [];
+            sessionList.innerHTML = "";
+
+            if (sessions.length === 0) {
+                sessionList.innerHTML = "<p>Нет активных сессий.</p>";
+                return;
+            }
+
+            sessions.forEach(session => {
+                const sessionItem = document.createElement("div");
+                sessionItem.className = "session-item";
+                sessionItem.textContent = `Сессия #${session.id} (Игроков: ${session.players.length})`;
+                sessionItem.onclick = () => joinSession(session.id);
+                sessionList.appendChild(sessionItem);
+            });
+        }
+
+        // Создание новой сессии
+        function createSession() {
+            const sessionId = Date.now().toString(); // Уникальный ID сессии
+            const newSession = {
+                id: sessionId,
+                players: [player.username],
+                board: JSON.parse(JSON.stringify(board)), // Копия игрового поля
+            };
+
+            const sessions = JSON.parse(localStorage.getItem("sessions")) || [];
+            sessions.push(newSession);
+            localStorage.setItem("sessions", JSON.stringify(sessions));
+
+            currentSessionId = sessionId;
+            lobby.style.display = "none";
+            gameInterface.style.display = "block";
+            addLogMessage(`Создана новая сессия #${sessionId}`);
+        }
+
+        // Присоединение к сессии
+        function joinSession(sessionId) {
+            const sessions = JSON.parse(localStorage.getItem("sessions")) || [];
+            const session = sessions.find(s => s.id === sessionId);
+
+            if (!session) {
+                alert("Сессия не найдена!");
+                return;
+            }
+
+            if (session.players.includes(player.username)) {
+                alert("Вы уже в этой сессии!");
+                return;
+            }
+
+            session.players.push(player.username);
+            localStorage.setItem("sessions", JSON.stringify(sessions));
+
+            currentSessionId = sessionId;
+            lobby.style.display = "none";
+            gameInterface.style.display = "block";
+            addLogMessage(`Вы присоединились к сессии #${sessionId}`);
+        }
 
         // Обновление информации об игроке
         function updatePlayerInfo() {
@@ -187,7 +375,7 @@
             if (cell.type === "jail") {
                 player.inJail = true;
                 addLogMessage("Вы попали в тюрьму!");
-            } else if (cell.type === "property" && cell.owner !== null && cell.owner !== "player") {
+            } else if (cell.type === "property" && cell.owner !== null && cell.owner !== player.username) {
                 const rent = cell.price * 0.1;
                 player.money -= rent;
                 addLogMessage(`Вы заплатили аренду: $${rent}`);
@@ -205,7 +393,7 @@
             }
 
             if (player.money >= cell.price) {
-                cell.owner = "player";
+                cell.owner = player.username;
                 player.money -= cell.price;
                 player.properties.push(cell.name);
                 addLogMessage(`Вы купили ${cell.name} за $${cell.price}`);
@@ -219,7 +407,7 @@
         // Постройка дома
         function buildHouse() {
             const cell = board[player.position];
-            if (cell.owner !== "player" || player.money < 100) {
+            if (cell.owner !== player.username || player.money < 100) {
                 addLogMessage("Постройка невозможна.");
                 return;
             }
@@ -230,12 +418,9 @@
             updatePlayerInfo();
         }
 
-        // Инициализация игры
-        updatePlayerInfo();
-
         // Интеграция с Telegram WebApp
         Telegram.WebApp.ready();
-        Telegram.WebApp.expand(); // Раскрыть приложение на весь экран
+        Telegram.WebApp.expand();
     </script>
 </body>
 </html>
