@@ -92,6 +92,20 @@
             position: relative;
         }
 
+        .cell:hover::after {
+            content: attr(data-tooltip);
+            position: absolute;
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 5px;
+            border-radius: 5px;
+            top: -30px;
+            left: 50%;
+            transform: translateX(-50%);
+            white-space: nowrap;
+            font-size: 12px;
+        }
+
         .cell:hover {
             transform: scale(1.05);
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
@@ -353,26 +367,56 @@
 
         @media (max-width: 600px) {
             h1 {
-                font-size: 24px;
+                font-size: 20px;
+                padding: 10px 20px;
+            }
+
+            .board {
+                width: 95vw;
+                height: 95vw;
+                max-width: 400px;
+                max-height: 400px;
+                border-width: 5px;
             }
 
             .cell {
                 font-size: 8px;
+                padding: 2px;
+            }
+
+            .center-area {
+                font-size: 12px;
             }
 
             .dice {
-                width: 40px;
-                height: 40px;
+                width: 30px;
+                height: 30px;
+                font-size: 16px;
             }
 
             .dice .dot {
-                width: 6px;
-                height: 6px;
+                width: 5px;
+                height: 5px;
+            }
+
+            .player-info {
+                font-size: 14px;
+                padding: 10px;
+            }
+
+            .actions button {
+                padding: 10px;
+                font-size: 14px;
+            }
+
+            .log {
+                height: 80px;
+                font-size: 12px;
             }
 
             .player-marker {
-                width: 15px;
-                height: 15px;
+                width: 12px;
+                height: 12px;
             }
         }
 
@@ -562,20 +606,25 @@
                 const cellElement = document.createElement("div");
                 cellElement.className = `cell ${cell.type}`;
                 cellElement.textContent = cell.name;
+                cellElement.setAttribute("data-tooltip", `${cell.name} (${cell.type})`);
 
-                // Расположение клеток по периметру прямоугольника
+                // Расположение клеток по периметру
                 if (index < 10) {
+                    // Верхний ряд (слева направо)
                     cellElement.style.gridColumn = `${index + 1} / ${index + 2}`;
                     cellElement.style.gridRow = "1 / 2";
-                } else if (index < 20) {
+                } else if (index < 19) {
+                    // Правый столбец (сверху вниз)
                     cellElement.style.gridColumn = "11 / 12";
-                    cellElement.style.gridRow = `${index - 9} / ${index - 8}`;
-                } else if (index < 30) {
-                    cellElement.style.gridColumn = `${30 - index} / ${31 - index}`;
+                    cellElement.style.gridRow = `${index - 8} / ${index - 7}`;
+                } else if (index < 28) {
+                    // Нижний ряд (справа налево)
+                    cellElement.style.gridColumn = `${38 - index} / ${39 - index}`;
                     cellElement.style.gridRow = "11 / 12";
                 } else {
+                    // Левый столбец (снизу вверх)
                     cellElement.style.gridColumn = "1 / 2";
-                    cellElement.style.gridRow = `${40 - index} / ${41 - index}`;
+                    cellElement.style.gridRow = `${56 - index} / ${57 - index}`;
                 }
 
                 // Добавляем обработчик клика для клеток
@@ -908,20 +957,26 @@
 
             // Решение: покупать ли собственность
             if (cell.type === "property" && cell.owner === null && bot.money >= cell.price) {
-                buyProperty();
-                addLogMessage("🤖 Бот купил собственность.");
+                if (bot.money - cell.price > 500) { // Пример условия
+                    buyProperty();
+                    addLogMessage("🤖 Бот купил собственность.");
+                }
             }
 
             // Решение: строить ли дом
             if (cell.type === "property" && cell.owner === bot.username && bot.money >= cell.price * 0.5) {
-                buildHouse();
-                addLogMessage("🤖 Бот построил дом.");
+                if (bot.money - cell.price * 0.5 > 300) { // Пример условия
+                    buildHouse();
+                    addLogMessage("🤖 Бот построил дом.");
+                }
             }
 
             // Решение: участвовать ли в аукционе
             if (cell.type === "property" && cell.owner === null && bot.money >= cell.price) {
-                startAuction();
-                addLogMessage("🤖 Бот участвует в аукционе.");
+                if (bot.money - cell.price > 400) { // Пример условия
+                    startAuction();
+                    addLogMessage("🤖 Бот участвует в аукционе.");
+                }
             }
 
             // Завершаем ход бота
