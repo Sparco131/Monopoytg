@@ -10,7 +10,7 @@
             font-family: 'Arial', sans-serif;
             margin: 0;
             padding: 10px;
-            background-color: #f0e6d2;
+            background-color: #D2691E; /* Шоколадный фон */
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -24,6 +24,9 @@
             margin: 10px 0;
             text-transform: uppercase;
             font-weight: bold;
+            background-color: rgba(255, 255, 255, 0.8);
+            padding: 10px;
+            border-radius: 10px;
         }
 
         .auth-form, .lobby, .game-interface {
@@ -33,6 +36,10 @@
             margin-bottom: 20px;
             width: 100%;
             max-width: 300px;
+            background-color: rgba(255, 255, 255, 0.9);
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
         }
 
         .auth-form input, .lobby input {
@@ -78,28 +85,35 @@
             background-color: #f0f0f0;
         }
 
+        /* Игровое поле */
         .board {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 8px;
-            width: 100%;
-            max-width: 300px;
-            margin-bottom: 15px;
+            position: relative;
+            width: 300px;
+            height: 300px;
+            border: 2px solid #2c3e50;
+            border-radius: 50%;
+            margin-bottom: 20px;
         }
 
         .cell {
+            position: absolute;
+            width: 60px;
+            height: 60px;
             border: 2px solid #2c3e50;
-            padding: 10px;
             text-align: center;
             background-color: #ffffff;
             border-radius: 10px;
-            font-size: 14px;
+            font-size: 12px;
             box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.1);
             transition: transform 0.2s ease;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
         .cell:hover {
-            transform: scale(1.05);
+            transform: scale(1.1);
         }
 
         .cell.start {
@@ -114,6 +128,21 @@
 
         .cell.jail {
             background-color: #e74c3c;
+            color: white;
+        }
+
+        .cell.chance {
+            background-color: #f1c40f;
+            color: white;
+        }
+
+        .cell.tax {
+            background-color: #9b59b6;
+            color: white;
+        }
+
+        .cell.community-chest {
+            background-color: #2ecc71;
             color: white;
         }
 
@@ -167,25 +196,46 @@
             color: #2c3e50;
         }
 
-        .cell.start::before {
-            content: "🏁";
-            font-size: 20px;
-            display: block;
-            margin-bottom: 5px;
+        .modal {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            z-index: 1000;
         }
 
-        .cell.property::before {
-            content: "🏠";
-            font-size: 20px;
-            display: block;
-            margin-bottom: 5px;
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 999;
         }
 
-        .cell.jail::before {
-            content: "🚓";
-            font-size: 20px;
-            display: block;
-            margin-bottom: 5px;
+        .modal-content {
+            text-align: center;
+        }
+
+        .modal-close {
+            margin-top: 10px;
+            padding: 5px 10px;
+            background-color: #e74c3c;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .modal-close:hover {
+            background-color: #c0392b;
         }
     </style>
 </head>
@@ -209,13 +259,8 @@
 
     <!-- Игровой интерфейс (скрыт по умолчанию) -->
     <div id="gameInterface" style="display: none;">
-        <div class="board">
-            <div class="cell start">Старт</div>
-            <div class="cell property">Улица 1</div>
-            <div class="cell property">Улица 2</div>
-            <div class="cell jail">Тюрьма</div>
-            <div class="cell property">Улица 3</div>
-            <div class="cell property">Улица 4</div>
+        <div class="board" id="board">
+            <!-- Клетки будут добавляться динамически -->
         </div>
 
         <div class="player-info">
@@ -226,13 +271,21 @@
         </div>
 
         <div class="actions">
-            <button onclick="rollDice()">Бросить кубик</button>
-            <button onclick="buyProperty()">Купить собственность</button>
-            <button onclick="buildHouse()">Построить дом</button>
+            <!-- Кнопки будут добавляться динамически -->
         </div>
 
         <div class="log" id="log">
             <p>Добро пожаловать в игру!</p>
+        </div>
+    </div>
+
+    <!-- Модальное окно для описания клетки -->
+    <div class="modal-overlay" id="modalOverlay"></div>
+    <div class="modal" id="modal">
+        <div class="modal-content">
+            <h2 id="modalTitle"></h2>
+            <p id="modalDescription"></p>
+            <button class="modal-close" onclick="closeModal()">Закрыть</button>
         </div>
     </div>
 
@@ -245,16 +298,22 @@
             { name: "Тюрьма", type: "jail", price: 0, owner: null, houses: 0 },
             { name: "Улица 3", type: "property", price: 300, owner: null, houses: 0 },
             { name: "Улица 4", type: "property", price: 300, owner: null, houses: 0 },
+            { name: "Шанс", type: "chance", price: 0, owner: null, houses: 0 },
+            { name: "Налог", type: "tax", price: 100, owner: null, houses: 0 },
+            { name: "Общественная казна", type: "community-chest", price: 0, owner: null, houses: 0 },
         ];
 
-        let player = {
-            username: "",
-            money: 1500,
-            position: 0,
-            properties: [],
-            inJail: false,
-        };
+        const chanceCards = [
+            "Получите $100!",
+            "Заплатите штраф $50.",
+            "Перейдите на старт.",
+            "Перейдите в тюрьму.",
+            "Получите $200 от каждого игрока.",
+            "Заплатите $100 за ремонт дорог."
+        ];
 
+        let players = [];
+        let currentPlayerIndex = 0;
         let currentSessionId = null;
 
         // Элементы DOM
@@ -267,6 +326,11 @@
         const propertiesElement = document.getElementById("properties");
         const positionElement = document.getElementById("position");
         const logElement = document.getElementById("log");
+        const modal = document.getElementById("modal");
+        const modalOverlay = document.getElementById("modalOverlay");
+        const modalTitle = document.getElementById("modalTitle");
+        const modalDescription = document.getElementById("modalDescription");
+        const boardElement = document.getElementById("board");
 
         // Логин игрока
         function login() {
@@ -276,7 +340,7 @@
                 return;
             }
 
-            player.username = username;
+            players.push({ username, money: 1500, position: 0, properties: [], inJail: false });
             authForm.style.display = "none";
             lobby.style.display = "block";
             loadSessions();
@@ -303,11 +367,12 @@
 
         // Создание новой сессии
         function createSession() {
-            const sessionId = Date.now().toString(); // Уникальный ID сессии
+            const sessionId = Date.now().toString();
             const newSession = {
                 id: sessionId,
-                players: [player.username],
-                board: JSON.parse(JSON.stringify(board)), // Копия игрового поля
+                players: players,
+                board: JSON.parse(JSON.stringify(board)),
+                currentPlayerIndex: 0
             };
 
             const sessions = JSON.parse(localStorage.getItem("sessions")) || [];
@@ -317,6 +382,8 @@
             currentSessionId = sessionId;
             lobby.style.display = "none";
             gameInterface.style.display = "block";
+            renderBoard();
+            updatePlayerInfo();
             addLogMessage(`Создана новая сессия #${sessionId}`);
         }
 
@@ -330,25 +397,46 @@
                 return;
             }
 
-            if (session.players.includes(player.username)) {
-                alert("Вы уже в этой сессии!");
-                return;
-            }
-
-            session.players.push(player.username);
+            session.players.push(...players);
             localStorage.setItem("sessions", JSON.stringify(sessions));
 
             currentSessionId = sessionId;
             lobby.style.display = "none";
             gameInterface.style.display = "block";
+            renderBoard();
+            updatePlayerInfo();
             addLogMessage(`Вы присоединились к сессии #${sessionId}`);
+        }
+
+        // Рендер игрового поля
+        function renderBoard() {
+            boardElement.innerHTML = "";
+            const radius = 150; // Радиус круга
+            const angleStep = (2 * Math.PI) / board.length; // Угол между клетками
+
+            board.forEach((cell, index) => {
+                const angle = angleStep * index;
+                const x = radius + radius * Math.cos(angle);
+                const y = radius + radius * Math.sin(angle);
+
+                const cellElement = document.createElement("div");
+                cellElement.className = `cell ${cell.type}`;
+                cellElement.textContent = cell.name;
+                cellElement.style.left = `${x}px`;
+                cellElement.style.top = `${y}px`;
+                cellElement.onclick = () => showCellDescription(cell.name, `Тип: ${cell.type}, Цена: $${cell.price}`);
+                boardElement.appendChild(cellElement);
+            });
         }
 
         // Обновление информации об игроке
         function updatePlayerInfo() {
-            moneyElement.textContent = player.money;
-            propertiesElement.textContent = player.properties.join(", ") || "Нет";
-            positionElement.textContent = board[player.position].name;
+            const currentPlayer = players[currentPlayerIndex];
+            playerNameElement.textContent = currentPlayer.username;
+            moneyElement.textContent = currentPlayer.money;
+            propertiesElement.textContent = currentPlayer.properties.join(", ") || "Нет";
+            positionElement.textContent = board[currentPlayer.position].name;
+            updateActions(); // Обновляем кнопки действий
         }
 
         // Добавление сообщения в лог
@@ -359,26 +447,42 @@
             logElement.scrollTop = logElement.scrollHeight;
         }
 
+        // Функция для броска двух кубиков
+        function rollTwoDice() {
+            const dice1 = Math.floor(Math.random() * 6) + 1;
+            const dice2 = Math.floor(Math.random() * 6) + 1;
+            return { dice1, dice2, isDouble: dice1 === dice2 };
+        }
+
         // Бросок кубика
         function rollDice() {
-            if (player.inJail) {
-                addLogMessage("Вы в тюрьме и не можете бросить кубик!");
+            const currentPlayer = players[currentPlayerIndex];
+
+            // Если игрок в тюрьме, он не может бросить кубик
+            if (currentPlayer.inJail) {
+                addLogMessage("Вы в тюрьме. Используйте 'Оплатить штраф' или 'Попытаться выбросить дубль'.");
                 return;
             }
 
-            const dice = Math.floor(Math.random() * 6) + 1;
-            player.position = (player.position + dice) % board.length;
-            const cell = board[player.position];
+            const { dice1, dice2, isDouble } = rollTwoDice();
+            const total = dice1 + dice2;
+            currentPlayer.position = (currentPlayer.position + total) % board.length;
+            const cell = board[currentPlayer.position];
 
-            addLogMessage(`Вы бросили кубик и выпало ${dice}. Вы на клетке: ${cell.name}`);
+            addLogMessage(`Вы бросили кубики: ${dice1} и ${dice2}. Вы на клетке: ${cell.name}`);
 
             if (cell.type === "jail") {
-                player.inJail = true;
+                currentPlayer.inJail = true;
                 addLogMessage("Вы попали в тюрьму!");
-            } else if (cell.type === "property" && cell.owner !== null && cell.owner !== player.username) {
+            } else if (cell.type === "property" && cell.owner !== null && cell.owner !== currentPlayer.username) {
                 const rent = cell.price * 0.1;
-                player.money -= rent;
+                currentPlayer.money -= rent;
                 addLogMessage(`Вы заплатили аренду: $${rent}`);
+            } else if (cell.type === "tax") {
+                currentPlayer.money -= cell.price;
+                addLogMessage(`Вы заплатили налог: $${cell.price}`);
+            } else if (cell.type === "chance") {
+                drawChanceCard();
             }
 
             updatePlayerInfo();
@@ -386,16 +490,17 @@
 
         // Покупка собственности
         function buyProperty() {
-            const cell = board[player.position];
+            const currentPlayer = players[currentPlayerIndex];
+            const cell = board[currentPlayer.position];
             if (cell.type !== "property" || cell.owner !== null) {
                 addLogMessage("Покупка невозможна.");
                 return;
             }
 
-            if (player.money >= cell.price) {
-                cell.owner = player.username;
-                player.money -= cell.price;
-                player.properties.push(cell.name);
+            if (currentPlayer.money >= cell.price) {
+                cell.owner = currentPlayer.username;
+                currentPlayer.money -= cell.price;
+                currentPlayer.properties.push(cell.name);
                 addLogMessage(`Вы купили ${cell.name} за $${cell.price}`);
             } else {
                 addLogMessage("Недостаточно денег для покупки.");
@@ -406,21 +511,142 @@
 
         // Постройка дома
         function buildHouse() {
-            const cell = board[player.position];
-            if (cell.owner !== player.username || player.money < 100) {
+            const currentPlayer = players[currentPlayerIndex];
+            const cell = board[currentPlayer.position];
+            if (cell.owner !== currentPlayer.username || currentPlayer.money < 100) {
                 addLogMessage("Постройка невозможна.");
                 return;
             }
 
             cell.houses += 1;
-            player.money -= 100;
+            currentPlayer.money -= 100;
             addLogMessage(`Вы построили дом на ${cell.name} за $100`);
             updatePlayerInfo();
         }
 
-        // Интеграция с Telegram WebApp
-        Telegram.WebApp.ready();
-        Telegram.WebApp.expand();
+        // Завершение хода
+        function endTurn() {
+            currentPlayerIndex = (currentPlayerIndex + 1) % players.length;
+            updatePlayerInfo();
+            addLogMessage(`Ход переходит к ${players[currentPlayerIndex].username}`);
+        }
+
+        // Карта шанса
+        function drawChanceCard() {
+            const currentPlayer = players[currentPlayerIndex];
+            const randomIndex = Math.floor(Math.random() * chanceCards.length);
+            const card = chanceCards[randomIndex];
+            addLogMessage(`Карта шанса: ${card}`);
+
+            if (card.includes("Получите")) {
+                const amount = parseInt(card.match(/\d+/)[0]);
+                currentPlayer.money += amount;
+            } else if (card.includes("Заплатите")) {
+                const amount = parseInt(card.match(/\d+/)[0]);
+                currentPlayer.money -= amount;
+            } else if (card.includes("Перейдите на старт")) {
+                currentPlayer.position = 0;
+            } else if (card.includes("Перейдите в тюрьму")) {
+                currentPlayer.position = 3;
+                currentPlayer.inJail = true;
+            }
+
+            updatePlayerInfo();
+        }
+
+        // Показ описания клетки
+        function showCellDescription(title, description) {
+            modalTitle.textContent = title;
+            modalDescription.textContent = description;
+            modal.style.display = "block";
+            modalOverlay.style.display = "block";
+        }
+
+        // Закрытие модального окна
+        function closeModal() {
+            modal.style.display = "none";
+            modalOverlay.style.display = "none";
+        }
+
+        // Функция для выхода из тюрьмы путем оплаты штрафа
+        function payJailFine() {
+            const currentPlayer = players[currentPlayerIndex];
+            if (!currentPlayer.inJail) {
+                addLogMessage("Вы не в тюрьме!");
+                return;
+            }
+
+            const fine = 50;
+            if (currentPlayer.money >= fine) {
+                currentPlayer.money -= fine;
+                currentPlayer.inJail = false;
+                addLogMessage(`Вы заплатили штраф $${fine} и вышли из тюрьмы.`);
+            } else {
+                addLogMessage("У вас недостаточно денег для оплаты штрафа.");
+            }
+
+            updatePlayerInfo();
+        }
+
+        // Функция для выхода из тюрьмы путем броска дублей
+        function tryEscapeJail() {
+            const currentPlayer = players[currentPlayerIndex];
+            if (!currentPlayer.inJail) {
+                addLogMessage("Вы не в тюрьме!");
+                return;
+            }
+
+            const { dice1, dice2, isDouble } = rollTwoDice();
+            addLogMessage(`Вы бросили кубики: ${dice1} и ${dice2}`);
+
+            if (isDouble) {
+                currentPlayer.inJail = false;
+                addLogMessage("Вы выбросили дубль и вышли из тюрьмы!");
+            } else {
+                addLogMessage("Дубль не выпал. Вы остаетесь в тюрьме.");
+            }
+
+            updatePlayerInfo();
+        }
+
+        // Обновление кнопок действий
+        function updateActions() {
+            const currentPlayer = players[currentPlayerIndex];
+            const actionsDiv = document.querySelector(".actions");
+            actionsDiv.innerHTML = "";
+
+            if (currentPlayer.inJail) {
+                const payButton = document.createElement("button");
+                payButton.textContent = "Оплатить штраф ($50)";
+                payButton.onclick = payJailFine;
+                actionsDiv.appendChild(payButton);
+
+                const escapeButton = document.createElement("button");
+                escapeButton.textContent = "Попытаться выбросить дубль";
+                escapeButton.onclick = tryEscapeJail;
+                actionsDiv.appendChild(escapeButton);
+            } else {
+                const rollButton = document.createElement("button");
+                rollButton.textContent = "Бросить кубик";
+                rollButton.onclick = rollDice;
+                actionsDiv.appendChild(rollButton);
+
+                const buyButton = document.createElement("button");
+                buyButton.textContent = "Купить собственность";
+                buyButton.onclick = buyProperty;
+                actionsDiv.appendChild(buyButton);
+
+                const buildButton = document.createElement("button");
+                buildButton.textContent = "Построить дом";
+                buildButton.onclick = buildHouse;
+                actionsDiv.appendChild(buildButton);
+
+                const endTurnButton = document.createElement("button");
+                endTurnButton.textContent = "Завершить ход";
+                endTurnButton.onclick = endTurn;
+                actionsDiv.appendChild(endTurnButton);
+            }
+        }
     </script>
 </body>
 </html>
