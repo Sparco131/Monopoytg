@@ -9,7 +9,7 @@
         body {
             font-family: 'Roboto', sans-serif;
             margin: 0;
-            padding: 10px;
+            padding: 0;
             background: url('https://i.postimg.cc/QKJCKQ87/photo-2024-04-28-23-19-17.jpg') no-repeat center center fixed;
             background-size: cover;
             display: flex;
@@ -18,6 +18,76 @@
             min-height: 100vh;
             box-sizing: border-box;
             color: #2c3e50;
+        }
+
+        /* Загрузочный экран */
+        .loading-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #2c3e50, #34495e);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            color: white;
+            font-family: 'Roboto', sans-serif;
+        }
+
+        .loading-content {
+            text-align: center;
+        }
+
+        .loading-content h1 {
+            font-size: 32px;
+            margin-bottom: 20px;
+        }
+
+        .spinner {
+            border: 4px solid rgba(255, 255, 255, 0.3);
+            border-top: 4px solid #ffffff;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .loading-content p {
+            font-size: 18px;
+            margin-bottom: 20px;
+        }
+
+        .loading-content button {
+            padding: 10px 20px;
+            font-size: 16px;
+            border: none;
+            border-radius: 10px;
+            background: #27ae60;
+            color: white;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+
+        .loading-content button:disabled {
+            background: #7f8c8d;
+            cursor: not-allowed;
+        }
+
+        .loading-content button:hover:not(:disabled) {
+            background: #2ecc71;
+        }
+
+        /* Основной контент */
+        .main-content {
+            display: none; /* Скрыт до завершения загрузки */
         }
 
         h1 {
@@ -145,7 +215,7 @@
             font-size: 20px;
             font-weight: bold;
             color: #2c3e50;
-            position: fixed;
+            position: absolute;
             top: 0;
             left: 0;
             opacity: 0;
@@ -400,65 +470,78 @@
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
 </head>
 <body>
-    <h1>Мини-Монополия</h1>
-
-    <!-- Меню -->
-    <div class="menu" id="menu">
-        <button onclick="startGame('bot')">Играть против бота</button>
-        <button onclick="startGame('player')">Играть с другом</button>
-    </div>
-
-    <!-- Игровое поле -->
-    <div class="board" id="board">
-        <!-- Клетки будут добавляться динамически -->
-        <div class="center-area">
-            <div class="dice-container" onclick="rollDice()">
-                <div class="dice" id="dice1" data-value="1">
-                    <div class="dot"></div>
-                </div>
-                <div class="dice" id="dice2" data-value="1">
-                    <div class="dot"></div>
-                </div>
-            </div>
+    <!-- Загрузочный экран -->
+    <div class="loading-screen" id="loadingScreen">
+        <div class="loading-content">
+            <h1>Мини-Монополия</h1>
+            <div class="spinner"></div>
+            <p>Загрузка...</p>
+            <button onclick="startGameAfterLoading()" id="startButton" disabled>Начать игру</button>
         </div>
     </div>
 
-    <!-- Информация об игроке -->
-    <div class="player-info" id="playerInfo">
-        <h2>Игрок: <span id="playerName"></span></h2>
-        <p>Деньги: $<span id="money">1500</span></p>
-        <p>Собственность: <span id="properties">Нет</span></p>
-        <p>Позиция: <span id="position">Старт</span></p>
-    </div>
+    <!-- Основной контент -->
+    <div class="main-content" id="mainContent">
+        <h1>Мини-Монополия</h1>
 
-    <!-- Кнопки действий -->
-    <div class="actions" id="actions">
-        <button onclick="rollDice()">Бросить кубик</button>
-        <button onclick="buyProperty()">Купить собственность</button>
-        <button onclick="buildHouse()">Построить дом</button>
-        <button onclick="startAuction()">Аукцион</button>
-        <button onclick="endTurn()">Завершить ход</button>
-    </div>
+        <!-- Меню -->
+        <div class="menu" id="menu">
+            <button onclick="startGame('bot')">Играть против бота</button>
+            <button onclick="startGame('player')">Играть с другом</button>
+        </div>
 
-    <!-- Лог событий -->
-    <div class="log" id="log">
-        <p><span class="icon">🎲</span> Добро пожаловать в игру!</p>
-    </div>
+        <!-- Игровое поле -->
+        <div class="board" id="board">
+            <!-- Клетки будут добавляться динамически -->
+            <div class="center-area">
+                <div class="dice-container" onclick="rollDice()">
+                    <div class="dice" id="dice1" data-value="1">
+                        <div class="dot"></div>
+                    </div>
+                    <div class="dice" id="dice2" data-value="1">
+                        <div class="dot"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
 
-    <!-- Индикатор хода -->
-    <div class="turn-indicator" id="turnIndicator">
-        <div class="progress" id="turnProgress"></div>
-    </div>
+        <!-- Информация об игроке -->
+        <div class="player-info" id="playerInfo">
+            <h2>Игрок: <span id="playerName"></span></h2>
+            <p>Деньги: $<span id="money">1500</span></p>
+            <p>Собственность: <span id="properties">Нет</span></p>
+            <p>Позиция: <span id="position">Старт</span></p>
+        </div>
 
-    <!-- Модальное окно для информации о клетке -->
-    <div class="modal" id="cellModal">
-        <div class="modal-content">
-            <div class="modal-icon">🏠</div>
-            <h3 id="modalTitle"></h3>
-            <p id="modalType"></p>
-            <p id="modalPrice"></p>
-            <p id="modalOwner"></p>
-            <button onclick="closeModal()">Закрыть</button>
+        <!-- Кнопки действий -->
+        <div class="actions" id="actions">
+            <button onclick="rollDice()">Бросить кубик</button>
+            <button onclick="buyProperty()">Купить собственность</button>
+            <button onclick="buildHouse()">Построить дом</button>
+            <button onclick="startAuction()">Аукцион</button>
+            <button onclick="endTurn()">Завершить ход</button>
+        </div>
+
+        <!-- Лог событий -->
+        <div class="log" id="log">
+            <p><span class="icon">🎲</span> Добро пожаловать в игру!</p>
+        </div>
+
+        <!-- Индикатор хода -->
+        <div class="turn-indicator" id="turnIndicator">
+            <div class="progress" id="turnProgress"></div>
+        </div>
+
+        <!-- Модальное окно для информации о клетке -->
+        <div class="modal" id="cellModal">
+            <div class="modal-content">
+                <div class="modal-icon">🏠</div>
+                <h3 id="modalTitle"></h3>
+                <p id="modalType"></p>
+                <p id="modalPrice"></p>
+                <p id="modalOwner"></p>
+                <button onclick="closeModal()">Закрыть</button>
+            </div>
         </div>
     </div>
 
@@ -512,6 +595,9 @@
         let isTurnInProgress = false;
 
         // Элементы DOM
+        const loadingScreen = document.getElementById("loadingScreen");
+        const startButton = document.getElementById("startButton");
+        const mainContent = document.getElementById("mainContent");
         const boardElement = document.getElementById("board");
         const playerNameElement = document.getElementById("playerName");
         const moneyElement = document.getElementById("money");
@@ -531,6 +617,23 @@
         const actionsElement = document.getElementById("actions");
         const logElementDisplay = document.getElementById("log");
         const turnIndicatorElement = document.getElementById("turnIndicator");
+
+        // Имитация загрузки
+        function simulateLoading() {
+            setTimeout(() => {
+                loadingScreen.querySelector(".spinner").style.display = "none";
+                loadingScreen.querySelector("p").style.display = "none";
+                startButton.disabled = false;
+                startButton.textContent = "Начать игру";
+            }, 3000); // Имитация загрузки в течение 3 секунд
+        }
+
+        // Запуск игры после загрузки
+        function startGameAfterLoading() {
+            loadingScreen.style.display = "none";
+            mainContent.style.display = "block";
+            startGame("bot"); // Или "player", в зависимости от выбора
+        }
 
         // Начало игры
         function startGame(mode) {
@@ -666,23 +769,24 @@
             void dice1Element.offsetHeight;
             void dice2Element.offsetHeight;
 
+            const boardRect = boardElement.getBoundingClientRect();
+            const centerX = boardRect.left + boardRect.width / 2;
+            const centerY = boardRect.top + boardRect.height / 2;
+
             const startX1 = Math.random() < 0.5 ? "-100%" : "100%";
             const startY1 = Math.random() * window.innerHeight;
             const startX2 = Math.random() < 0.5 ? "-100%" : "100%";
             const startY2 = Math.random() * window.innerHeight;
 
-            const endX = window.innerWidth / 2;
-            const endY = window.innerHeight / 2;
-
             dice1Element.style.setProperty("--startX", startX1);
             dice1Element.style.setProperty("--startY", `${startY1}px`);
-            dice1Element.style.setProperty("--endX", `${endX}px`);
-            dice1Element.style.setProperty("--endY", `${endY}px`);
+            dice1Element.style.setProperty("--endX", `${centerX}px`);
+            dice1Element.style.setProperty("--endY", `${centerY}px`);
 
             dice2Element.style.setProperty("--startX", startX2);
             dice2Element.style.setProperty("--startY", `${startY2}px`);
-            dice2Element.style.setProperty("--endX", `${endX + 60}px`);
-            dice2Element.style.setProperty("--endY", `${endY}px`);
+            dice2Element.style.setProperty("--endX", `${centerX + 60}px`);
+            dice2Element.style.setProperty("--endY", `${centerY}px`);
 
             dice1Element.style.animation = "throwDice 0.8s ease-out forwards";
             dice2Element.style.animation = "throwDice 0.8s ease-out forwards";
@@ -979,6 +1083,9 @@
                 }
             });
         }
+
+        // Запуск имитации загрузки при загрузке страницы
+        window.onload = simulateLoading;
     </script>
 </body>
 </html>
