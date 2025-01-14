@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Мини-Монополия</title>
     <style>
-        /* Ваши стили */
+        /* Общие стили */
         body {
             font-family: 'Roboto', sans-serif;
             margin: 0;
@@ -61,10 +61,10 @@
 
         .board {
             position: relative;
-            width: 95vw; /* Растягиваем поле по ширине */
-            max-width: 800px; /* Увеличиваем максимальную ширину */
-            height: 95vw; /* Сохраняем пропорции */
-            max-height: 800px; /* Увеличиваем максимальную высоту */
+            width: 95vw;
+            max-width: 600px;
+            height: 95vw;
+            max-height: 600px;
             border: 10px solid #2c3e50;
             border-radius: 20px;
             margin-bottom: 20px;
@@ -362,6 +362,7 @@
             margin-bottom: 10px;
         }
 
+        /* Стили для мобильных устройств */
         @media (max-width: 600px) {
             h1 {
                 font-size: 20px;
@@ -619,7 +620,14 @@
             board.forEach((cell, index) => {
                 const cellElement = document.createElement("div");
                 cellElement.className = `cell ${cell.type}`;
-                cellElement.textContent = cell.name;
+                
+                // Упрощаем текст для мобильных устройств
+                if (window.innerWidth <= 600) {
+                    cellElement.textContent = cell.name.split(" ")[0]; // Показываем только первое слово
+                } else {
+                    cellElement.textContent = cell.name;
+                }
+
                 cellElement.setAttribute("data-tooltip", `${cell.name} (${cell.type})`);
 
                 // Расположение клеток по периметру
