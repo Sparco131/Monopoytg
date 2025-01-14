@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Мини-Монополия</title>
     <style>
-        /* Общие стили */
+        /* Ваши стили */
         body {
             font-family: 'Roboto', sans-serif;
             margin: 0;
@@ -61,10 +61,10 @@
 
         .board {
             position: relative;
-            width: 90vw;
-            max-width: 600px;
-            height: 90vw;
-            max-height: 600px;
+            width: 95vw; /* Растягиваем поле по ширине */
+            max-width: 800px; /* Увеличиваем максимальную ширину */
+            height: 95vw; /* Сохраняем пропорции */
+            max-height: 800px; /* Увеличиваем максимальную высоту */
             border: 10px solid #2c3e50;
             border-radius: 20px;
             margin-bottom: 20px;
@@ -171,14 +171,12 @@
             position: absolute;
         }
 
-        /* Анимация броска кубиков */
         @keyframes roll {
             0% { transform: rotate(0deg) scale(1); }
             50% { transform: rotate(180deg) scale(1.2); }
             100% { transform: rotate(360deg) scale(1); }
         }
 
-        /* Расположение точек на кубиках */
         .dice[data-value="1"] .dot:nth-child(1) { top: 50%; left: 50%; transform: translate(-50%, -50%); }
         .dice[data-value="2"] .dot:nth-child(1) { top: 20%; left: 20%; }
         .dice[data-value="2"] .dot:nth-child(2) { bottom: 20%; right: 20%; }
@@ -301,7 +299,6 @@
             transition: width 0.5s;
         }
 
-        /* Модальное окно */
         .modal {
             display: none;
             position: fixed;
@@ -496,7 +493,7 @@
 
     <!-- Лог событий -->
     <div class="log" id="log">
-        <p><span class="icon">??</span> Добро пожаловать в игру!</p>
+        <p><span class="icon">🎲</span> Добро пожаловать в игру!</p>
     </div>
 
     <!-- Индикатор хода -->
@@ -507,7 +504,7 @@
     <!-- Модальное окно для информации о клетке -->
     <div class="modal" id="cellModal">
         <div class="modal-content">
-            <div class="modal-icon">??</div>
+            <div class="modal-icon">🏠</div>
             <h3 id="modalTitle"></h3>
             <p id="modalType"></p>
             <p id="modalPrice"></p>
@@ -519,37 +516,51 @@
     <script>
         // Инициализация данных игры
         const board = [
-            { name: "Старт", type: "start", price: 0, owner: null, houses: 0 },
-            { name: "Улица Пушкина", type: "property", price: 200, owner: null, houses: 0 },
-            { name: "Улица Лермонтова", type: "property", price: 200, owner: null, houses: 0 },
-            { name: "Железная дорога 1", type: "railroad", price: 200, owner: null },
-            { name: "Улица Гоголя", type: "property", price: 300, owner: null, houses: 0 },
-            { name: "Налог на роскошь", type: "tax", price: 100, owner: null },
-            { name: "Улица Толстого", type: "property", price: 300, owner: null, houses: 0 },
-            { name: "Шанс", type: "chance", price: 0, owner: null },
-            { name: "Улица Достоевского", type: "property", price: 400, owner: null, houses: 0 },
-            { name: "Улица Чехова", type: "property", price: 400, owner: null, houses: 0 },
-            { name: "Тюрьма", type: "jail", price: 0, owner: null },
-            { name: "Улица Тургенева", type: "property", price: 500, owner: null, houses: 0 },
-            { name: "Коммунальная услуга", type: "utility", price: 150, owner: null },
-            { name: "Улица Некрасова", type: "property", price: 500, owner: null, houses: 0 },
-            { name: "Улица Блока", type: "property", price: 600, owner: null, houses: 0 },
-            { name: "Железная дорога 2", type: "railroad", price: 200, owner: null },
-            { name: "Улица Есенина", type: "property", price: 600, owner: null, houses: 0 },
-            { name: "Общественная казна", type: "community-chest", price: 0, owner: null },
-            { name: "Улица Маяковского", type: "property", price: 700, owner: null, houses: 0 },
-            { name: "Улица Пастернака", type: "property", price: 700, owner: null, houses: 0 },
-            { name: "Парковка", type: "tax", price: 50, owner: null },
-            { name: "Улица Грибоедова", type: "property", price: 250, owner: null, houses: 0 },
-            { name: "Улица Куприна", type: "property", price: 350, owner: null, houses: 0 },
-            { name: "Улица Бунина", type: "property", price: 450, owner: null, houses: 0 },
-            { name: "Улица Ахматовой", type: "property", price: 550, owner: null, houses: 0 },
-            { name: "Улица Цветаевой", type: "property", price: 650, owner: null, houses: 0 },
-            { name: "Улица Шолохова", type: "property", price: 750, owner: null, houses: 0 },
+            { name: "Старт", type: "start", price: 0, owner: null, houses: 0 }, // 0
+            { name: "Улица Пушкина", type: "property", price: 60, owner: null, houses: 0 }, // 1
+            { name: "Общественная казна", type: "community-chest", price: 0, owner: null }, // 2
+            { name: "Улица Лермонтова", type: "property", price: 60, owner: null, houses: 0 }, // 3
+            { name: "Налог на доход", type: "tax", price: 200, owner: null }, // 4
+            { name: "Железная дорога 1", type: "railroad", price: 200, owner: null }, // 5
+            { name: "Улица Гоголя", type: "property", price: 100, owner: null, houses: 0 }, // 6
+            { name: "Шанс", type: "chance", price: 0, owner: null }, // 7
+            { name: "Улица Толстого", type: "property", price: 100, owner: null, houses: 0 }, // 8
+            { name: "Улица Достоевского", type: "property", price: 120, owner: null, houses: 0 }, // 9
+            { name: "Тюрьма", type: "jail", price: 0, owner: null }, // 10
+            { name: "Улица Чехова", type: "property", price: 140, owner: null, houses: 0 }, // 11
+            { name: "Коммунальная услуга", type: "utility", price: 150, owner: null }, // 12
+            { name: "Улица Тургенева", type: "property", price: 140, owner: null, houses: 0 }, // 13
+            { name: "Улица Некрасова", type: "property", price: 160, owner: null, houses: 0 }, // 14
+            { name: "Железная дорога 2", type: "railroad", price: 200, owner: null }, // 15
+            { name: "Улица Блока", type: "property", price: 180, owner: null, houses: 0 }, // 16
+            { name: "Общественная казна", type: "community-chest", price: 0, owner: null }, // 17
+            { name: "Улица Есенина", type: "property", price: 180, owner: null, houses: 0 }, // 18
+            { name: "Улица Маяковского", type: "property", price: 200, owner: null, houses: 0 }, // 19
+            { name: "Парковка", type: "tax", price: 0, owner: null }, // 20
+            { name: "Улица Пастернака", type: "property", price: 220, owner: null, houses: 0 }, // 21
+            { name: "Шанс", type: "chance", price: 0, owner: null }, // 22
+            { name: "Улица Грибоедова", type: "property", price: 220, owner: null, houses: 0 }, // 23
+            { name: "Улица Куприна", type: "property", price: 240, owner: null, houses: 0 }, // 24
+            { name: "Железная дорога 3", type: "railroad", price: 200, owner: null }, // 25
+            { name: "Улица Бунина", type: "property", price: 260, owner: null, houses: 0 }, // 26
+            { name: "Улица Ахматовой", type: "property", price: 260, owner: null, houses: 0 }, // 27
+            { name: "Коммунальная услуга", type: "utility", price: 150, owner: null }, // 28
+            { name: "Улица Цветаевой", type: "property", price: 280, owner: null, houses: 0 }, // 29
+            { name: "Отправляйтесь в тюрьму", type: "jail", price: 0, owner: null }, // 30
+            { name: "Улица Шолохова", type: "property", price: 300, owner: null, houses: 0 }, // 31
+            { name: "Улица Солженицына", type: "property", price: 300, owner: null, houses: 0 }, // 32
+            { name: "Общественная казна", type: "community-chest", price: 0, owner: null }, // 33
+            { name: "Улица Бродского", type: "property", price: 320, owner: null, houses: 0 }, // 34
+            { name: "Железная дорога 4", type: "railroad", price: 200, owner: null }, // 35
+            { name: "Шанс", type: "chance", price: 0, owner: null }, // 36
+            { name: "Улица Довлатова", type: "property", price: 350, owner: null, houses: 0 }, // 37
+            { name: "Налог на роскошь", type: "tax", price: 100, owner: null }, // 38
+            { name: "Улица Пелевина", type: "property", price: 400, owner: null, houses: 0 }, // 39
         ];
 
         let players = [];
         let currentPlayerIndex = 0;
+        let isTurnInProgress = false; // Флаг для отслеживания хода
 
         // Элементы DOM
         const boardElement = document.getElementById("board");
@@ -595,6 +606,9 @@
             logElementDisplay.style.display = "block";
             turnIndicatorElement.style.display = "block";
 
+            // Разблокируем кнопки
+            toggleActionButtons(false);
+
             // Рендер игрового поля
             renderBoard();
             updatePlayerInfo();
@@ -613,18 +627,18 @@
                     // Верхний ряд (слева направо)
                     cellElement.style.gridColumn = `${index + 1} / ${index + 2}`;
                     cellElement.style.gridRow = "1 / 2";
-                } else if (index < 19) {
+                } else if (index < 20) {
                     // Правый столбец (сверху вниз)
                     cellElement.style.gridColumn = "11 / 12";
-                    cellElement.style.gridRow = `${index - 8} / ${index - 7}`;
-                } else if (index < 28) {
+                    cellElement.style.gridRow = `${index - 9} / ${index - 8}`;
+                } else if (index < 30) {
                     // Нижний ряд (справа налево)
-                    cellElement.style.gridColumn = `${38 - index} / ${39 - index}`;
+                    cellElement.style.gridColumn = `${30 - index} / ${31 - index}`;
                     cellElement.style.gridRow = "11 / 12";
                 } else {
                     // Левый столбец (снизу вверх)
                     cellElement.style.gridColumn = "1 / 2";
-                    cellElement.style.gridRow = `${56 - index} / ${57 - index}`;
+                    cellElement.style.gridRow = `${40 - index} / ${41 - index}`;
                 }
 
                 // Добавляем обработчик клика для клеток
@@ -701,6 +715,14 @@
 
         // Бросок кубика
         function rollDice() {
+            if (isTurnInProgress) {
+                addLogMessage("🚫 Дождитесь завершения текущего хода.");
+                return;
+            }
+
+            isTurnInProgress = true; // Начинаем ход
+            toggleActionButtons(true); // Блокируем кнопки
+
             const dice1 = Math.floor(Math.random() * 6) + 1;
             const dice2 = Math.floor(Math.random() * 6) + 1;
             const total = dice1 + dice2;
@@ -717,7 +739,7 @@
 
                 const currentPlayer = players[currentPlayerIndex];
                 currentPlayer.position = (currentPlayer.position + total) % board.length;
-                addLogMessage(`?? Вы бросили кубики: ${dice1} и ${dice2}. Вы на клетке: ${board[currentPlayer.position].name}`);
+                addLogMessage(`🎲 Вы бросили кубики: ${dice1} и ${dice2}. Вы на клетке: ${board[currentPlayer.position].name}`);
                 handleCellAction(currentPlayer.position);
                 updatePlayerInfo();
                 updateMarkers();
@@ -741,17 +763,17 @@
                 case "railroad":
                 case "utility":
                     if (cell.owner === null) {
-                        addLogMessage(`?? ${cell.name} свободна. Вы можете купить её за $${cell.price}.`);
+                        addLogMessage(`🏠 ${cell.name} свободна. Вы можете купить её за $${cell.price}.`);
                     } else if (cell.owner !== currentPlayer.username) {
                         const rent = calculateRent(cell);
                         currentPlayer.money -= rent;
                         players.find(p => p.username === cell.owner).money += rent;
-                        addLogMessage(`?? Вы заплатили аренду $${rent} игроку ${cell.owner}.`);
+                        addLogMessage(`💸 Вы заплатили аренду $${rent} игроку ${cell.owner}.`);
                     }
                     break;
                 case "tax":
                     currentPlayer.money -= cell.price;
-                    addLogMessage(`?? Вы заплатили налог $${cell.price}.`);
+                    addLogMessage(`💸 Вы заплатили налог $${cell.price}.`);
                     break;
                 case "chance":
                     const chanceCards = [
@@ -765,7 +787,7 @@
                         "Заплатите $100 за ремонт дорог."
                     ];
                     const card = chanceCards[Math.floor(Math.random() * chanceCards.length)];
-                    addLogMessage(`?? Шанс: ${card}`);
+                    addLogMessage(`🎲 Шанс: ${card}`);
                     if (card === "Перейдите на старт.") {
                         currentPlayer.position = 0;
                         updateMarkers();
@@ -804,7 +826,7 @@
                         "Заплатите $50 за обучение."
                     ];
                     const chestCard = communityChestCards[Math.floor(Math.random() * communityChestCards.length)];
-                    addLogMessage(`?? Общественная казна: ${chestCard}`);
+                    addLogMessage(`🎲 Общественная казна: ${chestCard}`);
                     if (chestCard === "Перейдите на старт.") {
                         currentPlayer.position = 0;
                         updateMarkers();
@@ -827,21 +849,21 @@
                     }
                     break;
                 case "jail":
-                    addLogMessage(`?? Вы попали в тюрьму!`);
+                    addLogMessage(`🚨 Вы попали в тюрьму!`);
                     currentPlayer.inJail = true;
                     break;
                 case "start":
-                    addLogMessage(`?? Вы на старте. Получите $200!`);
+                    addLogMessage(`🏁 Вы на старте. Получите $200!`);
                     currentPlayer.money += 200;
                     break;
             }
 
             // Проверка на банкротство
             if (currentPlayer.money < 0) {
-                addLogMessage(`?? ${currentPlayer.username} обанкротился!`);
+                addLogMessage(`💔 ${currentPlayer.username} обанкротился!`);
                 players.splice(currentPlayerIndex, 1);
                 if (players.length === 1) {
-                    addLogMessage(`?? ${players[0].username} выиграл игру!`);
+                    addLogMessage(`🎉 ${players[0].username} выиграл игру!`);
                     endGame();
                 }
             }
@@ -867,14 +889,14 @@
             const cell = board[currentPlayer.position];
 
             if (cell.type !== "property" || cell.owner !== null || currentPlayer.money < cell.price) {
-                addLogMessage("?? Покупка невозможна.");
+                addLogMessage("🚫 Покупка невозможна.");
                 return;
             }
 
             cell.owner = currentPlayer.username;
             currentPlayer.money -= cell.price;
             currentPlayer.properties.push(cell.name);
-            addLogMessage(`?? Вы купили ${cell.name} за $${cell.price}`);
+            addLogMessage(`💰 Вы купили ${cell.name} за $${cell.price}`);
             updatePlayerInfo();
         }
 
@@ -884,19 +906,19 @@
             const cell = board[currentPlayer.position];
 
             if (cell.type !== "property" || cell.owner !== currentPlayer.username) {
-                addLogMessage("?? Вы не можете построить дом здесь.");
+                addLogMessage("🚫 Вы не можете построить дом здесь.");
                 return;
             }
 
             const houseCost = cell.price * 0.5; // Стоимость дома — 50% от стоимости клетки
             if (currentPlayer.money < houseCost) {
-                addLogMessage("?? У вас недостаточно денег для постройки дома.");
+                addLogMessage("🚫 У вас недостаточно денег для постройки дома.");
                 return;
             }
 
             cell.houses += 1;
             currentPlayer.money -= houseCost;
-            addLogMessage(`?? Вы построили дом на ${cell.name}. Стоимость: $${houseCost}`);
+            addLogMessage(`🏠 Вы построили дом на ${cell.name}. Стоимость: $${houseCost}`);
             updatePlayerInfo();
         }
 
@@ -906,13 +928,13 @@
             const cell = board[currentPlayer.position];
 
             if (cell.type !== "property" || cell.owner !== null) {
-                addLogMessage("?? Аукцион невозможен.");
+                addLogMessage("🚫 Аукцион невозможен.");
                 return;
             }
 
             const auctionParticipants = players.filter(p => p.money >= cell.price);
             if (auctionParticipants.length === 0) {
-                addLogMessage("?? Нет участников для аукциона.");
+                addLogMessage("🚫 Нет участников для аукциона.");
                 return;
             }
 
@@ -930,14 +952,17 @@
             cell.owner = winner.username;
             winner.money -= highestBid;
             winner.properties.push(cell.name);
-            addLogMessage(`?? ${winner.username} выиграл аукцион за ${cell.name} за $${highestBid}`);
+            addLogMessage(`💰 ${winner.username} выиграл аукцион за ${cell.name} за $${highestBid}`);
             updatePlayerInfo();
         }
 
         // Завершение хода
         function endTurn() {
+            isTurnInProgress = false; // Завершаем ход
+            toggleActionButtons(false); // Разблокируем кнопки
+
             currentPlayerIndex = (currentPlayerIndex + 1) % players.length;
-            addLogMessage(`?? Ход переходит к ${players[currentPlayerIndex].username}`);
+            addLogMessage(`🔄 Ход переходит к ${players[currentPlayerIndex].username}`);
             updatePlayerInfo();
 
             // Если текущий игрок — бот, он делает ход
@@ -959,7 +984,7 @@
             if (cell.type === "property" && cell.owner === null && bot.money >= cell.price) {
                 if (bot.money - cell.price > 500) { // Пример условия
                     buyProperty();
-                    addLogMessage("?? Бот купил собственность.");
+                    addLogMessage("🤖 Бот купил собственность.");
                 }
             }
 
@@ -967,7 +992,7 @@
             if (cell.type === "property" && cell.owner === bot.username && bot.money >= cell.price * 0.5) {
                 if (bot.money - cell.price * 0.5 > 300) { // Пример условия
                     buildHouse();
-                    addLogMessage("?? Бот построил дом.");
+                    addLogMessage("🤖 Бот построил дом.");
                 }
             }
 
@@ -975,7 +1000,7 @@
             if (cell.type === "property" && cell.owner === null && bot.money >= cell.price) {
                 if (bot.money - cell.price > 400) { // Пример условия
                     startAuction();
-                    addLogMessage("?? Бот участвует в аукционе.");
+                    addLogMessage("🤖 Бот участвует в аукционе.");
                 }
             }
 
@@ -996,6 +1021,16 @@
             p.innerHTML = message;
             logElement.appendChild(p);
             logElement.scrollTop = logElement.scrollHeight;
+        }
+
+        // Блокировка кнопок
+        function toggleActionButtons(disabled) {
+            const actionButtons = document.querySelectorAll(".actions button");
+            actionButtons.forEach(button => {
+                if (button.textContent !== "Завершить ход") {
+                    button.disabled = disabled;
+                }
+            });
         }
     </script>
 </body>
