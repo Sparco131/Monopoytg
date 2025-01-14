@@ -10,8 +10,8 @@
             font-family: 'Roboto', sans-serif;
             margin: 0;
             padding: 10px;
-            background: url('https://i.postimg.cc/K4B26YjP/background.jpg') no-repeat center center fixed;
-            background-size: cover;
+            background: url('https://i.postimg.cc/QKJCKQ87/photo-2024-04-28-23-19-17.jpg') no-repeat center center fixed;
+            background-size: cover; /* Растягиваем фон на весь экран */
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -68,7 +68,7 @@
             border: 10px solid #2c3e50;
             border-radius: 20px;
             margin-bottom: 20px;
-            background-color: rgba(255, 255, 255, 0.9);
+            background-color: rgba(255, 255, 255, 0.8); /* Полупрозрачный белый фон */
             box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
             display: grid;
             grid-template-columns: repeat(11, 1fr);
@@ -144,6 +144,7 @@
         .dice-container {
             display: flex;
             gap: 10px;
+            cursor: pointer; /* Делаем кубики кликабельными */
         }
 
         .dice {
@@ -203,7 +204,7 @@
             margin-bottom: 15px;
             text-align: center;
             font-size: 16px;
-            background-color: rgba(255, 255, 255, 0.9);
+            background-color: rgba(255, 255, 255, 0.9); /* Более плотный белый фон */
             padding: 15px;
             border-radius: 15px;
             border: 2px solid #2c3e50;
@@ -211,11 +212,14 @@
             width: 100%;
             max-width: 600px;
             display: none; /* Скрываем до начала игры */
+            color: #2c3e50; /* Цвет текста */
         }
 
+        .player-info h2,
         .player-info p {
             margin: 5px 0;
-            color: #2c3e50;
+            color: #2c3e50; /* Темный цвет текста */
+            text-shadow: 1px 1px 2px rgba(255, 255, 255, 0.8); /* Тень для текста */
         }
 
         .actions {
@@ -463,7 +467,7 @@
     <div class="board" id="board">
         <!-- Клетки будут добавляться динамически -->
         <div class="center-area">
-            <div class="dice-container">
+            <div class="dice-container" onclick="rollDice()">
                 <div class="dice" id="dice1" data-value="1">
                     <div class="dot"></div>
                 </div>
@@ -471,7 +475,6 @@
                     <div class="dot"></div>
                 </div>
             </div>
-            Кубики
         </div>
     </div>
 
