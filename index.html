@@ -511,9 +511,9 @@
         <!-- Кнопки действий -->
         <div class="actions" id="actions">
             <button onclick="rollDice()">Бросить кубик</button>
-            <button onclick="buyProperty()">Купить собственность</button>
-            <button onclick="buildHouse()">Построить дом</button>
-            <button onclick="startAuction()">Аукцион</button>
+            <button onclick="buyProperty()" disabled>Купить собственность</button>
+            <button onclick="buildHouse()" disabled>Построить дом</button>
+            <button onclick="startAuction()" disabled>Аукцион</button>
             <button onclick="endTurn()">Завершить ход</button>
         </div>
 
@@ -543,46 +543,46 @@
     <script>
         // Инициализация данных игры
         const board = [
-            { name: "Старт", type: "start", price: 0, owner: null, houses: 0 },
-            { name: "Улица Пушкина", type: "property", price: 60, owner: null, houses: 0 },
-            { name: "Общественная казна", type: "community-chest", price: 0, owner: null },
-            { name: "Улица Лермонтова", type: "property", price: 60, owner: null, houses: 0 },
-            { name: "Налог на доход", type: "tax", price: 200, owner: null },
-            { name: "Железная дорога 1", type: "railroad", price: 200, owner: null },
-            { name: "Улица Гоголя", type: "property", price: 100, owner: null, houses: 0 },
-            { name: "Шанс", type: "chance", price: 0, owner: null },
-            { name: "Улица Толстого", type: "property", price: 100, owner: null, houses: 0 },
-            { name: "Улица Достоевского", type: "property", price: 120, owner: null, houses: 0 },
-            { name: "Тюрьма", type: "jail", price: 0, owner: null },
-            { name: "Улица Чехова", type: "property", price: 140, owner: null, houses: 0 },
-            { name: "Коммунальная услуга", type: "utility", price: 150, owner: null },
-            { name: "Улица Тургенева", type: "property", price: 140, owner: null, houses: 0 },
-            { name: "Улица Некрасова", type: "property", price: 160, owner: null, houses: 0 },
-            { name: "Железная дорога 2", type: "railroad", price: 200, owner: null },
-            { name: "Улица Блока", type: "property", price: 180, owner: null, houses: 0 },
-            { name: "Общественная казна", type: "community-chest", price: 0, owner: null },
-            { name: "Улица Есенина", type: "property", price: 180, owner: null, houses: 0 },
-            { name: "Улица Маяковского", type: "property", price: 200, owner: null, houses: 0 },
-            { name: "Парковка", type: "tax", price: 0, owner: null },
-            { name: "Улица Пастернака", type: "property", price: 220, owner: null, houses: 0 },
-            { name: "Шанс", type: "chance", price: 0, owner: null },
-            { name: "Улица Грибоедова", type: "property", price: 220, owner: null, houses: 0 },
-            { name: "Улица Куприна", type: "property", price: 240, owner: null, houses: 0 },
-            { name: "Железная дорога 3", type: "railroad", price: 200, owner: null },
-            { name: "Улица Бунина", type: "property", price: 260, owner: null, houses: 0 },
-            { name: "Улица Ахматовой", type: "property", price: 260, owner: null, houses: 0 },
-            { name: "Коммунальная услуга", type: "utility", price: 150, owner: null },
-            { name: "Улица Цветаевой", type: "property", price: 280, owner: null, houses: 0 },
-            { name: "Отправляйтесь в тюрьму", type: "jail", price: 0, owner: null },
-            { name: "Улица Шолохова", type: "property", price: 300, owner: null, houses: 0 },
-            { name: "Улица Солженицына", type: "property", price: 300, owner: null, houses: 0 },
-            { name: "Общественная казна", type: "community-chest", price: 0, owner: null },
-            { name: "Улица Бродского", type: "property", price: 320, owner: null, houses: 0 },
-            { name: "Железная дорога 4", type: "railroad", price: 200, owner: null },
-            { name: "Шанс", type: "chance", price: 0, owner: null },
-            { name: "Улица Довлатова", type: "property", price: 350, owner: null, houses: 0 },
-            { name: "Налог на роскошь", type: "tax", price: 100, owner: null },
-            { name: "Улица Пелевина", type: "property", price: 400, owner: null, houses: 0 },
+            { name: "Старт", type: "start", price: 0, owner: null, houses: 0, color: null },
+            { name: "Улица Пушкина", type: "property", price: 60, owner: null, houses: 0, color: "brown" },
+            { name: "Общественная казна", type: "community-chest", price: 0, owner: null, color: null },
+            { name: "Улица Лермонтова", type: "property", price: 60, owner: null, houses: 0, color: "brown" },
+            { name: "Налог на доход", type: "tax", price: 200, owner: null, color: null },
+            { name: "Железная дорога 1", type: "railroad", price: 200, owner: null, color: null },
+            { name: "Улица Гоголя", type: "property", price: 100, owner: null, houses: 0, color: "lightblue" },
+            { name: "Шанс", type: "chance", price: 0, owner: null, color: null },
+            { name: "Улица Толстого", type: "property", price: 100, owner: null, houses: 0, color: "lightblue" },
+            { name: "Улица Достоевского", type: "property", price: 120, owner: null, houses: 0, color: "lightblue" },
+            { name: "Тюрьма", type: "jail", price: 0, owner: null, color: null },
+            { name: "Улица Чехова", type: "property", price: 140, owner: null, houses: 0, color: "pink" },
+            { name: "Коммунальная услуга", type: "utility", price: 150, owner: null, color: null },
+            { name: "Улица Тургенева", type: "property", price: 140, owner: null, houses: 0, color: "pink" },
+            { name: "Улица Некрасова", type: "property", price: 160, owner: null, houses: 0, color: "pink" },
+            { name: "Железная дорога 2", type: "railroad", price: 200, owner: null, color: null },
+            { name: "Улица Блока", type: "property", price: 180, owner: null, houses: 0, color: "orange" },
+            { name: "Общественная казна", type: "community-chest", price: 0, owner: null, color: null },
+            { name: "Улица Есенина", type: "property", price: 180, owner: null, houses: 0, color: "orange" },
+            { name: "Улица Маяковского", type: "property", price: 200, owner: null, houses: 0, color: "orange" },
+            { name: "Парковка", type: "tax", price: 0, owner: null, color: null },
+            { name: "Улица Пастернака", type: "property", price: 220, owner: null, houses: 0, color: "red" },
+            { name: "Шанс", type: "chance", price: 0, owner: null, color: null },
+            { name: "Улица Грибоедова", type: "property", price: 220, owner: null, houses: 0, color: "red" },
+            { name: "Улица Куприна", type: "property", price: 240, owner: null, houses: 0, color: "red" },
+            { name: "Железная дорога 3", type: "railroad", price: 200, owner: null, color: null },
+            { name: "Улица Бунина", type: "property", price: 260, owner: null, houses: 0, color: "yellow" },
+            { name: "Улица Ахматовой", type: "property", price: 260, owner: null, houses: 0, color: "yellow" },
+            { name: "Коммунальная услуга", type: "utility", price: 150, owner: null, color: null },
+            { name: "Улица Цветаевой", type: "property", price: 280, owner: null, houses: 0, color: "green" },
+            { name: "Отправляйтесь в тюрьму", type: "jail", price: 0, owner: null, color: null },
+            { name: "Улица Шолохова", type: "property", price: 300, owner: null, houses: 0, color: "blue" },
+            { name: "Улица Солженицына", type: "property", price: 300, owner: null, houses: 0, color: "blue" },
+            { name: "Общественная казна", type: "community-chest", price: 0, owner: null, color: null },
+            { name: "Улица Бродского", type: "property", price: 320, owner: null, houses: 0, color: "purple" },
+            { name: "Железная дорога 4", type: "railroad", price: 200, owner: null, color: null },
+            { name: "Шанс", type: "chance", price: 0, owner: null, color: null },
+            { name: "Улица Довлатова", type: "property", price: 350, owner: null, houses: 0, color: "darkgreen" },
+            { name: "Налог на роскошь", type: "tax", price: 100, owner: null, color: null },
+            { name: "Улица Пелевина", type: "property", price: 400, owner: null, houses: 0, color: "darkblue" },
         ];
 
         let players = [];
@@ -665,6 +665,12 @@
                 cellElement.textContent = window.innerWidth <= 600 ? cell.name.split(" ")[0] : cell.name;
                 cellElement.setAttribute("data-tooltip", `${cell.name} (${cell.type})`);
 
+                // Добавляем цвет для собственности
+                if (cell.color) {
+                    cellElement.style.backgroundColor = cell.color;
+                }
+
+                // Размещение клеток на поле
                 if (index < 10) {
                     cellElement.style.gridColumn = `${index + 1} / ${index + 2}`;
                     cellElement.style.gridRow = "1 / 2";
@@ -815,7 +821,32 @@
             const cell = board[position];
             const currentPlayer = players[currentPlayerIndex];
 
+            // Сброс состояния кнопок
+            toggleActionButtons(true); // Блокируем все кнопки, кроме "Завершить ход"
+
+            // Активация кнопок в зависимости от типа клетки
             switch (cell.type) {
+                case "property":
+                case "railroad":
+                case "utility":
+                    if (cell.owner === null) {
+                        // Если клетка свободна, активируем кнопку "Купить собственность"
+                        document.querySelector('button[onclick="buyProperty()"]').disabled = false;
+                        // Активируем кнопку "Аукцион"
+                        document.querySelector('button[onclick="startAuction()"]').disabled = false;
+                    } else if (cell.owner === currentPlayer.username) {
+                        // Если клетка принадлежит игроку, активируем кнопку "Построить дом"
+                        document.querySelector('button[onclick="buildHouse()"]').disabled = false;
+                    }
+                    break;
+            }
+
+            // Обработка событий на клетке
+            switch (cell.type) {
+                case "start":
+                    addLogMessage(`🏁 Вы на старте. Получите $200!`);
+                    currentPlayer.money += 200;
+                    break;
                 case "property":
                 case "railroad":
                 case "utility":
@@ -909,10 +940,6 @@
                     addLogMessage(`🚨 Вы попали в тюрьму!`);
                     currentPlayer.inJail = true;
                     break;
-                case "start":
-                    addLogMessage(`🏁 Вы на старте. Получите $200!`);
-                    currentPlayer.money += 200;
-                    break;
             }
 
             if (currentPlayer.money < 0) {
@@ -930,9 +957,11 @@
         // Расчет аренды
         function calculateRent(cell) {
             if (cell.type === "railroad") {
-                return 25 * (cell.owner ? 1 : 0);
+                const ownedRailroads = players.filter(p => p.properties.includes(cell.name)).length;
+                return 25 * ownedRailroads;
             } else if (cell.type === "utility") {
-                return 10 * (cell.owner ? 1 : 0);
+                const diceSum = dice1Element.getAttribute("data-value") + dice2Element.getAttribute("data-value");
+                return 4 * diceSum;
             } else if (cell.type === "property") {
                 return cell.price * 0.1 * (cell.houses + 1);
             }
@@ -944,11 +973,13 @@
             const currentPlayer = players[currentPlayerIndex];
             const cell = board[currentPlayer.position];
 
+            // Проверка, что клетка — собственность, она свободна и у игрока достаточно денег
             if (cell.type !== "property" || cell.owner !== null || currentPlayer.money < cell.price) {
                 addLogMessage("🚫 Покупка невозможна.");
                 return;
             }
 
+            // Покупка клетки
             cell.owner = currentPlayer.username;
             currentPlayer.money -= cell.price;
             currentPlayer.properties.push(cell.name);
@@ -961,17 +992,19 @@
             const currentPlayer = players[currentPlayerIndex];
             const cell = board[currentPlayer.position];
 
+            // Проверка, что клетка — собственность, игрок владеет ею и у него достаточно денег
             if (cell.type !== "property" || cell.owner !== currentPlayer.username) {
                 addLogMessage("🚫 Вы не можете построить дом здесь.");
                 return;
             }
 
-            const houseCost = cell.price * 0.5;
+            const houseCost = cell.price * 0.5; // Стоимость постройки дома
             if (currentPlayer.money < houseCost) {
                 addLogMessage("🚫 У вас недостаточно денег для постройки дома.");
                 return;
             }
 
+            // Постройка дома
             cell.houses += 1;
             currentPlayer.money -= houseCost;
             addLogMessage(`🏠 Вы построили дом на ${cell.name}. Стоимость: $${houseCost}`);
@@ -983,21 +1016,25 @@
             const currentPlayer = players[currentPlayerIndex];
             const cell = board[currentPlayer.position];
 
+            // Проверка, что клетка — собственность и она свободна
             if (cell.type !== "property" || cell.owner !== null) {
                 addLogMessage("🚫 Аукцион невозможен.");
                 return;
             }
 
+            // Поиск участников аукциона (игроков с достаточным количеством денег)
             const auctionParticipants = players.filter(p => p.money >= cell.price);
             if (auctionParticipants.length === 0) {
                 addLogMessage("🚫 Нет участников для аукциона.");
                 return;
             }
 
-            let highestBid = cell.price;
-            let winner = auctionParticipants[0];
+            // Определение победителя аукциона
+            let highestBid = cell.price; // Начальная ставка — цена клетки
+            let winner = auctionParticipants[0]; // Победитель по умолчанию
 
             auctionParticipants.forEach(participant => {
+                // Случайная ставка от участника
                 const bid = Math.floor(Math.random() * (participant.money - cell.price + 1)) + cell.price;
                 if (bid > highestBid) {
                     highestBid = bid;
@@ -1005,6 +1042,7 @@
                 }
             });
 
+            // Передача клетки победителю
             cell.owner = winner.username;
             winner.money -= highestBid;
             winner.properties.push(cell.name);
