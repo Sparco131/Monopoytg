@@ -322,7 +322,7 @@
             position: absolute;
             transform: translate(-50%, -50%);
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-            transition: transform 0.5s ease-in-out;
+            transition: all 0.5s ease-in-out; /* Плавное перемещение */
         }
 
         .turn-indicator {
@@ -615,20 +615,14 @@
         // Имитация загрузки
         function simulateLoading() {
             setTimeout(() => {
-                // Скрываем загрузочный экран
                 loadingScreen.style.display = "none";
-
-                // Показываем меню выбора режима игры
                 menu.style.display = "block";
-            }, 3000); // Имитация загрузки в течение 3 секунд
+            }, 3000);
         }
 
         // Начало игры
         function startGame(mode) {
-            // Скрываем меню
             menu.style.display = "none";
-
-            // Показываем основной контент
             mainContent.style.display = "block";
 
             // Инициализация игроков
@@ -724,6 +718,8 @@
                 const rect = cell.getBoundingClientRect();
                 const boardRect = boardElement.getBoundingClientRect();
 
+                // Плавное перемещение маркера
+                marker.style.transition = "top 0.5s ease-in-out, left 0.5s ease-in-out";
                 marker.style.top = `${rect.top - boardRect.top + rect.height / 2}px`;
                 marker.style.left = `${rect.left - boardRect.left + rect.width / 2}px`;
             });
@@ -800,15 +796,11 @@
                 updateDice(dice1Element, dice1);
                 updateDice(dice2Element, dice2);
 
-                const currentPlayer = players[currentPlayerIndex];
-                currentPlayer.position = (currentPlayer.position + total) % board.length;
-                addLogMessage(`🎲 Вы бросили кубики: ${dice1} и ${dice2}. Вы на клетке: ${board[currentPlayer.position].name}`);
-                handleCellAction(currentPlayer.position);
-                updatePlayerInfo();
-                updateMarkers();
+                // Плавное перемещение игрока
+                movePlayer(total);
 
                 // Если текущий игрок — бот, он делает ход
-                if (currentPlayer.username === "Бот") {
+                if (players[currentPlayerIndex].username === "Бот") {
                     setTimeout(() => {
                         botDecision();
                     }, 1000);
@@ -816,10 +808,36 @@
             }, 800);
         }
 
+        // Плавное перемещение игрока
+        function movePlayer(steps) {
+            const player = players[currentPlayerIndex];
+            const startPosition = player.position;
+            const endPosition = (startPosition + steps) % board.length;
+
+            // Функция для плавного перемещения по шагам
+            const moveStepByStep = (currentStep) => {
+                if (currentStep <= steps) {
+                    player.position = (startPosition + currentStep) % board.length;
+                    updateMarkers();
+
+                    // Если это не последний шаг, продолжаем перемещение
+                    if (currentStep < steps) {
+                        setTimeout(() => moveStepByStep(currentStep + 1), 500); // Задержка между шагами
+                    } else {
+                        // После завершения перемещения проверяем действия на клетке
+                        checkCellAction();
+                    }
+                }
+            };
+
+            // Начинаем перемещение с первого шага
+            moveStepByStep(1);
+        }
+
         // Обработка действий на клетке
-        function handleCellAction(position) {
-            const cell = board[position];
-            const currentPlayer = players[currentPlayerIndex];
+        function checkCellAction() {
+            const player = players[currentPlayerIndex];
+            const cell = board[player.position];
 
             // Сброс состояния кнопок
             toggleActionButtons(true); // Блокируем все кнопки, кроме "Завершить ход"
@@ -834,7 +852,7 @@
                         document.querySelector('button[onclick="buyProperty()"]').disabled = false;
                         // Активируем кнопку "Аукцион"
                         document.querySelector('button[onclick="startAuction()"]').disabled = false;
-                    } else if (cell.owner === currentPlayer.username) {
+                    } else if (cell.owner === player.username) {
                         // Если клетка принадлежит игроку, активируем кнопку "Построить дом"
                         document.querySelector('button[onclick="buildHouse()"]').disabled = false;
                     }
@@ -845,22 +863,22 @@
             switch (cell.type) {
                 case "start":
                     addLogMessage(`🏁 Вы на старте. Получите $200!`);
-                    currentPlayer.money += 200;
+                    player.money += 200;
                     break;
                 case "property":
                 case "railroad":
                 case "utility":
                     if (cell.owner === null) {
                         addLogMessage(`🏠 ${cell.name} свободна. Вы можете купить её за $${cell.price}.`);
-                    } else if (cell.owner !== currentPlayer.username) {
+                    } else if (cell.owner !== player.username) {
                         const rent = calculateRent(cell);
-                        currentPlayer.money -= rent;
+                        player.money -= rent;
                         players.find(p => p.username === cell.owner).money += rent;
                         addLogMessage(`💸 Вы заплатили аренду $${rent} игроку ${cell.owner}.`);
                     }
                     break;
                 case "tax":
-                    currentPlayer.money -= cell.price;
+                    player.money -= cell.price;
                     addLogMessage(`💸 Вы заплатили налог $${cell.price}.`);
                     break;
                 case "chance":
@@ -877,29 +895,29 @@
                     const card = chanceCards[Math.floor(Math.random() * chanceCards.length)];
                     addLogMessage(`🎲 Шанс: ${card}`);
                     if (card === "Перейдите на старт.") {
-                        currentPlayer.position = 0;
+                        player.position = 0;
                         updateMarkers();
                     } else if (card === "Вы попали в тюрьму.") {
-                        currentPlayer.inJail = true;
+                        player.inJail = true;
                     } else if (card.includes("получили")) {
                         const amount = parseInt(card.match(/\d+/)[0]);
-                        currentPlayer.money += amount;
+                        player.money += amount;
                     } else if (card.includes("потеряли")) {
                         const amount = parseInt(card.match(/\d+/)[0]);
-                        currentPlayer.money -= amount;
+                        player.money -= amount;
                     } else if (card.includes("от каждого игрока")) {
                         const amount = parseInt(card.match(/\d+/)[0]);
-                        players.forEach(player => {
-                            if (player !== currentPlayer) {
-                                player.money -= amount;
-                                currentPlayer.money += amount;
+                        players.forEach(p => {
+                            if (p !== player) {
+                                p.money -= amount;
+                                player.money += amount;
                             }
                         });
                     } else if (card.includes("Пройдите вперед на")) {
                         const steps = parseInt(card.match(/\d+/)[0]);
-                        currentPlayer.position = (currentPlayer.position + steps) % board.length;
+                        player.position = (player.position + steps) % board.length;
                         updateMarkers();
-                        handleCellAction(currentPlayer.position);
+                        checkCellAction();
                     }
                     break;
                 case "community-chest":
@@ -916,34 +934,34 @@
                     const chestCard = communityChestCards[Math.floor(Math.random() * communityChestCards.length)];
                     addLogMessage(`🎲 Общественная казна: ${chestCard}`);
                     if (chestCard === "Перейдите на старт.") {
-                        currentPlayer.position = 0;
+                        player.position = 0;
                         updateMarkers();
                     } else if (chestCard === "Вы попали в тюрьму.") {
-                        currentPlayer.inJail = true;
+                        player.inJail = true;
                     } else if (chestCard.includes("получили")) {
                         const amount = parseInt(chestCard.match(/\d+/)[0]);
-                        currentPlayer.money += amount;
+                        player.money += amount;
                     } else if (chestCard.includes("потеряли")) {
                         const amount = parseInt(chestCard.match(/\d+/)[0]);
-                        currentPlayer.money -= amount;
+                        player.money -= amount;
                     } else if (chestCard.includes("от каждого игрока")) {
                         const amount = parseInt(chestCard.match(/\d+/)[0]);
-                        players.forEach(player => {
-                            if (player !== currentPlayer) {
-                                player.money -= amount;
-                                currentPlayer.money += amount;
+                        players.forEach(p => {
+                            if (p !== player) {
+                                p.money -= amount;
+                                player.money += amount;
                             }
                         });
                     }
                     break;
                 case "jail":
                     addLogMessage(`🚨 Вы попали в тюрьму!`);
-                    currentPlayer.inJail = true;
+                    player.inJail = true;
                     break;
             }
 
-            if (currentPlayer.money < 0) {
-                addLogMessage(`💔 ${currentPlayer.username} обанкротился!`);
+            if (player.money < 0) {
+                addLogMessage(`💔 ${player.username} обанкротился!`);
                 players.splice(currentPlayerIndex, 1);
                 if (players.length === 1) {
                     addLogMessage(`🎉 ${players[0].username} выиграл игру!`);
@@ -1052,8 +1070,8 @@
 
         // Завершение хода
         function endTurn() {
-            isTurnInProgress = false;
-            toggleActionButtons(false);
+            isTurnInProgress = false; // Сбрасываем состояние хода
+            toggleActionButtons(false); // Разблокируем кнопки
 
             currentPlayerIndex = (currentPlayerIndex + 1) % players.length;
             addLogMessage(`🔄 Ход переходит к ${players[currentPlayerIndex].username}`);
