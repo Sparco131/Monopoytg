@@ -588,6 +588,7 @@
         let players = [];
         let currentPlayerIndex = 0;
         let isTurnInProgress = false;
+        let hasPaidRent = false; // Флаг для отслеживания оплаты аренды за ход
 
         // Элементы DOM
         const loadingScreen = document.getElementById("loadingScreen");
@@ -759,6 +760,7 @@
             }
 
             isTurnInProgress = true;
+            hasPaidRent = false; // Сбрасываем флаг оплаты аренды
             toggleActionButtons(true);
 
             const dice1 = Math.floor(Math.random() * 6) + 1;
@@ -870,11 +872,12 @@
                 case "utility":
                     if (cell.owner === null) {
                         addLogMessage(`🏠 ${cell.name} свободна. Вы можете купить её за $${cell.price}.`);
-                    } else if (cell.owner !== player.username) {
+                    } else if (cell.owner !== player.username && !hasPaidRent) {
                         const rent = calculateRent(cell);
                         player.money -= rent;
                         players.find(p => p.username === cell.owner).money += rent;
                         addLogMessage(`💸 Вы заплатили аренду $${rent} игроку ${cell.owner}.`);
+                        hasPaidRent = true; // Устанавливаем флаг оплаты аренды
                     }
                     break;
                 case "tax":
@@ -974,16 +977,47 @@
 
         // Расчет аренды
         function calculateRent(cell) {
-            if (cell.type === "railroad") {
-                const ownedRailroads = players.filter(p => p.properties.includes(cell.name)).length;
-                return 25 * ownedRailroads;
-            } else if (cell.type === "utility") {
-                const diceSum = dice1Element.getAttribute("data-value") + dice2Element.getAttribute("data-value");
-                return 4 * diceSum;
-            } else if (cell.type === "property") {
-                return cell.price * 0.1 * (cell.houses + 1);
+            const owner = players.find(player => player.username === cell.owner);
+            if (!owner) return 0; // Если владелец не найден, аренда равна 0
+
+            switch (cell.type) {
+                case "property":
+                    // Базовая аренда
+                    let rent = cell.price * 0.1; // 10% от стоимости клетки
+
+                    // Если у игрока есть все клетки одного цвета, аренда удваивается
+                    const sameColorCells = board.filter(c => c.color === cell.color && c.owner === cell.owner);
+                    if (sameColorCells.length === 2) { // Например, для коричневых и светло-голубых клеток
+                        rent *= 2;
+                    }
+
+                    // Учет домов
+                    if (cell.houses > 0) {
+                        rent = cell.price * 0.5 * cell.houses; // 50% от стоимости клетки за каждый дом
+                    }
+
+                    return rent;
+
+                case "railroad":
+                    // Аренда зависит от количества железных дорог у владельца
+                    const ownedRailroads = owner.properties.filter(prop => board.find(c => c.name === prop).type === "railroad").length;
+                    return 25 * Math.pow(2, ownedRailroads - 1); // 25, 50, 100, 200
+
+                case "utility":
+                    // Аренда зависит от суммы на кубиках и количества коммунальных услуг у владельца
+                    const diceSum = parseInt(dice1Element.getAttribute("data-value")) + parseInt(dice2Element.getAttribute("data-value"));
+                    const ownedUtilities = owner.properties.filter(prop => board.find(c => c.name === prop).type === "utility").length;
+
+                    if (ownedUtilities === 1) {
+                        return diceSum * 4; // 4x сумма кубиков
+                    } else if (ownedUtilities === 2) {
+                        return diceSum * 10; // 10x сумма кубиков
+                    }
+                    return 0;
+
+                default:
+                    return 0; // Для других типов клеток аренда не взимается
             }
-            return 0;
         }
 
         // Покупка собственности
@@ -1071,6 +1105,7 @@
         // Завершение хода
         function endTurn() {
             isTurnInProgress = false; // Сбрасываем состояние хода
+            hasPaidRent = false; // Сбрасываем флаг оплаты аренды
             toggleActionButtons(false); // Разблокируем кнопки
 
             currentPlayerIndex = (currentPlayerIndex + 1) % players.length;
