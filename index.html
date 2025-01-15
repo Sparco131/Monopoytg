@@ -1294,7 +1294,7 @@
 
             auctionParticipants.forEach(participant => {
                 // Случайная ставка от участника
-                const bid = Math.floor(Math.random() * (participant.money - cell.price + 1)) + cell.price;
+                const bid = Math.min(Math.floor(Math.random() * (participant.money - cell.price + 1)) + cell.price, participant.money);
                 if (bid > highestBid) {
                     highestBid = bid;
                     winner = participant;
