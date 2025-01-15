@@ -359,6 +359,13 @@
             <div class="cell property" style="grid-column: 8 / 9; grid-row: 10 / 11;">Налог (200$)</div>
             <div class="cell property" style="grid-column: 7 / 8; grid-row: 10 / 11;">Налог (100$)</div>
 
+            <!-- Дополнительные клетки для завершения круга -->
+            <div class="cell property" style="grid-column: 6 / 7; grid-row: 10 / 11;">Улица 8 (220$)</div>
+            <div class="cell property" style="grid-column: 5 / 6; grid-row: 10 / 11;">Улица 9 (240$)</div>
+            <div class="cell property" style="grid-column: 4 / 5; grid-row: 10 / 11;">Улица 10 (260$)</div>
+            <div class="cell property" style="grid-column: 3 / 4; grid-row: 10 / 11;">Улица 11 (280$)</div>
+            <div class="cell property" style="grid-column: 2 / 3; grid-row: 10 / 11;">Улица 12 (300$)</div>
+
             <!-- Игроки -->
             <div id="player1" class="player"></div>
             <div id="player2" class="player"></div>
@@ -534,6 +541,11 @@
                 { type: "jail", name: "Тюрьма" },
                 { type: "free_parking", name: "Бесплатная парковка" },
                 { type: "go_to_jail", name: "Идите в тюрьму" },
+                { type: "property", name: "Улица 8", price: 220, rent: 45 },
+                { type: "property", name: "Улица 9", price: 240, rent: 50 },
+                { type: "property", name: "Улица 10", price: 260, rent: 55 },
+                { type: "property", name: "Улица 11", price: 280, rent: 60 },
+                { type: "property", name: "Улица 12", price: 300, rent: 65 },
             ];
             return cells[index];
         }
@@ -562,6 +574,11 @@
                 { x: 10, y: 8 },   // Jail
                 { x: 10, y: 9 },   // Free Parking
                 { x: 10, y: 10 },  // Go to Jail
+                { x: 9, y: 10 },   // Улица 8
+                { x: 8, y: 10 },   // Улица 9
+                { x: 7, y: 10 },   // Улица 10
+                { x: 6, y: 10 },   // Улица 11
+                { x: 5, y: 10 },   // Улица 12
             ];
             return positions[index];
         }
