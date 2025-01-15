@@ -9,25 +9,25 @@
         body {
             font-family: 'Arial', sans-serif;
             background: linear-gradient(135deg, #f5f7fa, #c3cfe2);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
             margin: 0;
-            padding: 20px;
-            box-sizing: border-box;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
             color: #333;
         }
 
         /* Контейнер для меню */
         .menu-container {
             background: white;
-            padding: 30px;
+            padding: 20px;
             border-radius: 15px;
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
             text-align: center;
             max-width: 400px;
             width: 100%;
+            margin: 20px auto;
         }
 
         .menu-container h1 {
@@ -80,6 +80,7 @@
             border-radius: 15px;
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
             overflow: hidden;
+            margin-top: 20px; /* Отступ сверху */
         }
 
         /* Игровое поле */
@@ -99,9 +100,9 @@
             justify-content: center;
             align-items: center;
             border: 1px solid #ddd;
-            font-size: 10px; /* Уменьшаем размер текста */
+            font-size: 10px;
             text-align: center;
-            padding: 2px; /* Уменьшаем отступы */
+            padding: 2px;
             box-sizing: border-box;
             background: white;
             transition: background 0.3s ease;
@@ -118,7 +119,7 @@
             font-weight: bold;
             grid-column: span 2;
             grid-row: span 2;
-            font-size: 12px; /* Увеличиваем текст для угловых клеток */
+            font-size: 10px;
         }
 
         /* Свойства */
@@ -129,7 +130,7 @@
         /* Игроки */
         .player {
             position: absolute;
-            width: 4%; /* Уменьшаем размер игроков */
+            width: 4%;
             height: 4%;
             border-radius: 50%;
             transition: all 0.5s ease;
@@ -152,13 +153,31 @@
             background: #ff9f43;
         }
 
-        /* Кнопка */
-        .controls {
+        /* Контейнер для кубиков и кнопки */
+        .dice-controls {
+            display: none; /* Скрываем по умолчанию */
+            justify-content: center;
+            align-items: center;
+            gap: 20px;
             margin-top: 20px;
-            text-align: center;
         }
 
-        .controls button {
+        /* Кубики */
+        .dice {
+            display: inline-block;
+            width: 50px;
+            height: 50px;
+            border: 2px solid #333;
+            border-radius: 10px;
+            text-align: center;
+            line-height: 50px;
+            font-size: 24px;
+            background: white;
+            box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Кнопка броска */
+        .roll-button {
             background: linear-gradient(135deg, #6a11cb, #2575fc);
             color: white;
             border: none;
@@ -169,14 +188,14 @@
             transition: background 0.3s ease;
         }
 
-        .controls button:hover {
+        .roll-button:hover {
             background: linear-gradient(135deg, #2575fc, #6a11cb);
         }
 
         /* Адаптация для мобильных устройств */
         @media (max-width: 600px) {
             .menu-container {
-                padding: 20px;
+                padding: 15px;
             }
 
             .menu-container h1 {
@@ -189,12 +208,30 @@
             }
 
             .cell {
-                font-size: 8px; /* Еще меньше текст для мобильных */
+                font-size: 8px;
                 padding: 1px;
             }
 
             .corner {
-                font-size: 10px; /* Уменьшаем текст угловых клеток для мобильных */
+                font-size: 10px;
+            }
+
+            .board-container {
+                max-width: 100%;
+                border-radius: 0;
+                margin-top: 10px; /* Меньше отступ сверху для мобильных */
+            }
+
+            .dice {
+                width: 40px;
+                height: 40px;
+                font-size: 20px;
+                line-height: 40px;
+            }
+
+            .roll-button {
+                padding: 10px 20px;
+                font-size: 0.9rem;
             }
         }
     </style>
@@ -257,16 +294,22 @@
             <div id="player3" class="player"></div>
             <div id="player4" class="player"></div>
         </div>
+    </div>
 
-        <div class="controls">
-            <button onclick="rollDice()">Roll Dice</button>
-        </div>
+    <!-- Кубики и кнопка броска -->
+    <div class="dice-controls" id="dice-controls">
+        <div id="dice1" class="dice">1</div>
+        <div id="dice2" class="dice">1</div>
+        <button class="roll-button" onclick="rollDice()">Бросить кубики</button>
     </div>
 
     <script>
         // Элементы меню и поля
         const menu = document.getElementById('menu');
         const boardContainer = document.getElementById('board-container');
+        const diceControls = document.getElementById('dice-controls');
+        const dice1Element = document.getElementById('dice1');
+        const dice2Element = document.getElementById('dice2');
 
         // Игроки и боты
         let players = [];
@@ -277,9 +320,10 @@
             const mode = document.getElementById('mode').value;
             const playersCount = parseInt(document.getElementById('players').value);
 
-            // Скрываем меню и показываем поле
+            // Скрываем меню и показываем поле и кубики
             menu.style.display = 'none';
             boardContainer.style.display = 'block';
+            diceControls.style.display = 'flex'; // Показываем кубики и кнопку
 
             // Инициализация игры
             initGame(mode, playersCount);
@@ -334,15 +378,21 @@
             const currentPlayer = players[currentPlayerIndex];
             if (currentPlayer.isBot) return; // Человек не может ходить за бота
 
-            const dice1 = Math.floor(Math.random() * 6) + 1;
-            const dice2 = Math.floor(Math.random() * 6) + 1;
-            const steps = dice1 + dice2;
+            let dice1 = 0, dice2 = 0;
+            const interval = setInterval(() => {
+                dice1 = Math.floor(Math.random() * 6) + 1;
+                dice2 = Math.floor(Math.random() * 6) + 1;
+                dice1Element.textContent = dice1;
+                dice2Element.textContent = dice2;
+            }, 100);
 
-            movePlayer(currentPlayer, steps);
-            console.log(`Игрок ${currentPlayer.id} бросил кубики: ${dice1} и ${dice2}, шаги: ${steps}`);
-
-            // Переход хода
-            nextTurn();
+            setTimeout(() => {
+                clearInterval(interval);
+                const steps = dice1 + dice2;
+                movePlayer(currentPlayer, steps);
+                console.log(`Игрок ${currentPlayer.id} бросил кубики: ${dice1} и ${dice2}, шаги: ${steps}`);
+                nextTurn();
+            }, 2000);
         }
 
         // Функция для перемещения игрока
