@@ -506,6 +506,7 @@
             <p>Деньги: $<span id="money">1500</span></p>
             <p>Собственность: <span id="properties">Нет</span></p>
             <p>Позиция: <span id="position">Старт</span></p>
+            <p id="jailStatus"></p>
         </div>
 
         <!-- Кнопки действий -->
@@ -515,6 +516,10 @@
             <button onclick="buildHouse()" disabled>Построить дом</button>
             <button onclick="startAuction()" disabled>Аукцион</button>
             <button onclick="endTurn()">Завершить ход</button>
+            <!-- Кнопки для тюрьмы -->
+            <button onclick="payToExitJail()" id="payJailButton" style="display: none;">Заплатить $50</button>
+            <button onclick="useGetOutOfJailCard()" id="useJailCardButton" style="display: none;">Использовать карту</button>
+            <button onclick="tryToRollDouble()" id="rollDoubleButton" style="display: none;">Попытаться выкинуть дубль</button>
         </div>
 
         <!-- Лог событий -->
@@ -544,51 +549,51 @@
         // Инициализация данных игры
         const board = [
             { name: "Старт", type: "start", price: 0, owner: null, houses: 0, color: null },
-            { name: "Улица Пушкина", type: "property", price: 60, owner: null, houses: 0, color: "brown" },
+            { name: "Улица Пушкина", type: "property", price: 60, owner: null, houses: 0, color: "brown", rent: [2, 10, 30, 90, 160, 250] },
             { name: "Общественная казна", type: "community-chest", price: 0, owner: null, color: null },
-            { name: "Улица Лермонтова", type: "property", price: 60, owner: null, houses: 0, color: "brown" },
+            { name: "Улица Лермонтова", type: "property", price: 60, owner: null, houses: 0, color: "brown", rent: [4, 20, 60, 180, 320, 450] },
             { name: "Налог на доход", type: "tax", price: 200, owner: null, color: null },
-            { name: "Железная дорога 1", type: "railroad", price: 200, owner: null, color: null },
-            { name: "Улица Гоголя", type: "property", price: 100, owner: null, houses: 0, color: "lightblue" },
+            { name: "Железная дорога 1", type: "railroad", price: 200, owner: null, color: null, rent: [25, 50, 100, 200] },
+            { name: "Улица Гоголя", type: "property", price: 100, owner: null, houses: 0, color: "lightblue", rent: [6, 30, 90, 270, 400, 550] },
             { name: "Шанс", type: "chance", price: 0, owner: null, color: null },
-            { name: "Улица Толстого", type: "property", price: 100, owner: null, houses: 0, color: "lightblue" },
-            { name: "Улица Достоевского", type: "property", price: 120, owner: null, houses: 0, color: "lightblue" },
+            { name: "Улица Толстого", type: "property", price: 100, owner: null, houses: 0, color: "lightblue", rent: [6, 30, 90, 270, 400, 550] },
+            { name: "Улица Достоевского", type: "property", price: 120, owner: null, houses: 0, color: "lightblue", rent: [8, 40, 100, 300, 450, 600] },
             { name: "Тюрьма", type: "jail", price: 0, owner: null, color: null },
-            { name: "Улица Чехова", type: "property", price: 140, owner: null, houses: 0, color: "pink" },
-            { name: "Коммунальная услуга", type: "utility", price: 150, owner: null, color: null },
-            { name: "Улица Тургенева", type: "property", price: 140, owner: null, houses: 0, color: "pink" },
-            { name: "Улица Некрасова", type: "property", price: 160, owner: null, houses: 0, color: "pink" },
-            { name: "Железная дорога 2", type: "railroad", price: 200, owner: null, color: null },
-            { name: "Улица Блока", type: "property", price: 180, owner: null, houses: 0, color: "orange" },
+            { name: "Улица Чехова", type: "property", price: 140, owner: null, houses: 0, color: "pink", rent: [10, 50, 150, 450, 625, 750] },
+            { name: "Коммунальная услуга", type: "utility", price: 150, owner: null, color: null, rent: [4, 10] },
+            { name: "Улица Тургенева", type: "property", price: 140, owner: null, houses: 0, color: "pink", rent: [10, 50, 150, 450, 625, 750] },
+            { name: "Улица Некрасова", type: "property", price: 160, owner: null, houses: 0, color: "pink", rent: [12, 60, 180, 500, 700, 900] },
+            { name: "Железная дорога 2", type: "railroad", price: 200, owner: null, color: null, rent: [25, 50, 100, 200] },
+            { name: "Улица Блока", type: "property", price: 180, owner: null, houses: 0, color: "orange", rent: [14, 70, 200, 550, 750, 950] },
             { name: "Общественная казна", type: "community-chest", price: 0, owner: null, color: null },
-            { name: "Улица Есенина", type: "property", price: 180, owner: null, houses: 0, color: "orange" },
-            { name: "Улица Маяковского", type: "property", price: 200, owner: null, houses: 0, color: "orange" },
+            { name: "Улица Есенина", type: "property", price: 180, owner: null, houses: 0, color: "orange", rent: [14, 70, 200, 550, 750, 950] },
+            { name: "Улица Маяковского", type: "property", price: 200, owner: null, houses: 0, color: "orange", rent: [16, 80, 220, 600, 800, 1000] },
             { name: "Парковка", type: "tax", price: 0, owner: null, color: null },
-            { name: "Улица Пастернака", type: "property", price: 220, owner: null, houses: 0, color: "red" },
+            { name: "Улица Пастернака", type: "property", price: 220, owner: null, houses: 0, color: "red", rent: [18, 90, 250, 700, 875, 1050] },
             { name: "Шанс", type: "chance", price: 0, owner: null, color: null },
-            { name: "Улица Грибоедова", type: "property", price: 220, owner: null, houses: 0, color: "red" },
-            { name: "Улица Куприна", type: "property", price: 240, owner: null, houses: 0, color: "red" },
-            { name: "Железная дорога 3", type: "railroad", price: 200, owner: null, color: null },
-            { name: "Улица Бунина", type: "property", price: 260, owner: null, houses: 0, color: "yellow" },
-            { name: "Улица Ахматовой", type: "property", price: 260, owner: null, houses: 0, color: "yellow" },
-            { name: "Коммунальная услуга", type: "utility", price: 150, owner: null, color: null },
-            { name: "Улица Цветаевой", type: "property", price: 280, owner: null, houses: 0, color: "green" },
+            { name: "Улица Грибоедова", type: "property", price: 220, owner: null, houses: 0, color: "red", rent: [18, 90, 250, 700, 875, 1050] },
+            { name: "Улица Куприна", type: "property", price: 240, owner: null, houses: 0, color: "red", rent: [20, 100, 300, 750, 925, 1100] },
+            { name: "Железная дорога 3", type: "railroad", price: 200, owner: null, color: null, rent: [25, 50, 100, 200] },
+            { name: "Улица Бунина", type: "property", price: 260, owner: null, houses: 0, color: "yellow", rent: [22, 110, 330, 800, 975, 1150] },
+            { name: "Улица Ахматовой", type: "property", price: 260, owner: null, houses: 0, color: "yellow", rent: [22, 110, 330, 800, 975, 1150] },
+            { name: "Коммунальная услуга", type: "utility", price: 150, owner: null, color: null, rent: [4, 10] },
+            { name: "Улица Цветаевой", type: "property", price: 280, owner: null, houses: 0, color: "green", rent: [24, 120, 360, 850, 1025, 1200] },
             { name: "Отправляйтесь в тюрьму", type: "jail", price: 0, owner: null, color: null },
-            { name: "Улица Шолохова", type: "property", price: 300, owner: null, houses: 0, color: "blue" },
-            { name: "Улица Солженицына", type: "property", price: 300, owner: null, houses: 0, color: "blue" },
+            { name: "Улица Шолохова", type: "property", price: 300, owner: null, houses: 0, color: "blue", rent: [26, 130, 390, 900, 1100, 1275] },
+            { name: "Улица Солженицына", type: "property", price: 300, owner: null, houses: 0, color: "blue", rent: [26, 130, 390, 900, 1100, 1275] },
             { name: "Общественная казна", type: "community-chest", price: 0, owner: null, color: null },
-            { name: "Улица Бродского", type: "property", price: 320, owner: null, houses: 0, color: "purple" },
-            { name: "Железная дорога 4", type: "railroad", price: 200, owner: null, color: null },
+            { name: "Улица Бродского", type: "property", price: 320, owner: null, houses: 0, color: "purple", rent: [28, 150, 450, 1000, 1200, 1400] },
+            { name: "Железная дорога 4", type: "railroad", price: 200, owner: null, color: null, rent: [25, 50, 100, 200] },
             { name: "Шанс", type: "chance", price: 0, owner: null, color: null },
-            { name: "Улица Довлатова", type: "property", price: 350, owner: null, houses: 0, color: "darkgreen" },
+            { name: "Улица Довлатова", type: "property", price: 350, owner: null, houses: 0, color: "darkgreen", rent: [35, 175, 500, 1100, 1300, 1500] },
             { name: "Налог на роскошь", type: "tax", price: 100, owner: null, color: null },
-            { name: "Улица Пелевина", type: "property", price: 400, owner: null, houses: 0, color: "darkblue" },
+            { name: "Улица Пелевина", type: "property", price: 400, owner: null, houses: 0, color: "darkblue", rent: [50, 200, 600, 1400, 1700, 2000] },
         ];
 
         let players = [];
         let currentPlayerIndex = 0;
         let isTurnInProgress = false;
-        let hasPaidRent = false; // Флаг для отслеживания оплаты аренды за ход
+        let hasPaidRent = false;
 
         // Элементы DOM
         const loadingScreen = document.getElementById("loadingScreen");
@@ -612,6 +617,10 @@
         const actionsElement = document.getElementById("actions");
         const logElementDisplay = document.getElementById("log");
         const turnIndicatorElement = document.getElementById("turnIndicator");
+        const payJailButton = document.getElementById("payJailButton");
+        const useJailCardButton = document.getElementById("useJailCardButton");
+        const rollDoubleButton = document.getElementById("rollDoubleButton");
+        const jailStatusElement = document.getElementById("jailStatus");
 
         // Имитация загрузки
         function simulateLoading() {
@@ -628,13 +637,13 @@
 
             // Инициализация игроков
             players = [
-                { username: "Игрок 1", money: 1500, position: 0, properties: [], inJail: false, color: "#e74c3c" },
+                { username: "Игрок 1", money: 1500, position: 0, properties: [], inJail: false, jailTurns: 0, getOutOfJailCards: 0, color: "#e74c3c" },
             ];
 
             if (mode === "bot") {
-                players.push({ username: "Бот", money: 1500, position: 0, properties: [], inJail: false, color: "#3498db" });
+                players.push({ username: "Бот", money: 1500, position: 0, properties: [], inJail: false, jailTurns: 0, getOutOfJailCards: 0, color: "#3498db" });
             } else if (mode === "player") {
-                players.push({ username: "Игрок 2", money: 1500, position: 0, properties: [], inJail: false, color: "#3498db" });
+                players.push({ username: "Игрок 2", money: 1500, position: 0, properties: [], inJail: false, jailTurns: 0, getOutOfJailCards: 0, color: "#3498db" });
             }
 
             // Показываем игровое поле и интерфейс
@@ -733,6 +742,20 @@
             moneyElement.textContent = currentPlayer.money;
             propertiesElement.textContent = currentPlayer.properties.join(", ") || "Нет";
             positionElement.textContent = board[currentPlayer.position].name;
+
+            // Обновление статуса тюрьмы
+            if (currentPlayer.inJail) {
+                jailStatusElement.textContent = `В тюрьме (ходов: ${currentPlayer.jailTurns})`;
+                payJailButton.style.display = "block";
+                useJailCardButton.style.display = currentPlayer.getOutOfJailCards > 0 ? "block" : "none";
+                rollDoubleButton.style.display = "block";
+            } else {
+                jailStatusElement.textContent = "";
+                payJailButton.style.display = "none";
+                useJailCardButton.style.display = "none";
+                rollDoubleButton.style.display = "none";
+            }
+
             updateTurnIndicator();
         }
 
@@ -797,6 +820,27 @@
             setTimeout(() => {
                 updateDice(dice1Element, dice1);
                 updateDice(dice2Element, dice2);
+
+                // Если игрок в тюрьме, обрабатываем попытку выкинуть дубль
+                const currentPlayer = players[currentPlayerIndex];
+                if (currentPlayer.inJail) {
+                    if (dice1 === dice2) {
+                        addLogMessage(`🎲 Вы выкинули дубль и вышли из тюрьмы!`);
+                        currentPlayer.inJail = false;
+                        currentPlayer.jailTurns = 0;
+                        movePlayer(total);
+                    } else {
+                        currentPlayer.jailTurns += 1;
+                        if (currentPlayer.jailTurns >= 3) {
+                            addLogMessage(`🚨 Вы не смогли выкинуть дубль за 3 хода. Вы обязаны заплатить $50.`);
+                            payToExitJail();
+                        } else {
+                            addLogMessage(`🚨 Вы не выкинули дубль. Осталось попыток: ${3 - currentPlayer.jailTurns}`);
+                        }
+                    }
+                    updatePlayerInfo();
+                    return;
+                }
 
                 // Плавное перемещение игрока
                 movePlayer(total);
@@ -885,81 +929,15 @@
                     addLogMessage(`💸 Вы заплатили налог $${cell.price}.`);
                     break;
                 case "chance":
-                    const chanceCards = [
-                        "Вы получили $100!",
-                        "Вы потеряли $50!",
-                        "Перейдите на старт.",
-                        "Вы попали в тюрьму.",
-                        "Получите $50 от каждого игрока.",
-                        "Пройдите вперед на 3 клетки.",
-                        "Ваша собственность подорожала! Получите $200.",
-                        "Заплатите $100 за ремонт дорог."
-                    ];
-                    const card = chanceCards[Math.floor(Math.random() * chanceCards.length)];
-                    addLogMessage(`🎲 Шанс: ${card}`);
-                    if (card === "Перейдите на старт.") {
-                        player.position = 0;
-                        updateMarkers();
-                    } else if (card === "Вы попали в тюрьму.") {
-                        player.inJail = true;
-                    } else if (card.includes("получили")) {
-                        const amount = parseInt(card.match(/\d+/)[0]);
-                        player.money += amount;
-                    } else if (card.includes("потеряли")) {
-                        const amount = parseInt(card.match(/\d+/)[0]);
-                        player.money -= amount;
-                    } else if (card.includes("от каждого игрока")) {
-                        const amount = parseInt(card.match(/\d+/)[0]);
-                        players.forEach(p => {
-                            if (p !== player) {
-                                p.money -= amount;
-                                player.money += amount;
-                            }
-                        });
-                    } else if (card.includes("Пройдите вперед на")) {
-                        const steps = parseInt(card.match(/\d+/)[0]);
-                        player.position = (player.position + steps) % board.length;
-                        updateMarkers();
-                        checkCellAction();
-                    }
+                    drawChanceCard(player);
                     break;
                 case "community-chest":
-                    const communityChestCards = [
-                        "Вы получили $200!",
-                        "Вы потеряли $100!",
-                        "Перейдите на старт.",
-                        "Вы попали в тюрьму.",
-                        "Получите $20 от каждого игрока.",
-                        "Ваш день рождения! Получите $10 от каждого игрока.",
-                        "Вы выиграли в лотерею! Получите $100.",
-                        "Заплатите $50 за обучение."
-                    ];
-                    const chestCard = communityChestCards[Math.floor(Math.random() * communityChestCards.length)];
-                    addLogMessage(`🎲 Общественная казна: ${chestCard}`);
-                    if (chestCard === "Перейдите на старт.") {
-                        player.position = 0;
-                        updateMarkers();
-                    } else if (chestCard === "Вы попали в тюрьму.") {
-                        player.inJail = true;
-                    } else if (chestCard.includes("получили")) {
-                        const amount = parseInt(chestCard.match(/\d+/)[0]);
-                        player.money += amount;
-                    } else if (chestCard.includes("потеряли")) {
-                        const amount = parseInt(chestCard.match(/\d+/)[0]);
-                        player.money -= amount;
-                    } else if (chestCard.includes("от каждого игрока")) {
-                        const amount = parseInt(chestCard.match(/\d+/)[0]);
-                        players.forEach(p => {
-                            if (p !== player) {
-                                p.money -= amount;
-                                player.money += amount;
-                            }
-                        });
-                    }
+                    drawCommunityChestCard(player);
                     break;
                 case "jail":
                     addLogMessage(`🚨 Вы попали в тюрьму!`);
                     player.inJail = true;
+                    player.jailTurns = 0;
                     break;
             }
 
@@ -978,45 +956,121 @@
         // Расчет аренды
         function calculateRent(cell) {
             const owner = players.find(player => player.username === cell.owner);
-            if (!owner) return 0; // Если владелец не найден, аренда равна 0
+            if (!owner) return 0;
 
             switch (cell.type) {
                 case "property":
-                    // Базовая аренда
-                    let rent = cell.price * 0.1; // 10% от стоимости клетки
-
-                    // Если у игрока есть все клетки одного цвета, аренда удваивается
                     const sameColorCells = board.filter(c => c.color === cell.color && c.owner === cell.owner);
-                    if (sameColorCells.length === 2) { // Например, для коричневых и светло-голубых клеток
-                        rent *= 2;
-                    }
-
-                    // Учет домов
-                    if (cell.houses > 0) {
-                        rent = cell.price * 0.5 * cell.houses; // 50% от стоимости клетки за каждый дом
-                    }
-
-                    return rent;
-
+                    const rentIndex = cell.houses + (sameColorCells.length === 2 ? 1 : 0);
+                    return cell.rent[rentIndex] || 0;
                 case "railroad":
-                    // Аренда зависит от количества железных дорог у владельца
                     const ownedRailroads = owner.properties.filter(prop => board.find(c => c.name === prop).type === "railroad").length;
-                    return 25 * Math.pow(2, ownedRailroads - 1); // 25, 50, 100, 200
-
+                    return cell.rent[ownedRailroads - 1] || 0;
                 case "utility":
-                    // Аренда зависит от суммы на кубиках и количества коммунальных услуг у владельца
                     const diceSum = parseInt(dice1Element.getAttribute("data-value")) + parseInt(dice2Element.getAttribute("data-value"));
                     const ownedUtilities = owner.properties.filter(prop => board.find(c => c.name === prop).type === "utility").length;
-
-                    if (ownedUtilities === 1) {
-                        return diceSum * 4; // 4x сумма кубиков
-                    } else if (ownedUtilities === 2) {
-                        return diceSum * 10; // 10x сумма кубиков
-                    }
-                    return 0;
-
+                    return diceSum * cell.rent[ownedUtilities - 1] || 0;
                 default:
-                    return 0; // Для других типов клеток аренда не взимается
+                    return 0;
+            }
+        }
+
+        // Карты "Шанс"
+        function drawChanceCard(player) {
+            const chanceCards = [
+                "Вы получили $100!",
+                "Вы потеряли $50!",
+                "Перейдите на старт.",
+                "Вы попали в тюрьму.",
+                "Получите $50 от каждого игрока.",
+                "Пройдите вперед на 3 клетки.",
+                "Ваша собственность подорожала! Получите $200.",
+                "Заплатите $100 за ремонт дорог."
+            ];
+            const card = chanceCards[Math.floor(Math.random() * chanceCards.length)];
+            addLogMessage(`🎲 Шанс: ${card}`);
+
+            switch (card) {
+                case "Перейдите на старт.":
+                    player.position = 0;
+                    updateMarkers();
+                    break;
+                case "Вы попали в тюрьму.":
+                    player.inJail = true;
+                    player.jailTurns = 0;
+                    break;
+                case "Получите $50 от каждого игрока.":
+                    players.forEach(p => {
+                        if (p !== player) {
+                            p.money -= 50;
+                            player.money += 50;
+                        }
+                    });
+                    break;
+                case "Пройдите вперед на 3 клетки.":
+                    player.position = (player.position + 3) % board.length;
+                    updateMarkers();
+                    checkCellAction();
+                    break;
+                default:
+                    const amount = parseInt(card.match(/\d+/)[0]);
+                    if (card.includes("получили")) {
+                        player.money += amount;
+                    } else if (card.includes("потеряли")) {
+                        player.money -= amount;
+                    }
+                    break;
+            }
+        }
+
+        // Карты "Общественная казна"
+        function drawCommunityChestCard(player) {
+            const communityChestCards = [
+                "Вы получили $200!",
+                "Вы потеряли $100!",
+                "Перейдите на старт.",
+                "Вы попали в тюрьму.",
+                "Получите $20 от каждого игрока.",
+                "Ваш день рождения! Получите $10 от каждого игрока.",
+                "Вы выиграли в лотерею! Получите $100.",
+                "Заплатите $50 за обучение."
+            ];
+            const card = communityChestCards[Math.floor(Math.random() * communityChestCards.length)];
+            addLogMessage(`🎲 Общественная казна: ${card}`);
+
+            switch (card) {
+                case "Перейдите на старт.":
+                    player.position = 0;
+                    updateMarkers();
+                    break;
+                case "Вы попали в тюрьму.":
+                    player.inJail = true;
+                    player.jailTurns = 0;
+                    break;
+                case "Получите $20 от каждого игрока.":
+                    players.forEach(p => {
+                        if (p !== player) {
+                            p.money -= 20;
+                            player.money += 20;
+                        }
+                    });
+                    break;
+                case "Ваш день рождения! Получите $10 от каждого игрока.":
+                    players.forEach(p => {
+                        if (p !== player) {
+                            p.money -= 10;
+                            player.money += 10;
+                        }
+                    });
+                    break;
+                default:
+                    const amount = parseInt(card.match(/\d+/)[0]);
+                    if (card.includes("получили")) {
+                        player.money += amount;
+                    } else if (card.includes("потеряли")) {
+                        player.money -= amount;
+                    }
+                    break;
             }
         }
 
@@ -1173,6 +1227,39 @@
                     button.disabled = disabled;
                 }
             });
+        }
+
+        // Оплата штрафа для выхода из тюрьмы
+        function payToExitJail() {
+            const currentPlayer = players[currentPlayerIndex];
+            if (currentPlayer.money >= 50) {
+                currentPlayer.money -= 50;
+                currentPlayer.inJail = false;
+                currentPlayer.jailTurns = 0;
+                addLogMessage(`💸 Вы заплатили $50 и вышли из тюрьмы.`);
+                updatePlayerInfo();
+            } else {
+                addLogMessage(`🚫 У вас недостаточно денег для оплаты штрафа.`);
+            }
+        }
+
+        // Использование карты "Освобождение из тюрьмы"
+        function useGetOutOfJailCard() {
+            const currentPlayer = players[currentPlayerIndex];
+            if (currentPlayer.getOutOfJailCards > 0) {
+                currentPlayer.getOutOfJailCards -= 1;
+                currentPlayer.inJail = false;
+                currentPlayer.jailTurns = 0;
+                addLogMessage(`🎫 Вы использовали карту "Освобождение из тюрьмы".`);
+                updatePlayerInfo();
+            } else {
+                addLogMessage(`🚫 У вас нет карт "Освобождение из тюрьмы".`);
+            }
+        }
+
+        // Попытка выкинуть дубль для выхода из тюрьмы
+        function tryToRollDouble() {
+            rollDice();
         }
 
         // Запуск имитации загрузки при загрузке страницы
