@@ -9,7 +9,7 @@
         body {
             font-family: 'Roboto', sans-serif;
             margin: 0;
-            padding: 0;
+            padding: 10px;
             background: #f4f4f4;
             display: flex;
             flex-direction: column;
@@ -40,7 +40,7 @@
         }
 
         .loading-content h1 {
-            font-size: 32px;
+            font-size: 24px;
             margin-bottom: 20px;
         }
 
@@ -60,7 +60,7 @@
         }
 
         .loading-content p {
-            font-size: 18px;
+            font-size: 16px;
             margin-bottom: 20px;
         }
 
@@ -75,7 +75,7 @@
         }
 
         .menu h1 {
-            font-size: 32px;
+            font-size: 24px;
             margin-bottom: 20px;
             color: #2c3e50;
         }
@@ -108,12 +108,12 @@
             display: none;
             width: 100%;
             max-width: 600px;
-            padding: 20px;
+            padding: 10px;
             box-sizing: border-box;
         }
 
         h1 {
-            font-size: 28px;
+            font-size: 24px;
             margin: 10px 0;
             text-transform: uppercase;
             font-weight: bold;
@@ -123,12 +123,12 @@
 
         .board {
             position: relative;
-            width: 100%;
-            height: 95vw;
-            max-height: 400px;
-            border: 10px solid #2c3e50;
-            border-radius: 20px;
-            margin-bottom: 20px;
+            width: 90vw;
+            height: 90vw;
+            max-height: 300px;
+            border: 5px solid #2c3e50;
+            border-radius: 10px;
+            margin-bottom: 10px;
             background-color: white;
             display: grid;
             grid-template-columns: repeat(11, 1fr);
@@ -142,8 +142,8 @@
             align-items: center;
             justify-content: center;
             text-align: center;
-            font-size: 10px;
-            padding: 5px;
+            font-size: 8px;
+            padding: 2px;
             box-sizing: border-box;
             border: 1px solid #2c3e50;
             background-color: white;
@@ -157,12 +157,12 @@
         }
 
         .cell-icon {
-            font-size: 20px;
-            margin-bottom: 5px;
+            font-size: 16px;
+            margin-bottom: 2px;
         }
 
         .cell-name {
-            font-size: 10px;
+            font-size: 8px;
             text-align: center;
         }
 
@@ -177,7 +177,7 @@
             left: 50%;
             transform: translateX(-50%);
             white-space: nowrap;
-            font-size: 12px;
+            font-size: 10px;
         }
 
         .center-area {
@@ -188,29 +188,29 @@
             justify-content: center;
             background-color: white;
             border: 2px dashed #2c3e50;
-            border-radius: 15px;
-            font-size: 14px;
+            border-radius: 10px;
+            font-size: 12px;
             color: #2c3e50;
             flex-direction: column;
-            gap: 10px;
+            gap: 5px;
         }
 
         .dice-container {
             display: flex;
-            gap: 10px;
+            gap: 5px;
             cursor: pointer;
         }
 
         .dice {
-            width: 50px;
-            height: 50px;
+            width: 30px;
+            height: 30px;
             background-color: white;
             border: 2px solid #2c3e50;
-            border-radius: 10px;
+            border-radius: 5px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 20px;
+            font-size: 16px;
             font-weight: bold;
             color: #2c3e50;
             position: relative;
@@ -224,23 +224,23 @@
             height: 100%;
             background: white;
             border: 1px solid #2c3e50;
-            border-radius: 10px;
+            border-radius: 5px;
             display: flex;
             align-items: center;
             justify-content: center;
             backface-visibility: hidden;
         }
 
-        .dice .face.front { transform: translateZ(25px); }
-        .dice .face.back { transform: rotateY(180deg) translateZ(25px); }
-        .dice .face.right { transform: rotateY(90deg) translateZ(25px); }
-        .dice .face.left { transform: rotateY(-90deg) translateZ(25px); }
-        .dice .face.top { transform: rotateX(90deg) translateZ(25px); }
-        .dice .face.bottom { transform: rotateX(-90deg) translateZ(25px); }
+        .dice .face.front { transform: translateZ(15px); }
+        .dice .face.back { transform: rotateY(180deg) translateZ(15px); }
+        .dice .face.right { transform: rotateY(90deg) translateZ(15px); }
+        .dice .face.left { transform: rotateY(-90deg) translateZ(15px); }
+        .dice .face.top { transform: rotateX(90deg) translateZ(15px); }
+        .dice .face.bottom { transform: rotateX(-90deg) translateZ(15px); }
 
         .dice .dot {
-            width: 8px;
-            height: 8px;
+            width: 5px;
+            height: 5px;
             background-color: #2c3e50;
             border-radius: 50%;
             position: absolute;
@@ -300,8 +300,8 @@
         }
 
         .player-marker {
-            width: 20px;
-            height: 20px;
+            width: 12px;
+            height: 12px;
             border-radius: 50%;
             position: absolute;
             transform: translate(-50%, -50%);
@@ -310,12 +310,12 @@
         }
 
         .player-info {
-            margin-bottom: 15px;
+            margin-bottom: 10px;
             text-align: center;
-            font-size: 16px;
+            font-size: 14px;
             background-color: white;
-            padding: 15px;
-            border-radius: 15px;
+            padding: 10px;
+            border-radius: 10px;
             border: 2px solid #2c3e50;
             width: 100%;
             max-width: 600px;
@@ -326,17 +326,17 @@
         .actions {
             display: flex;
             flex-direction: column;
-            gap: 10px;
+            gap: 5px;
             width: 100%;
             max-width: 600px;
             display: none;
         }
 
         .actions button {
-            padding: 15px;
-            font-size: 16px;
+            padding: 10px;
+            font-size: 14px;
             border: none;
-            border-radius: 10px;
+            border-radius: 5px;
             background: #2c3e50;
             color: white;
             cursor: pointer;
@@ -352,15 +352,33 @@
         .log {
             width: 100%;
             max-width: 600px;
-            height: 100px;
+            height: 80px;
             border: 2px solid #2c3e50;
-            padding: 10px;
+            padding: 5px;
             overflow-y: auto;
             background-color: white;
-            border-radius: 10px;
-            margin-top: 15px;
-            font-size: 14px;
+            border-radius: 5px;
+            margin-top: 10px;
+            font-size: 12px;
             display: none;
+        }
+
+        .toggle-log-button {
+            display: block;
+            width: 100%;
+            padding: 5px;
+            font-size: 12px;
+            background: #2c3e50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-bottom: 5px;
+        }
+
+        .log-content {
+            max-height: 60px;
+            overflow-y: auto;
         }
 
         .turn-indicator {
@@ -394,116 +412,39 @@
 
         .modal-content {
             background: white;
-            padding: 20px;
-            border-radius: 15px;
-            max-width: 300px;
+            padding: 15px;
+            border-radius: 10px;
+            max-width: 90%;
             width: 100%;
             text-align: center;
         }
 
         .modal-content h3 {
             margin-top: 0;
-            font-size: 24px;
+            font-size: 20px;
             color: #2c3e50;
         }
 
         .modal-content p {
             margin: 10px 0;
-            font-size: 16px;
+            font-size: 14px;
             color: #34495e;
         }
 
         .modal-content button {
-            padding: 10px 20px;
+            padding: 10px 15px;
             background: #2c3e50;
             color: white;
             border: none;
-            border-radius: 10px;
+            border-radius: 5px;
             cursor: pointer;
-            font-size: 16px;
+            font-size: 14px;
             margin-top: 10px;
             transition: background 0.2s ease;
         }
 
         .modal-content button:hover {
             background: #34495e;
-        }
-
-        /* Стили для мобильных устройств (вертикальный режим) */
-        @media (max-width: 600px) and (orientation: portrait) {
-            h1 {
-                font-size: 20px;
-            }
-
-            .board {
-                width: 95vw;
-                height: 95vw;
-                max-height: 400px;
-                border-width: 5px;
-            }
-
-            .cell {
-                font-size: 8px;
-                padding: 2px;
-            }
-
-            .center-area {
-                font-size: 12px;
-            }
-
-            .dice {
-                width: 30px;
-                height: 30px;
-                font-size: 16px;
-            }
-
-            .dice .dot {
-                width: 5px;
-                height: 5px;
-            }
-
-            .player-info {
-                font-size: 14px;
-                padding: 10px;
-            }
-
-            .actions button {
-                padding: 10px;
-                font-size: 14px;
-            }
-
-            .log {
-                height: 80px;
-                font-size: 12px;
-            }
-
-            .player-marker {
-                width: 12px;
-                height: 12px;
-            }
-        }
-
-        /* Стили для мобильных устройств (горизонтальный режим) */
-        @media (max-width: 900px) and (orientation: landscape) {
-            .main-content {
-                flex-direction: row;
-                gap: 20px;
-            }
-
-            .board {
-                width: 60vw;
-                height: 60vw;
-                max-height: 400px;
-            }
-
-            .player-info, .actions, .log {
-                width: 35vw;
-                max-width: none;
-            }
-
-            .log {
-                height: 150px;
-            }
         }
     </style>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
@@ -637,7 +578,10 @@
 
         <!-- Лог событий -->
         <div class="log" id="log">
-            <p><span class="icon">🎲</span> Добро пожаловать в игру!</p>
+            <button onclick="toggleLog()" class="toggle-log-button">Скрыть лог</button>
+            <div class="log-content">
+                <p><span class="icon">🎲</span> Добро пожаловать в игру!</p>
+            </div>
         </div>
 
         <!-- Индикатор хода -->
@@ -1406,7 +1350,7 @@
         function addLogMessage(message) {
             const p = document.createElement("p");
             p.innerHTML = message;
-            logElement.appendChild(p);
+            logElement.querySelector(".log-content").appendChild(p);
             logElement.scrollTop = logElement.scrollHeight;
         }
 
@@ -1451,6 +1395,19 @@
         // Попытка выкинуть дубль для выхода из тюрьмы
         function tryToRollDouble() {
             rollDice();
+        }
+
+        // Скрытие/показа лога
+        function toggleLog() {
+            const logContent = document.querySelector('.log-content');
+            const toggleButton = document.querySelector('.toggle-log-button');
+            if (logContent.style.display === "none") {
+                logContent.style.display = "block";
+                toggleButton.textContent = "Скрыть лог";
+            } else {
+                logContent.style.display = "none";
+                toggleButton.textContent = "Показать лог";
+            }
         }
 
         // Запуск имитации загрузки при загрузке страницы
