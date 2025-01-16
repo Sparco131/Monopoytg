@@ -506,6 +506,13 @@
             <div class="cell property" style="grid-column: 12 / 13; grid-row: 9 / 10;">Железная дорога 3 (200$)</div>
             <div class="cell property" style="grid-column: 12 / 13; grid-row: 10 / 11;">Железная дорога 4 (200$)</div>
 
+            <!-- Новая клетка над Бесплатной парковкой -->
+            <div class="cell empty" style="grid-column: 12 / 13; grid-row: 11 / 12;">Дорога</div>
+
+            <!-- Новая клетка слева от Бесплатной парковки -->
+            <div class="cell property" style="grid-column: 10 / 11; grid-row: 12 / 13;">Улица 15 (400$)</div> <!-- Новая клетка с улицей -->
+            <div class="cell empty" style="grid-column: 11 / 12; grid-row: 12 / 13;">Дорога</div> <!-- Сдвинутая клетка "Дорога" -->
+
             <!-- Игроки -->
             <div id="player1" class="player"></div>
             <div id="player2" class="player"></div>
@@ -762,6 +769,9 @@
                 { type: "property", name: "Улица 10", price: 260, rent: 55 },
                 { type: "property", name: "Улица 11", price: 280, rent: 60 },
                 { type: "property", name: "Улица 12", price: 300, rent: 65 },
+                { type: "empty", name: "Дорога" }, // Новая клетка над Бесплатной парковкой
+                { type: "property", name: "Улица 15", price: 400, rent: 80 }, // Новая клетка с улицей
+                { type: "empty", name: "Дорога" }, // Сдвинутая клетка "Дорога"
             ];
             return cells[index];
         }
@@ -799,6 +809,9 @@
                 { x: 6, y: 9 }, // Улица 10
                 { x: 5, y: 9 }, // Улица 11
                 { x: 4, y: 9 }, // Улица 12
+                { x: 12, y: 11 }, // Новая клетка над Бесплатной парковкой
+                { x: 10, y: 12 }, // Новая клетка с улицей
+                { x: 11, y: 12 }, // Сдвинутая клетка "Дорога"
             ];
             return positions[index];
         }
