@@ -201,7 +201,6 @@
             color: #333;
             transition: background 0.3s ease;
             box-shadow: 0 0 1px rgba(0, 0, 0, 0.1);
-            cursor: pointer;
         }
 
         .cell:hover {
@@ -225,6 +224,15 @@
             background: #ffcc00;
             color: black;
             font-weight: bold;
+        }
+
+        .cell.empty {
+            background: #f0f0f0;
+            color: #999;
+            font-size: 8px;
+            text-align: center;
+            padding: 5px;
+            box-sizing: border-box;
         }
 
         .player {
@@ -445,63 +453,55 @@
         </div>
     </div>
 
-    <!-- Модальное окно для информации о клетке -->
-    <div id="cell-info-modal" class="modal">
-        <div class="modal-content">
-            <h2 id="cell-info-title"></h2>
-            <p id="cell-info-description"></p>
-            <button onclick="closeCellInfo()">Закрыть</button>
-        </div>
-    </div>
-
     <!-- Игровое поле -->
     <div class="board-container" id="board-container">
         <div class="board">
             <!-- Угловые клетки -->
             <div class="cell corner" style="grid-column: 1 / 2; grid-row: 1 / 2;">Старт</div>
+            <div class="cell empty" style="grid-column: 1 / 2; grid-row: 2 / 3;">Дорога</div> <!-- Новая клетка -->
             <div class="cell corner" style="grid-column: 12 / 13; grid-row: 1 / 2;">Идите в тюрьму</div>
             <div class="cell corner" style="grid-column: 12 / 13; grid-row: 12 / 13;">Бесплатная парковка</div>
             <div class="cell corner" style="grid-column: 1 / 2; grid-row: 12 / 13;">Тюрьма</div>
 
             <!-- Остальные клетки -->
-            <div class="cell property" style="grid-column: 3 / 4; grid-row: 12 / 13;"></div>
-            <div class="cell property" style="grid-column: 4 / 5; grid-row: 12 / 13;"></div>
-            <div class="cell property" style="grid-column: 5 / 6; grid-row: 12 / 13;"></div>
-            <div class="cell property" style="grid-column: 6 / 7; grid-row: 12 / 13;"></div>
-            <div class="cell property" style="grid-column: 7 / 8; grid-row: 12 / 13;"></div>
-            <div class="cell property" style="grid-column: 8 / 9; grid-row: 12 / 13;"></div>
-            <div class="cell property" style="grid-column: 9 / 10; grid-row: 12 / 13;"></div>
-            <div class="cell property" style="grid-column: 10 / 11; grid-row: 12 / 13;"></div>
+            <div class="cell property" style="grid-column: 3 / 4; grid-row: 12 / 13;">Улица 1 (60$)</div>
+            <div class="cell property" style="grid-column: 4 / 5; grid-row: 12 / 13;">Улица 2 (60$)</div>
+            <div class="cell property" style="grid-column: 5 / 6; grid-row: 12 / 13;">Улица 3 (100$)</div>
+            <div class="cell property" style="grid-column: 6 / 7; grid-row: 12 / 13;">Улица 4 (100$)</div>
+            <div class="cell property" style="grid-column: 7 / 8; grid-row: 12 / 13;">Улица 5 (140$)</div>
+            <div class="cell property" style="grid-column: 8 / 9; grid-row: 12 / 13;">Улица 6 (140$)</div>
+            <div class="cell property" style="grid-column: 9 / 10; grid-row: 12 / 13;">Улица 7 (180$)</div>
+            <div class="cell property" style="grid-column: 10 / 11; grid-row: 12 / 13;">Улица 8 (220$)</div>
 
             <!-- Левая сторона (снизу вверх) -->
-            <div class="cell property" style="grid-column: 1 / 2; grid-row: 10 / 11;"></div>
-            <div class="cell property" style="grid-column: 1 / 2; grid-row: 9 / 10;"></div>
-            <div class="cell property" style="grid-column: 1 / 2; grid-row: 8 / 9;"></div>
-            <div class="cell property" style="grid-column: 1 / 2; grid-row: 7 / 8;"></div>
-            <div class="cell property" style="grid-column: 1 / 2; grid-row: 6 / 7;"></div>
-            <div class="cell property" style="grid-column: 1 / 2; grid-row: 5 / 6;"></div>
-            <div class="cell property" style="grid-column: 1 / 2; grid-row: 4 / 5;"></div>
-            <div class="cell property" style="grid-column: 1 / 2; grid-row: 3 / 4;"></div>
+            <div class="cell property" style="grid-column: 1 / 2; grid-row: 10 / 11;">Железная дорога 1 (200$)</div>
+            <div class="cell property" style="grid-column: 1 / 2; grid-row: 9 / 10;">Железная дорога 2 (200$)</div>
+            <div class="cell property" style="grid-column: 1 / 2; grid-row: 8 / 9;">Железная дорога 3 (200$)</div>
+            <div class="cell property" style="grid-column: 1 / 2; grid-row: 7 / 8;">Железная дорога 4 (200$)</div>
+            <div class="cell property" style="grid-column: 1 / 2; grid-row: 6 / 7;">Электростанция (150$)</div>
+            <div class="cell property" style="grid-column: 1 / 2; grid-row: 5 / 6;">Водоканал (150$)</div>
+            <div class="cell property" style="grid-column: 1 / 2; grid-row: 4 / 5;">Шанс</div>
+            <div class="cell property" style="grid-column: 1 / 2; grid-row: 3 / 4;">Общественная казна</div>
 
             <!-- Верхняя сторона (справа налево) -->
-            <div class="cell property" style="grid-column: 3 / 4; grid-row: 1 / 2;"></div>
-            <div class="cell property" style="grid-column: 4 / 5; grid-row: 1 / 2;"></div>
-            <div class="cell property" style="grid-column: 5 / 6; grid-row: 1 / 2;"></div>
-            <div class="cell property" style="grid-column: 6 / 7; grid-row: 1 / 2;"></div>
-            <div class="cell property" style="grid-column: 7 / 8; grid-row: 1 / 2;"></div>
-            <div class="cell property" style="grid-column: 8 / 9; grid-row: 1 / 2;"></div>
-            <div class="cell property" style="grid-column: 9 / 10; grid-row: 1 / 2;"></div>
-            <div class="cell property" style="grid-column: 10 / 11; grid-row: 1 / 2;"></div>
+            <div class="cell property" style="grid-column: 3 / 4; grid-row: 1 / 2;">Улица 9 (240$)</div>
+            <div class="cell property" style="grid-column: 4 / 5; grid-row: 1 / 2;">Улица 10 (260$)</div>
+            <div class="cell property" style="grid-column: 5 / 6; grid-row: 1 / 2;">Улица 11 (280$)</div>
+            <div class="cell property" style="grid-column: 6 / 7; grid-row: 1 / 2;">Улица 12 (300$)</div>
+            <div class="cell property" style="grid-column: 7 / 8; grid-row: 1 / 2;">Налог (200$)</div>
+            <div class="cell property" style="grid-column: 8 / 9; grid-row: 1 / 2;">Налог (100$)</div>
+            <div class="cell property" style="grid-column: 9 / 10; grid-row: 1 / 2;">Улица 13 (320$)</div>
+            <div class="cell property" style="grid-column: 10 / 11; grid-row: 1 / 2;">Улица 14 (350$)</div>
 
             <!-- Правая сторона (сверху вниз) -->
-            <div class="cell property" style="grid-column: 12 / 13; grid-row: 3 / 4;"></div>
-            <div class="cell lottery" style="grid-column: 12 / 13; grid-row: 4 / 5;"></div>
-            <div class="cell property" style="grid-column: 12 / 13; grid-row: 5 / 6;"></div>
-            <div class="cell property" style="grid-column: 12 / 13; grid-row: 6 / 7;"></div>
-            <div class="cell property" style="grid-column: 12 / 13; grid-row: 7 / 8;"></div>
-            <div class="cell property" style="grid-column: 12 / 13; grid-row: 8 / 9;"></div>
-            <div class="cell property" style="grid-column: 12 / 13; grid-row: 9 / 10;"></div>
-            <div class="cell property" style="grid-column: 12 / 13; grid-row: 10 / 11;"></div>
+            <div class="cell property" style="grid-column: 12 / 13; grid-row: 3 / 4;">Шанс</div>
+            <div class="cell lottery" style="grid-column: 12 / 13; grid-row: 4 / 5;">Лотерея</div> <!-- Заменено на Лотерею -->
+            <div class="cell property" style="grid-column: 12 / 13; grid-row: 5 / 6;">Электростанция (150$)</div>
+            <div class="cell property" style="grid-column: 12 / 13; grid-row: 6 / 7;">Водоканал (150$)</div>
+            <div class="cell property" style="grid-column: 12 / 13; grid-row: 7 / 8;">Железная дорога 1 (200$)</div>
+            <div class="cell property" style="grid-column: 12 / 13; grid-row: 8 / 9;">Железная дорога 2 (200$)</div>
+            <div class="cell property" style="grid-column: 12 / 13; grid-row: 9 / 10;">Железная дорога 3 (200$)</div>
+            <div class="cell property" style="grid-column: 12 / 13; grid-row: 10 / 11;">Железная дорога 4 (200$)</div>
 
             <!-- Игроки -->
             <div id="player1" class="player"></div>
@@ -575,11 +575,6 @@
 
             // Инициализация игры с настройками
             initGame(mode, playersCount);
-
-            // Добавляем обработчики клика на клетки
-            document.querySelectorAll('.cell').forEach(cell => {
-                cell.addEventListener('click', () => showCellInfo(cell));
-            });
         }
 
         // Инициализация игры
@@ -709,7 +704,9 @@
         // Обработка действий на клетке
         function handleCellAction(player, position) {
             const cell = getCellData(position);
-            if (cell.type === "property" && cell.owner && cell.owner !== player) {
+            if (cell.type === "empty") {
+                addLogMessage(`${player.id} прошел по дороге. Ничего не произошло.`);
+            } else if (cell.type === "property" && cell.owner && cell.owner !== player) {
                 const rent = cell.rent;
                 if (player.money >= rent) {
                     player.money -= rent;
@@ -733,6 +730,7 @@
         function getCellData(index) {
             const cells = [
                 { type: "start", name: "Старт" },
+                { type: "empty", name: "Дорога" }, // Новая клетка
                 { type: "property", name: "Улица 1", price: 60, rent: 10 },
                 { type: "property", name: "Улица 2", price: 60, rent: 10 },
                 { type: "property", name: "Улица 3", price: 100, rent: 20 },
@@ -747,7 +745,7 @@
                 { type: "utility", name: "Электростанция", price: 150, rent: 25 },
                 { type: "utility", name: "Водоканал", price: 150, rent: 25 },
                 { type: "chance", name: "Шанс" },
-                { type: "lottery", name: "Лотерея" }, // Заменено на Лотерею
+                { type: "lottery", name: "Лотерея" },
                 { type: "tax", name: "Налог", amount: 200 },
                 { type: "tax", name: "Налог", amount: 100 },
                 { type: "jail", name: "Тюрьма" },
@@ -765,32 +763,33 @@
         // Получение координат клетки
         function getCellPosition(index) {
             const positions = [
-                { x: 0, y: 0 },
-                { x: 1, y: 0 },
-                { x: 2, y: 0 },
-                { x: 3, y: 0 },
-                { x: 4, y: 0 },
-                { x: 5, y: 0 },
-                { x: 6, y: 0 },
-                { x: 7, y: 0 },
-                { x: 8, y: 0 },
-                { x: 9, y: 0 },
-                { x: 10, y: 0 },
-                { x: 11, y: 0 },
-                { x: 11, y: 1 },
-                { x: 11, y: 2 },
-                { x: 11, y: 3 },
-                { x: 11, y: 4 },
-                { x: 11, y: 5 },
-                { x: 11, y: 6 },
-                { x: 11, y: 7 },
-                { x: 11, y: 10 },
-                { x: 0, y: 10 },
-                { x: 9, y: 10 },
-                { x: 8, y: 10 },
-                { x: 7, y: 10 },
-                { x: 6, y: 10 },
-                { x: 5, y: 10 },
+                { x: 0, y: 0 }, // Старт
+                { x: 1, y: 0 }, // Дорога (новая клетка)
+                { x: 2, y: 0 }, // Улица 1
+                { x: 3, y: 0 }, // Улица 2
+                { x: 4, y: 0 }, // Улица 3
+                { x: 5, y: 0 }, // Улица 4
+                { x: 6, y: 0 }, // Улица 5
+                { x: 7, y: 0 }, // Улица 6
+                { x: 8, y: 0 }, // Улица 7
+                { x: 9, y: 0 }, // Железная дорога 1
+                { x: 10, y: 0 }, // Железная дорога 2
+                { x: 11, y: 0 }, // Железная дорога 3
+                { x: 11, y: 1 }, // Железная дорога 4
+                { x: 11, y: 2 }, // Электростанция
+                { x: 11, y: 3 }, // Водоканал
+                { x: 11, y: 4 }, // Шанс
+                { x: 11, y: 5 }, // Лотерея
+                { x: 11, y: 6 }, // Налог
+                { x: 11, y: 7 }, // Налог
+                { x: 11, y: 8 }, // Тюрьма
+                { x: 11, y: 9 }, // Бесплатная парковка
+                { x: 10, y: 9 }, // Идите в тюрьму
+                { x: 9, y: 9 }, // Улица 8
+                { x: 8, y: 9 }, // Улица 9
+                { x: 7, y: 9 }, // Улица 10
+                { x: 6, y: 9 }, // Улица 11
+                { x: 5, y: 9 }, // Улица 12
             ];
             return positions[index];
         }
@@ -910,39 +909,6 @@
 
             addLogMessage('Настройки сессии сохранены.');
             closeSessionSettings();
-        }
-
-        // Показ информации о клетке
-        function showCellInfo(cell) {
-            const modal = document.getElementById('cell-info-modal');
-            const title = document.getElementById('cell-info-title');
-            const description = document.getElementById('cell-info-description');
-
-            const cellData = getCellData(getCellIndex(cell));
-            title.textContent = cellData.name;
-            description.textContent = `Тип: ${cellData.type}`;
-
-            if (cellData.type === "property") {
-                description.textContent += `\nЦена: ${cellData.price}$\nАренда: ${cellData.rent}$`;
-            } else if (cellData.type === "tax") {
-                description.textContent += `\nСумма налога: ${cellData.amount}$`;
-            } else if (cellData.type === "lottery") {
-                description.textContent += "\nВы можете выиграть деньги или пропустить ход!";
-            }
-
-            modal.style.display = 'flex';
-        }
-
-        // Закрытие модального окна информации о клетке
-        function closeCellInfo() {
-            const modal = document.getElementById('cell-info-modal');
-            modal.style.display = 'none';
-        }
-
-        // Получение индекса клетки
-        function getCellIndex(cell) {
-            const cells = Array.from(document.querySelectorAll('.cell'));
-            return cells.indexOf(cell);
         }
     </script>
 </body>
