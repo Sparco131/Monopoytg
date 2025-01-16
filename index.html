@@ -94,6 +94,7 @@
             cursor: pointer;
             transition: transform 0.3s ease, box-shadow 0.3s ease;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+            margin: 5px;
         }
 
         .menu-container button:hover {
@@ -106,47 +107,63 @@
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
         }
 
-        /* Стили для блока настроек */
-        .settings {
-            margin-top: 20px;
-            padding: 15px;
-            background: rgba(255, 255, 255, 0.1);
+        /* Модальные окна */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 20px;
             border-radius: 10px;
+            color: black;
+            max-width: 400px;
+            width: 90%;
+            text-align: center;
         }
 
-        .settings h2 {
-            font-size: 1.2rem;
-            margin-bottom: 10px;
-            color: white;
-            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-        }
-
-        .settings label {
+        .modal-content label {
             display: block;
             margin: 10px 0 5px;
             font-weight: bold;
-            color: rgba(255, 255, 255, 0.8);
+            color: #333;
             text-align: left;
         }
 
-        .settings input[type="number"],
-        .settings select {
+        .modal-content input,
+        .modal-content select {
             width: 100%;
             padding: 8px;
-            border: 1px solid rgba(255, 255, 255, 0.3);
-            border-radius: 8px;
-            font-size: 0.9rem;
             margin-bottom: 10px;
-            box-sizing: border-box;
-            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 1rem;
+        }
+
+        .modal-content button {
+            margin: 5px;
+            padding: 8px 16px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            background: #6a11cb;
             color: white;
         }
 
-        .settings input[type="checkbox"] {
-            margin-right: 10px;
+        .modal-content button:hover {
+            background: #2575fc;
         }
 
-        /* Контейнер для игрового поля */
+        /* Игровое поле и другие стили */
         .board-container {
             display: none;
             width: 90%;
@@ -160,7 +177,6 @@
             margin-top: 20px;
         }
 
-        /* Игровое поле */
         .board {
             width: 100%;
             height: 100%;
@@ -172,7 +188,6 @@
             gap: 0;
         }
 
-        /* Стили для клеток */
         .cell {
             display: flex;
             justify-content: center;
@@ -192,7 +207,6 @@
             background: #f9f9f9;
         }
 
-        /* Угловые клетки */
         .corner {
             background: linear-gradient(135deg, #6a11cb, #2575fc);
             color: white;
@@ -206,14 +220,12 @@
             box-sizing: border-box;
         }
 
-        /* Стили для клетки "Лотерея" */
         .cell.lottery {
             background: #ffcc00;
             color: black;
             font-weight: bold;
         }
 
-        /* Игроки */
         .player {
             position: absolute;
             width: 4%;
@@ -244,7 +256,6 @@
             background: #ff9f43;
         }
 
-        /* Контейнер для кубиков */
         .dice-container {
             position: absolute;
             top: 50%;
@@ -255,7 +266,6 @@
             z-index: 10;
         }
 
-        /* Кубики */
         .dice {
             display: inline-block;
             width: 40px;
@@ -280,20 +290,18 @@
             }
         }
 
-        /* Контейнер для кнопок */
         .controls {
             display: none;
-            flex-direction: row; /* Кнопки теперь в строку */
-            flex-wrap: wrap; /* Если кнопки не помещаются, они переносятся на новую строку */
-            justify-content: center; /* Центрируем кнопки */
-            gap: 8px; /* Расстояние между кнопками */
+            flex-direction: row;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 8px;
             margin-top: 20px;
             margin-bottom: 20px;
             width: 90%;
             max-width: 400px;
         }
 
-        /* Кнопки */
         .controls button {
             background: linear-gradient(135deg, #6a11cb, #2575fc);
             color: white;
@@ -303,8 +311,8 @@
             font-size: 0.8rem;
             cursor: pointer;
             transition: background 0.3s ease;
-            flex: 1 1 auto; /* Кнопки растягиваются, чтобы заполнить доступное пространство */
-            min-width: 80px; /* Минимальная ширина кнопки */
+            flex: 1 1 auto;
+            min-width: 80px;
             text-align: center;
         }
 
@@ -312,7 +320,6 @@
             background: linear-gradient(135deg, #2575fc, #6a11cb);
         }
 
-        /* Лог */
         .log-container {
             width: 100%;
             max-height: 100px;
@@ -337,7 +344,6 @@
             border-radius: 5px;
         }
 
-        /* Адаптация для мобильных устройств */
         @media (max-width: 600px) {
             .menu-container {
                 padding: 15px;
@@ -403,10 +409,19 @@
         <label for="players">Количество игроков (включая ботов):</label>
         <input type="number" id="players" min="1" max="4" value="2">
 
-        <!-- Дополнительные настройки -->
-        <div class="settings">
-            <h2>Настройки</h2>
+        <!-- Кнопка "Настройка сессии" -->
+        <button onclick="openSessionSettings()">Настройка сессии</button>
 
+        <!-- Кнопка "Начать игру" -->
+        <button onclick="startGame()">Начать игру</button>
+    </div>
+
+    <!-- Модальное окно для настроек сессии -->
+    <div id="session-settings-modal" class="modal">
+        <div class="modal-content">
+            <h2>Настройка сессии</h2>
+
+            <!-- Дополнительные настройки -->
             <label for="startingMoney">Стартовый капитал:</label>
             <input type="number" id="startingMoney" min="500" max="5000" value="1500">
 
@@ -422,9 +437,11 @@
                 <option value="medium">Средняя</option>
                 <option value="hard">Сложная</option>
             </select>
-        </div>
 
-        <button onclick="startGame()">Начать игру</button>
+            <!-- Кнопки для закрытия и сохранения -->
+            <button onclick="closeSessionSettings()">Закрыть</button>
+            <button onclick="saveSessionSettings()">Сохранить</button>
+        </div>
     </div>
 
     <!-- Игровое поле -->
@@ -517,7 +534,12 @@
         // Игроки и боты
         let players = [];
         let currentPlayerIndex = 0;
-        let gameSettings = {};
+        let gameSettings = {
+            startingMoney: 1500,
+            maxHouses: 4,
+            enableAuctions: true,
+            botDifficulty: "medium",
+        };
 
         // Функция для добавления сообщения в лог
         function addLogMessage(message) {
@@ -535,43 +557,31 @@
             const mode = document.getElementById('mode').value;
             const playersCount = parseInt(document.getElementById('players').value);
 
-            // Получаем настройки
-            const startingMoney = parseInt(document.getElementById('startingMoney').value);
-            const maxHouses = parseInt(document.getElementById('maxHouses').value);
-            const enableAuctions = document.getElementById('enableAuctions').checked;
-            const botDifficulty = document.getElementById('botDifficulty').value;
-
             // Скрываем меню и показываем поле и кнопки
             menu.style.display = 'none';
             boardContainer.style.display = 'block';
             controls.style.display = 'flex';
 
             // Инициализация игры с настройками
-            initGame(mode, playersCount, startingMoney, maxHouses, enableAuctions, botDifficulty);
+            initGame(mode, playersCount);
 
             // Заменяем случайную клетку на "Лотерея"
             replaceRandomCellWithLottery();
         }
 
         // Инициализация игры
-        function initGame(mode, playersCount, startingMoney, maxHouses, enableAuctions, botDifficulty) {
+        function initGame(mode, playersCount) {
             players = [];
             for (let i = 1; i <= playersCount; i++) {
                 players.push({
                     id: `player${i}`,
                     position: 0,
-                    money: startingMoney,
+                    money: gameSettings.startingMoney,
                     isBot: i > 1,
                     properties: [],
-                    botDifficulty: botDifficulty,
+                    botDifficulty: gameSettings.botDifficulty,
                 });
             }
-
-            // Сохраняем настройки в глобальной переменной
-            gameSettings = {
-                maxHouses,
-                enableAuctions,
-            };
 
             currentPlayerIndex = 0;
             highlightActivePlayer();
@@ -862,6 +872,29 @@
         // Кнопка "Заложить имущество"
         function mortgageProperty() {
             addLogMessage("Залог имущества пока не реализован.");
+        }
+
+        // Открытие модального окна настроек сессии
+        function openSessionSettings() {
+            const modal = document.getElementById('session-settings-modal');
+            modal.style.display = 'flex';
+        }
+
+        // Закрытие модального окна настроек сессии
+        function closeSessionSettings() {
+            const modal = document.getElementById('session-settings-modal');
+            modal.style.display = 'none';
+        }
+
+        // Сохранение настроек сессии
+        function saveSessionSettings() {
+            gameSettings.startingMoney = parseInt(document.getElementById('startingMoney').value);
+            gameSettings.maxHouses = parseInt(document.getElementById('maxHouses').value);
+            gameSettings.enableAuctions = document.getElementById('enableAuctions').checked;
+            gameSettings.botDifficulty = document.getElementById('botDifficulty').value;
+
+            addLogMessage('Настройки сессии сохранены.');
+            closeSessionSettings();
         }
     </script>
 </body>
