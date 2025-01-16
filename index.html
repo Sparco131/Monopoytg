@@ -106,32 +106,49 @@
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
         }
 
-        /* Анимация фона */
-        body::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 10%, transparent 10.01%);
-            background-size: 20px 20px;
-            animation: moveBackground 10s linear infinite;
-            z-index: -1;
+        /* Стили для блока настроек */
+        .settings {
+            margin-top: 20px;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
         }
 
-        @keyframes moveBackground {
-            from {
-                transform: translateY(0) translateX(0);
-            }
-            to {
-                transform: translateY(-100%) translateX(-100%);
-            }
+        .settings h2 {
+            font-size: 1.2rem;
+            margin-bottom: 10px;
+            color: white;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        .settings label {
+            display: block;
+            margin: 10px 0 5px;
+            font-weight: bold;
+            color: rgba(255, 255, 255, 0.8);
+            text-align: left;
+        }
+
+        .settings input[type="number"],
+        .settings select {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 8px;
+            font-size: 0.9rem;
+            margin-bottom: 10px;
+            box-sizing: border-box;
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+        }
+
+        .settings input[type="checkbox"] {
+            margin-right: 10px;
         }
 
         /* Контейнер для игрового поля */
         .board-container {
-            display: none; /* Скрываем поле по умолчанию */
+            display: none;
             width: 90%;
             max-width: 400px;
             aspect-ratio: 1;
@@ -140,7 +157,7 @@
             border-radius: 15px;
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
             overflow: hidden;
-            margin-top: 20px; /* Отступ сверху */
+            margin-top: 20px;
         }
 
         /* Игровое поле */
@@ -148,11 +165,11 @@
             width: 100%;
             height: 100%;
             display: grid;
-            grid-template-columns: repeat(12, 1fr); /* 12 столбцов */
-            grid-template-rows: repeat(12, 1fr); /* 12 строк */
+            grid-template-columns: repeat(12, 1fr);
+            grid-template-rows: repeat(12, 1fr);
             background: #f0f0f0;
             box-sizing: border-box;
-            gap: 0; /* Убираем зазоры между клетками */
+            gap: 0;
         }
 
         /* Стили для клеток */
@@ -160,15 +177,15 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            border: none; /* Убираем границы */
+            border: none;
             font-size: 8px;
             text-align: center;
-            padding: 0; /* Убираем внутренние отступы */
+            padding: 0;
             box-sizing: border-box;
             background: white;
             color: #333;
             transition: background 0.3s ease;
-            box-shadow: 0 0 1px rgba(0, 0, 0, 0.1); /* Легкая тень для разделения клеток */
+            box-shadow: 0 0 1px rgba(0, 0, 0, 0.1);
         }
 
         .cell:hover {
@@ -191,15 +208,9 @@
 
         /* Стили для клетки "Лотерея" */
         .cell.lottery {
-            background: #ffcc00; /* Желтый цвет */
+            background: #ffcc00;
             color: black;
             font-weight: bold;
-        }
-
-        /* Свойства */
-        .property {
-            background: #e0f7fa; /* Светло-голубой */
-            color: #333;
         }
 
         /* Игроки */
@@ -218,39 +229,38 @@
         }
 
         #player1 {
-            background: #ff6b6b; /* Красный */
+            background: #ff6b6b;
         }
 
         #player2 {
-            background: #4ecdc4; /* Бирюзовый */
+            background: #4ecdc4;
         }
 
         #player3 {
-            background: #ffe66d; /* Желтый */
+            background: #ffe66d;
         }
 
         #player4 {
-            background: #ff9f43; /* Оранжевый */
+            background: #ff9f43;
         }
 
         /* Контейнер для кубиков и кнопок */
         .controls {
-            display: none; /* Скрываем по умолчанию */
-            flex-direction: row;
-            flex-wrap: wrap;
-            justify-content: center;
-            gap: 8px;
-            margin-top: 20px; /* Отступ сверху */
-            margin-bottom: 20px; /* Отступ снизу */
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+            margin-top: 20px;
+            margin-bottom: 20px;
             width: 90%;
             max-width: 400px;
         }
 
-        .dice-controls {
+        .dice-container {
             display: flex;
             gap: 10px;
-            width: 100%;
             justify-content: center;
+            margin-bottom: 10px;
         }
 
         /* Кубики */
@@ -295,6 +305,31 @@
 
         .controls button:hover {
             background: linear-gradient(135deg, #2575fc, #6a11cb);
+        }
+
+        /* Лог */
+        .log-container {
+            width: 100%;
+            max-height: 100px;
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 10px;
+            padding: 10px;
+            box-sizing: border-box;
+            overflow-y: auto;
+            margin-top: 10px;
+        }
+
+        .log-content {
+            font-size: 12px;
+            color: #333;
+            line-height: 1.5;
+        }
+
+        .log-message {
+            margin-bottom: 5px;
+            padding: 5px;
+            background: rgba(0, 0, 0, 0.05);
+            border-radius: 5px;
         }
 
         /* Адаптация для мобильных устройств */
@@ -352,6 +387,8 @@
     <!-- Меню -->
     <div class="menu-container" id="menu">
         <h1>Modern Monopoly</h1>
+
+        <!-- Основные настройки -->
         <label for="mode">Выберите режим:</label>
         <select id="mode">
             <option value="classic">Классический</option>
@@ -361,6 +398,27 @@
         <label for="players">Количество игроков (включая ботов):</label>
         <input type="number" id="players" min="1" max="4" value="2">
 
+        <!-- Дополнительные настройки -->
+        <div class="settings">
+            <h2>Настройки</h2>
+
+            <label for="startingMoney">Стартовый капитал:</label>
+            <input type="number" id="startingMoney" min="500" max="5000" value="1500">
+
+            <label for="maxHouses">Максимум домов на улице:</label>
+            <input type="number" id="maxHouses" min="1" max="5" value="4">
+
+            <label for="enableAuctions">Включить аукционы:</label>
+            <input type="checkbox" id="enableAuctions" checked>
+
+            <label for="botDifficulty">Сложность ботов:</label>
+            <select id="botDifficulty">
+                <option value="easy">Легкая</option>
+                <option value="medium">Средняя</option>
+                <option value="hard">Сложная</option>
+            </select>
+        </div>
+
         <button onclick="startGame()">Начать игру</button>
     </div>
 
@@ -368,10 +426,10 @@
     <div class="board-container" id="board-container">
         <div class="board">
             <!-- Угловые клетки -->
-            <div class="cell corner" style="grid-column: 1 / 2; grid-row: 1 / 2;">Старт</div> <!-- Верхний левый угол -->
-            <div class="cell corner" style="grid-column: 12 / 13; grid-row: 1 / 2;">Идите в тюрьму</div> <!-- Верхний правый угол -->
-            <div class="cell corner" style="grid-column: 12 / 13; grid-row: 12 / 13;">Бесплатная парковка</div> <!-- Правый нижний угол -->
-            <div class="cell corner" style="grid-column: 1 / 2; grid-row: 12 / 13;">Тюрьма</div> <!-- Левый нижний угол -->
+            <div class="cell corner" style="grid-column: 1 / 2; grid-row: 1 / 2;">Старт</div>
+            <div class="cell corner" style="grid-column: 12 / 13; grid-row: 1 / 2;">Идите в тюрьму</div>
+            <div class="cell corner" style="grid-column: 12 / 13; grid-row: 12 / 13;">Бесплатная парковка</div>
+            <div class="cell corner" style="grid-column: 1 / 2; grid-row: 12 / 13;">Тюрьма</div>
 
             <!-- Остальные клетки -->
             <div class="cell property" style="grid-column: 3 / 4; grid-row: 12 / 13;">Улица 1 (60$)</div>
@@ -423,7 +481,7 @@
 
     <!-- Кубики и кнопки -->
     <div class="controls" id="controls">
-        <div class="dice-controls">
+        <div class="dice-container">
             <div id="dice1" class="dice">1</div>
             <div id="dice2" class="dice">1</div>
         </div>
@@ -433,6 +491,11 @@
         <button onclick="trade()">Торговать</button>
         <button onclick="buildHouses()">Строить дома</button>
         <button onclick="mortgageProperty()">Заложить</button>
+
+        <!-- Лог -->
+        <div class="log-container">
+            <div class="log-content" id="log-content"></div>
+        </div>
     </div>
 
     <script>
@@ -442,42 +505,67 @@
         const controls = document.getElementById('controls');
         const dice1Element = document.getElementById('dice1');
         const dice2Element = document.getElementById('dice2');
+        const logContent = document.getElementById('log-content');
 
         // Игроки и боты
         let players = [];
         let currentPlayerIndex = 0;
+        let gameSettings = {};
+
+        // Функция для добавления сообщения в лог
+        function addLogMessage(message) {
+            const logMessage = document.createElement('div');
+            logMessage.className = 'log-message';
+            logMessage.textContent = message;
+            logContent.appendChild(logMessage);
+
+            // Автоматическая прокрутка вниз
+            logContent.scrollTop = logContent.scrollHeight;
+        }
 
         // Начало игры
         function startGame() {
             const mode = document.getElementById('mode').value;
             const playersCount = parseInt(document.getElementById('players').value);
 
+            // Получаем настройки
+            const startingMoney = parseInt(document.getElementById('startingMoney').value);
+            const maxHouses = parseInt(document.getElementById('maxHouses').value);
+            const enableAuctions = document.getElementById('enableAuctions').checked;
+            const botDifficulty = document.getElementById('botDifficulty').value;
+
             // Скрываем меню и показываем поле и кнопки
             menu.style.display = 'none';
             boardContainer.style.display = 'block';
-            controls.style.display = 'flex'; // Показываем кнопки
+            controls.style.display = 'flex';
 
-            // Инициализация игры
-            initGame(mode, playersCount);
+            // Инициализация игры с настройками
+            initGame(mode, playersCount, startingMoney, maxHouses, enableAuctions, botDifficulty);
 
             // Заменяем случайную клетку на "Лотерея"
             replaceRandomCellWithLottery();
         }
 
         // Инициализация игры
-        function initGame(mode, playersCount) {
+        function initGame(mode, playersCount, startingMoney, maxHouses, enableAuctions, botDifficulty) {
             players = [];
             for (let i = 1; i <= playersCount; i++) {
                 players.push({
                     id: `player${i}`,
                     position: 0,
-                    money: 1500,
-                    isBot: i > 1, // Первый игрок — человек, остальные — боты
+                    money: startingMoney,
+                    isBot: i > 1,
                     properties: [],
+                    botDifficulty: botDifficulty,
                 });
             }
 
-            // Начинаем игру с первого игрока
+            // Сохраняем настройки в глобальной переменной
+            gameSettings = {
+                maxHouses,
+                enableAuctions,
+            };
+
             currentPlayerIndex = 0;
             highlightActivePlayer();
             if (players[currentPlayerIndex].isBot) {
@@ -501,11 +589,23 @@
                 const steps = dice1 + dice2;
 
                 movePlayer(bot, steps);
-                console.log(`Бот ${bot.id} бросил кубики: ${dice1} и ${dice2}, шаги: ${steps}`);
+                addLogMessage(`Бот ${bot.id} бросил кубики: ${dice1} и ${dice2}, шаги: ${steps}`);
 
-                // Переход хода
+                // Логика для ботов в зависимости от сложности
+                if (bot.botDifficulty === "easy") {
+                    if (Math.random() < 0.3) {
+                        buyProperty();
+                    }
+                } else if (bot.botDifficulty === "medium") {
+                    if (Math.random() < 0.6) {
+                        buyProperty();
+                    }
+                } else if (bot.botDifficulty === "hard") {
+                    buyProperty();
+                }
+
                 nextTurn();
-            }, 1000); // Задержка для имитации "думающего" бота
+            }, 1000);
         }
 
         // Переход хода
@@ -520,7 +620,7 @@
         // Функция для броска кубиков
         function rollDice() {
             const currentPlayer = players[currentPlayerIndex];
-            if (currentPlayer.isBot) return; // Человек не может ходить за бота
+            if (currentPlayer.isBot) return;
 
             let dice1 = 0, dice2 = 0;
             const interval = setInterval(() => {
@@ -534,7 +634,7 @@
                 clearInterval(interval);
                 const steps = dice1 + dice2;
                 movePlayer(currentPlayer, steps);
-                console.log(`Игрок ${currentPlayer.id} бросил кубики: ${dice1} и ${dice2}, шаги: ${steps}`);
+                addLogMessage(`Игрок ${currentPlayer.id} бросил кубики: ${dice1} и ${dice2}, шаги: ${steps}`);
                 nextTurn();
             }, 2000);
         }
@@ -544,7 +644,6 @@
             const newPosition = (player.position + steps) % 40;
             player.position = newPosition;
 
-            // Обновляем позицию на поле
             const playerElement = document.getElementById(player.id);
             const board = document.querySelector('.board');
             const cellSize = board.offsetWidth / 12;
@@ -552,7 +651,6 @@
             playerElement.style.left = `${cell.x * cellSize}px`;
             playerElement.style.top = `${cell.y * cellSize}px`;
 
-            // Обработка клетки
             const currentCell = document.querySelector(`.cell[style*="grid-column: ${cell.x + 1} / ${cell.x + 2}"][style*="grid-row: ${cell.y + 1} / ${cell.y + 2}"]`);
             if (currentCell.classList.contains('lottery')) {
                 handleLotteryCell(player);
@@ -566,30 +664,27 @@
             const cell = getCellData(position);
             if (cell.type === "property" && !cell.owner) {
                 if (player.money >= cell.price) {
-                    // Бот покупает собственность, если у него достаточно денег
                     player.money -= cell.price;
                     player.properties.push(cell);
                     cell.owner = player;
-                    console.log(`${player.id} купил ${cell.name} за ${cell.price}$`);
+                    addLogMessage(`${player.id} купил ${cell.name} за ${cell.price}$`);
                 }
             } else if (cell.type === "property" && cell.owner && cell.owner !== player) {
                 const rent = cell.rent;
                 if (player.money >= rent) {
-                    // Бот платит аренду
                     player.money -= rent;
                     cell.owner.money += rent;
-                    console.log(`${player.id} заплатил аренду ${cell.owner.id} в размере ${rent}$`);
+                    addLogMessage(`${player.id} заплатил аренду ${cell.owner.id} в размере ${rent}$`);
                 } else {
-                    // Бот объявляет банкротство
-                    console.log(`${player.id} объявил банкротство!`);
+                    addLogMessage(`${player.id} объявил банкротство!`);
                     handleBankruptcy(player);
                 }
             } else if (cell.type === "tax") {
                 player.money -= cell.amount;
-                console.log(`${player.id} заплатил налог в размере ${cell.amount}$`);
+                addLogMessage(`${player.id} заплатил налог в размере ${cell.amount}$`);
             } else if (cell.type === "chance" || cell.type === "community_chest") {
                 const card = drawCard(cell.type);
-                console.log(`${player.id} вытянул карточку: ${card}`);
+                addLogMessage(`${player.id} вытянул карточку: ${card}`);
                 handleCardEffect(player, card);
             }
         }
@@ -630,43 +725,42 @@
         // Получение координат клетки
         function getCellPosition(index) {
             const positions = [
-                { x: 0, y: 0 },    // Старт (верхний левый угол)
-                { x: 1, y: 0 },    // Улица 1
-                { x: 2, y: 0 },    // Улица 2
-                { x: 3, y: 0 },    // Улица 3
-                { x: 4, y: 0 },    // Улица 4
-                { x: 5, y: 0 },    // Улица 5
-                { x: 6, y: 0 },    // Улица 6
-                { x: 7, y: 0 },    // Улица 7
-                { x: 8, y: 0 },    // Железная дорога 1
-                { x: 9, y: 0 },    // Железная дорога 2
-                { x: 10, y: 0 },   // Железная дорога 3
-                { x: 11, y: 0 },   // Железная дорога 4
-                { x: 11, y: 1 },   // Электростанция
-                { x: 11, y: 2 },   // Водоканал
-                { x: 11, y: 3 },   // Шанс
-                { x: 11, y: 4 },   // Общественная казна
-                { x: 11, y: 5 },   // Налог (200$)
-                { x: 11, y: 6 },   // Налог (100$)
-                { x: 11, y: 7 },   // Идите в тюрьму (верхний правый угол)
-                { x: 11, y: 10 },  // Бесплатная парковка (правый нижний угол)
-                { x: 0, y: 10 },   // Тюрьма (левый нижний угол)
-                { x: 9, y: 10 },   // Улица 8
-                { x: 8, y: 10 },   // Улица 9
-                { x: 7, y: 10 },   // Улица 10
-                { x: 6, y: 10 },   // Улица 11
-                { x: 5, y: 10 },   // Улица 12
+                { x: 0, y: 0 },
+                { x: 1, y: 0 },
+                { x: 2, y: 0 },
+                { x: 3, y: 0 },
+                { x: 4, y: 0 },
+                { x: 5, y: 0 },
+                { x: 6, y: 0 },
+                { x: 7, y: 0 },
+                { x: 8, y: 0 },
+                { x: 9, y: 0 },
+                { x: 10, y: 0 },
+                { x: 11, y: 0 },
+                { x: 11, y: 1 },
+                { x: 11, y: 2 },
+                { x: 11, y: 3 },
+                { x: 11, y: 4 },
+                { x: 11, y: 5 },
+                { x: 11, y: 6 },
+                { x: 11, y: 7 },
+                { x: 11, y: 10 },
+                { x: 0, y: 10 },
+                { x: 9, y: 10 },
+                { x: 8, y: 10 },
+                { x: 7, y: 10 },
+                { x: 6, y: 10 },
+                { x: 5, y: 10 },
             ];
             return positions[index];
         }
 
         // Функция для замены случайной клетки на "Лотерея"
         function replaceRandomCellWithLottery() {
-            const cells = document.querySelectorAll('.cell:not(.corner)'); // Все клетки, кроме угловых
-            const randomIndex = Math.floor(Math.random() * cells.length); // Случайный индекс
+            const cells = document.querySelectorAll('.cell:not(.corner)');
+            const randomIndex = Math.floor(Math.random() * cells.length);
             const randomCell = cells[randomIndex];
 
-            // Заменяем содержимое клетки
             randomCell.classList.add('lottery');
             randomCell.textContent = 'Лотерея';
         }
@@ -686,15 +780,12 @@
 
             if (outcome.amount) {
                 player.money += outcome.amount;
-                console.log(`${player.id} попал на Лотерею: ${outcome.text}`);
-                alert(`${player.id} попал на Лотерею: ${outcome.text}`);
+                addLogMessage(`${player.id} попал на Лотерею: ${outcome.text}`);
             } else if (outcome.effect === "freeHouse") {
-                // Добавьте логику для получения бесплатного дома
-                console.log(`${player.id} получил бесплатный дом!`);
+                addLogMessage(`${player.id} получил бесплатный дом!`);
             } else if (outcome.effect === "skipTurn") {
-                // Пропуск хода
-                console.log(`${player.id} пропускает ход!`);
-                nextTurn(); // Переход хода
+                addLogMessage(`${player.id} пропускает ход!`);
+                nextTurn();
             }
         }
 
@@ -722,12 +813,10 @@
 
         // Обработка банкротства
         function handleBankruptcy(player) {
-            console.log(`${player.id} объявил банкротство!`);
-            // Удаляем игрока из списка
+            addLogMessage(`${player.id} объявил банкротство!`);
             players = players.filter(p => p.id !== player.id);
             if (players.length === 1) {
-                // Если остался один игрок, игра заканчивается
-                console.log(`Игрок ${players[0].id} выиграл!`);
+                addLogMessage(`Игрок ${players[0].id} выиграл!`);
                 alert(`Игрок ${players[0].id} выиграл!`);
             }
         }
@@ -741,9 +830,9 @@
                     currentPlayer.money -= currentCell.price;
                     currentPlayer.properties.push(currentCell);
                     currentCell.owner = currentPlayer;
-                    console.log(`${currentPlayer.id} купил ${currentCell.name} за ${currentCell.price}$`);
+                    addLogMessage(`${currentPlayer.id} купил ${currentCell.name} за ${currentCell.price}$`);
                 } else {
-                    console.log(`${currentPlayer.id} не хватает денег для покупки ${currentCell.name}`);
+                    addLogMessage(`${currentPlayer.id} не хватает денег для покупки ${currentCell.name}`);
                 }
             }
         }
@@ -755,17 +844,17 @@
 
         // Кнопка "Торговать"
         function trade() {
-            console.log("Торговля пока не реализована.");
+            addLogMessage("Торговля пока не реализована.");
         }
 
         // Кнопка "Строить дома"
         function buildHouses() {
-            console.log("Строительство домов пока не реализовано.");
+            addLogMessage("Строительство домов пока не реализовано.");
         }
 
         // Кнопка "Заложить имущество"
         function mortgageProperty() {
-            console.log("Залог имущества пока не реализован.");
+            addLogMessage("Залог имущества пока не реализован.");
         }
     </script>
 </body>
