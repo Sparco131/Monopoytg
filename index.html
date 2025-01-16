@@ -406,41 +406,44 @@
 <body>
     <!-- Меню -->
     <div class="menu-container" id="menu">
-        <h1>Modern Monopoly</h1>
+        <h1 id="game-title">Modern Monopoly</h1>
 
         <!-- Основные настройки -->
-        <label for="mode">Выберите режим:</label>
+        <label for="mode" id="mode-label">Выберите режим:</label>
         <select id="mode">
             <option value="classic">Классический</option>
             <option value="fast">Быстрый</option>
         </select>
 
-        <label for="players">Количество игроков (включая ботов):</label>
+        <label for="players" id="players-label">Количество игроков (включая ботов):</label>
         <input type="number" id="players" min="1" max="4" value="2">
 
         <!-- Кнопка "Настройка сессии" -->
-        <button onclick="openSessionSettings()">Настройка сессии</button>
+        <button onclick="openSessionSettings()" id="session-settings-button">Настройка сессии</button>
 
         <!-- Кнопка "Начать игру" -->
-        <button onclick="startGame()">Начать игру</button>
+        <button onclick="startGame()" id="start-game-button">Начать игру</button>
+
+        <!-- Кнопка "Настройки" -->
+        <button onclick="openSettings()" id="settings-button">Настройки</button>
     </div>
 
     <!-- Модальное окно для настроек сессии -->
     <div id="session-settings-modal" class="modal">
         <div class="modal-content">
-            <h2>Настройка сессии</h2>
+            <h2 id="session-settings-title">Настройка сессии</h2>
 
             <!-- Дополнительные настройки -->
-            <label for="startingMoney">Стартовый капитал:</label>
+            <label for="startingMoney" id="starting-money-label">Стартовый капитал:</label>
             <input type="number" id="startingMoney" min="500" max="5000" value="1500">
 
-            <label for="maxHouses">Максимум домов на улице:</label>
+            <label for="maxHouses" id="max-houses-label">Максимум домов на улице:</label>
             <input type="number" id="maxHouses" min="1" max="5" value="4">
 
-            <label for="enableAuctions">Включить аукционы:</label>
+            <label for="enableAuctions" id="enable-auctions-label">Включить аукционы:</label>
             <input type="checkbox" id="enableAuctions" checked>
 
-            <label for="botDifficulty">Сложность ботов:</label>
+            <label for="botDifficulty" id="bot-difficulty-label">Сложность ботов:</label>
             <select id="botDifficulty">
                 <option value="easy">Легкая</option>
                 <option value="medium">Средняя</option>
@@ -448,8 +451,26 @@
             </select>
 
             <!-- Кнопки для закрытия и сохранения -->
-            <button onclick="closeSessionSettings()">Закрыть</button>
-            <button onclick="saveSessionSettings()">Сохранить</button>
+            <button onclick="closeSessionSettings()" id="close-session-settings-button">Закрыть</button>
+            <button onclick="saveSessionSettings()" id="save-session-settings-button">Сохранить</button>
+        </div>
+    </div>
+
+    <!-- Модальное окно для настроек языка -->
+    <div id="settings-modal" class="modal">
+        <div class="modal-content">
+            <h2 id="settings-title">Настройки</h2>
+
+            <!-- Выбор языка -->
+            <label for="language" id="language-label">Выберите язык:</label>
+            <select id="language">
+                <option value="ru">Русский</option>
+                <option value="en">English</option>
+            </select>
+
+            <!-- Кнопки для закрытия и сохранения -->
+            <button onclick="closeSettings()" id="close-settings-button">Закрыть</button>
+            <button onclick="saveSettings()" id="save-settings-button">Сохранить</button>
         </div>
     </div>
 
@@ -531,13 +552,13 @@
 
     <!-- Кнопки и лог -->
     <div class="controls" id="controls">
-        <button class="roll-button" onclick="rollDice()">Бросить кубики</button>
-        <button onclick="buyProperty()">Купить</button>
-        <button onclick="skipTurn()">Пропустить</button>
-        <button onclick="endTurn()">Завершить ход</button>
-        <button onclick="trade()">Торговать</button>
-        <button onclick="buildHouses()">Строить дома</button>
-        <button onclick="mortgageProperty()">Заложить</button>
+        <button class="roll-button" onclick="rollDice()" id="roll-dice-button">Бросить кубики</button>
+        <button onclick="buyProperty()" id="buy-property-button">Купить</button>
+        <button onclick="skipTurn()" id="skip-turn-button">Пропустить</button>
+        <button onclick="endTurn()" id="end-turn-button">Завершить ход</button>
+        <button onclick="trade()" id="trade-button">Торговать</button>
+        <button onclick="buildHouses()" id="build-houses-button">Строить дома</button>
+        <button onclick="mortgageProperty()" id="mortgage-property-button">Заложить</button>
 
         <!-- Лог -->
         <div class="log-container">
@@ -563,6 +584,92 @@
             enableAuctions: true,
             botDifficulty: "medium",
         };
+
+        // Языковые настройки
+        let language = "ru"; // По умолчанию русский
+        const translations = {
+            ru: {
+                gameTitle: "Modern Monopoly",
+                modeLabel: "Выберите режим:",
+                playersLabel: "Количество игроков (включая ботов):",
+                sessionSettingsButton: "Настройка сессии",
+                startGameButton: "Начать игру",
+                settingsButton: "Настройки",
+                sessionSettingsTitle: "Настройка сессии",
+                startingMoneyLabel: "Стартовый капитал:",
+                maxHousesLabel: "Максимум домов на улице:",
+                enableAuctionsLabel: "Включить аукционы:",
+                botDifficultyLabel: "Сложность ботов:",
+                closeSessionSettingsButton: "Закрыть",
+                saveSessionSettingsButton: "Сохранить",
+                settingsTitle: "Настройки",
+                languageLabel: "Выберите язык:",
+                closeSettingsButton: "Закрыть",
+                saveSettingsButton: "Сохранить",
+                rollDiceButton: "Бросить кубики",
+                buyPropertyButton: "Купить",
+                skipTurnButton: "Пропустить",
+                endTurnButton: "Завершить ход",
+                tradeButton: "Торговать",
+                buildHousesButton: "Строить дома",
+                mortgagePropertyButton: "Заложить",
+            },
+            en: {
+                gameTitle: "Modern Monopoly",
+                modeLabel: "Select mode:",
+                playersLabel: "Number of players (including bots):",
+                sessionSettingsButton: "Session Settings",
+                startGameButton: "Start Game",
+                settingsButton: "Settings",
+                sessionSettingsTitle: "Session Settings",
+                startingMoneyLabel: "Starting money:",
+                maxHousesLabel: "Maximum houses per street:",
+                enableAuctionsLabel: "Enable auctions:",
+                botDifficultyLabel: "Bot difficulty:",
+                closeSessionSettingsButton: "Close",
+                saveSessionSettingsButton: "Save",
+                settingsTitle: "Settings",
+                languageLabel: "Select language:",
+                closeSettingsButton: "Close",
+                saveSettingsButton: "Save",
+                rollDiceButton: "Roll Dice",
+                buyPropertyButton: "Buy",
+                skipTurnButton: "Skip",
+                endTurnButton: "End Turn",
+                tradeButton: "Trade",
+                buildHousesButton: "Build Houses",
+                mortgagePropertyButton: "Mortgage",
+            },
+        };
+
+        // Функция для обновления текста на выбранный язык
+        function updateLanguage() {
+            const lang = translations[language];
+            document.getElementById("game-title").textContent = lang.gameTitle;
+            document.getElementById("mode-label").textContent = lang.modeLabel;
+            document.getElementById("players-label").textContent = lang.playersLabel;
+            document.getElementById("session-settings-button").textContent = lang.sessionSettingsButton;
+            document.getElementById("start-game-button").textContent = lang.startGameButton;
+            document.getElementById("settings-button").textContent = lang.settingsButton;
+            document.getElementById("session-settings-title").textContent = lang.sessionSettingsTitle;
+            document.getElementById("starting-money-label").textContent = lang.startingMoneyLabel;
+            document.getElementById("max-houses-label").textContent = lang.maxHousesLabel;
+            document.getElementById("enable-auctions-label").textContent = lang.enableAuctionsLabel;
+            document.getElementById("bot-difficulty-label").textContent = lang.botDifficultyLabel;
+            document.getElementById("close-session-settings-button").textContent = lang.closeSessionSettingsButton;
+            document.getElementById("save-session-settings-button").textContent = lang.saveSessionSettingsButton;
+            document.getElementById("settings-title").textContent = lang.settingsTitle;
+            document.getElementById("language-label").textContent = lang.languageLabel;
+            document.getElementById("close-settings-button").textContent = lang.closeSettingsButton;
+            document.getElementById("save-settings-button").textContent = lang.saveSettingsButton;
+            document.getElementById("roll-dice-button").textContent = lang.rollDiceButton;
+            document.getElementById("buy-property-button").textContent = lang.buyPropertyButton;
+            document.getElementById("skip-turn-button").textContent = lang.skipTurnButton;
+            document.getElementById("end-turn-button").textContent = lang.endTurnButton;
+            document.getElementById("trade-button").textContent = lang.tradeButton;
+            document.getElementById("build-houses-button").textContent = lang.buildHousesButton;
+            document.getElementById("mortgage-property-button").textContent = lang.mortgagePropertyButton;
+        }
 
         // Функция для добавления сообщения в лог
         function addLogMessage(message) {
@@ -642,7 +749,7 @@
 
                 // Бот автоматически завершает ход
                 endTurn();
-            }, 3000); // Задержка хода бота: 3 секунды
+            }, 2500); // Задержка хода бота: 2,5 секунды
         }
 
         // Переход хода
@@ -695,22 +802,74 @@
 
         // Функция для перемещения игрока
         function movePlayer(player, steps) {
-            const newPosition = (player.position + steps) % 40;
+            const newPosition = (player.position + steps) % 40; // Всего 40 клеток
             player.position = newPosition;
 
             const playerElement = document.getElementById(player.id);
             const board = document.querySelector('.board');
-            const cellSize = board.offsetWidth / 12;
-            const cell = getCellPosition(newPosition);
-            playerElement.style.left = `${cell.x * cellSize}px`;
-            playerElement.style.top = `${cell.y * cellSize}px`;
+            const cellSize = board.offsetWidth / 12; // Размер клетки
 
+            // Получаем координаты клетки
+            const cell = getCellPosition(newPosition);
+            const cellX = cell.x;
+            const cellY = cell.y;
+
+            // Рассчитываем позицию маркера внутри клетки
+            const offsetX = cellSize * 0.25; // Смещение от края клетки
+            const offsetY = cellSize * 0.25;
+
+            // Позиционируем маркер
+            playerElement.style.left = `${cellX * cellSize + offsetX}px`;
+            playerElement.style.top = `${cellY * cellSize + offsetY}px`;
+
+            // Обрабатываем действия на клетке
             const currentCell = document.querySelector(`.cell[style*="grid-column: ${cell.x + 1} / ${cell.x + 2}"][style*="grid-row: ${cell.y + 1} / ${cell.y + 2}"]`);
             if (currentCell.classList.contains('lottery')) {
                 handleLotteryCell(player);
             } else {
                 handleCellAction(player, newPosition);
             }
+        }
+
+        // Получение координат клетки
+        function getCellPosition(index) {
+            const positions = [
+                { x: 0, y: 0 }, // Старт
+                { x: 1, y: 0 }, // Новая клетка справа от Старта
+                { x: 2, y: 0 }, // Улица 1
+                { x: 3, y: 0 }, // Улица 2
+                { x: 4, y: 0 }, // Улица 3
+                { x: 5, y: 0 }, // Улица 4
+                { x: 6, y: 0 }, // Улица 5
+                { x: 7, y: 0 }, // Улица 6
+                { x: 8, y: 0 }, // Улица 7
+                { x: 9, y: 0 }, // Железная дорога 1
+                { x: 10, y: 0 }, // Железная дорога 2
+                { x: 11, y: 0 }, // Железная дорога 3
+                { x: 11, y: 1 }, // Железная дорога 4
+                { x: 11, y: 2 }, // Электростанция
+                { x: 11, y: 3 }, // Водоканал
+                { x: 11, y: 4 }, // Шанс
+                { x: 11, y: 5 }, // Лотерея
+                { x: 11, y: 6 }, // Налог
+                { x: 11, y: 7 }, // Налог
+                { x: 11, y: 8 }, // Тюрьма
+                { x: 12, y: 8 }, // Новая клетка справа от Тюрьмы
+                { x: 11, y: 7 }, // Новая клетка над Тюрьмой
+                { x: 11, y: 9 }, // Бесплатная парковка
+                { x: 10, y: 9 }, // Идите в тюрьму
+                { x: 9, y: 9 }, // Новая клетка слева от Идите в тюрьму
+                { x: 10, y: 1 }, // Новая клетка под Идите в тюрьму
+                { x: 8, y: 9 }, // Улица 8
+                { x: 7, y: 9 }, // Улица 9
+                { x: 6, y: 9 }, // Улица 10
+                { x: 5, y: 9 }, // Улица 11
+                { x: 4, y: 9 }, // Улица 12
+                { x: 12, y: 11 }, // Новая клетка над Бесплатной парковкой
+                { x: 10, y: 12 }, // Новая клетка с улицей
+                { x: 11, y: 12 }, // Сдвинутая клетка "Дорога"
+            ];
+            return positions[index];
         }
 
         // Обработка действий на клетке
@@ -778,48 +937,6 @@
                 { type: "empty", name: "Дорога" }, // Сдвинутая клетка "Дорога"
             ];
             return cells[index];
-        }
-
-        // Получение координат клетки
-        function getCellPosition(index) {
-            const positions = [
-                { x: 0, y: 0 }, // Старт
-                { x: 1, y: 0 }, // Новая клетка справа от Старта
-                { x: 0, y: 1 }, // Существующая клетка под Стартом
-                { x: 2, y: 0 }, // Улица 1
-                { x: 3, y: 0 }, // Улица 2
-                { x: 4, y: 0 }, // Улица 3
-                { x: 5, y: 0 }, // Улица 4
-                { x: 6, y: 0 }, // Улица 5
-                { x: 7, y: 0 }, // Улица 6
-                { x: 8, y: 0 }, // Улица 7
-                { x: 9, y: 0 }, // Железная дорога 1
-                { x: 10, y: 0 }, // Железная дорога 2
-                { x: 11, y: 0 }, // Железная дорога 3
-                { x: 11, y: 1 }, // Железная дорога 4
-                { x: 11, y: 2 }, // Электростанция
-                { x: 11, y: 3 }, // Водоканал
-                { x: 11, y: 4 }, // Шанс
-                { x: 11, y: 5 }, // Лотерея
-                { x: 11, y: 6 }, // Налог
-                { x: 11, y: 7 }, // Налог
-                { x: 11, y: 8 }, // Тюрьма
-                { x: 12, y: 8 }, // Новая клетка справа от Тюрьмы
-                { x: 11, y: 7 }, // Новая клетка над Тюрьмой
-                { x: 11, y: 9 }, // Бесплатная парковка
-                { x: 10, y: 9 }, // Идите в тюрьму
-                { x: 9, y: 9 }, // Новая клетка слева от Идите в тюрьму
-                { x: 10, y: 1 }, // Новая клетка под Идите в тюрьму
-                { x: 8, y: 9 }, // Улица 8
-                { x: 7, y: 9 }, // Улица 9
-                { x: 6, y: 9 }, // Улица 10
-                { x: 5, y: 9 }, // Улица 11
-                { x: 4, y: 9 }, // Улица 12
-                { x: 12, y: 11 }, // Новая клетка над Бесплатной парковкой
-                { x: 10, y: 12 }, // Новая клетка с улицей
-                { x: 11, y: 12 }, // Сдвинутая клетка "Дорога"
-            ];
-            return positions[index];
         }
 
         // Функция для обработки попадания на клетку "Лотерея"
@@ -938,6 +1055,30 @@
             addLogMessage('Настройки сессии сохранены.');
             closeSessionSettings();
         }
+
+        // Открытие модального окна настроек
+        function openSettings() {
+            const modal = document.getElementById('settings-modal');
+            modal.style.display = 'flex';
+        }
+
+        // Закрытие модального окна настроек
+        function closeSettings() {
+            const modal = document.getElementById('settings-modal');
+            modal.style.display = 'none';
+        }
+
+        // Сохранение настроек языка
+        function saveSettings() {
+            const selectedLanguage = document.getElementById('language').value;
+            language = selectedLanguage;
+            updateLanguage();
+            addLogMessage('Настройки языка сохранены.');
+            closeSettings();
+        }
+
+        // Инициализация языка при загрузке страницы
+        updateLanguage();
     </script>
 </body>
 </html>
