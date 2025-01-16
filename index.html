@@ -14,6 +14,7 @@
             display: flex;
             flex-direction: column;
             align-items: center;
+            justify-content: center;
             min-height: 100vh;
             color: white;
             overflow: hidden;
@@ -22,7 +23,7 @@
         /* Контейнер для меню */
         .menu-container {
             background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(10px);
+            backdrop-filter: blur(15px);
             padding: 40px;
             border-radius: 20px;
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
@@ -30,17 +31,7 @@
             max-width: 400px;
             width: 100%;
             animation: fadeIn 1s ease-in-out;
-        }
-
-        @keyframes fadeIn {
-            from {
-                opacity: 0;
-                transform: translateY(-20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+            border: 1px solid rgba(255, 255, 255, 0.2);
         }
 
         .menu-container h1 {
@@ -48,14 +39,23 @@
             margin-bottom: 20px;
             color: white;
             text-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+            animation: slideIn 0.8s ease-out;
+        }
+
+        .menu-content {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
         }
 
         .menu-container label {
             display: block;
-            margin: 15px 0 5px;
+            margin: 10px 0 5px;
             font-weight: bold;
-            color: rgba(255, 255, 255, 0.8);
+            color: rgba(255, 255, 255, 0.9);
             text-align: left;
+            font-size: 1rem;
+            animation: fadeIn 1.2s ease-in-out;
         }
 
         .menu-container select,
@@ -65,16 +65,18 @@
             border: 1px solid rgba(255, 255, 255, 0.3);
             border-radius: 10px;
             font-size: 1rem;
-            margin-bottom: 20px;
+            margin-bottom: 10px;
             box-sizing: border-box;
             background: rgba(255, 255, 255, 0.1);
             color: white;
-            transition: border-color 0.3s ease, background 0.3s ease;
+            transition: all 0.3s ease;
+            animation: fadeIn 1.4s ease-in-out;
         }
 
         .menu-container select:hover,
         .menu-container input:hover {
             border-color: rgba(255, 255, 255, 0.5);
+            background: rgba(255, 255, 255, 0.2);
         }
 
         .menu-container select:focus,
@@ -82,6 +84,7 @@
             border-color: #6a11cb;
             background: rgba(255, 255, 255, 0.2);
             outline: none;
+            box-shadow: 0 0 8px rgba(106, 17, 203, 0.6);
         }
 
         .menu-container button {
@@ -94,6 +97,7 @@
             cursor: pointer;
             transition: transform 0.3s ease, box-shadow 0.3s ease;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+            animation: fadeIn 1.6s ease-in-out;
         }
 
         .menu-container button:hover {
@@ -106,26 +110,26 @@
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
         }
 
-        /* Анимация фона */
-        body::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 10%, transparent 10.01%);
-            background-size: 20px 20px;
-            animation: moveBackground 10s linear infinite;
-            z-index: -1;
-        }
-
-        @keyframes moveBackground {
+        /* Анимации */
+        @keyframes fadeIn {
             from {
-                transform: translateY(0) translateX(0);
+                opacity: 0;
+                transform: translateY(-20px);
             }
             to {
-                transform: translateY(-100%) translateX(-100%);
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(-50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
             }
         }
 
@@ -226,14 +230,15 @@
             background: #ff9f43; /* Оранжевый */
         }
 
-        /* Контейнер для кубиков и кнопки */
+        /* Контейнер для кубиков и кнопок */
         .dice-controls {
             display: none; /* Скрываем по умолчанию */
             justify-content: center;
             align-items: center;
-            gap: 20px;
+            gap: 10px;
             margin-top: 20px; /* Отступ сверху */
             margin-bottom: 20px; /* Отступ снизу */
+            flex-wrap: wrap; /* Перенос кнопок на новую строку */
         }
 
         /* Кубики */
@@ -251,51 +256,41 @@
             box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
         }
 
-        /* Кнопка броска */
-        .roll-button {
+        /* Кнопки */
+        .action-button {
             background: linear-gradient(135deg, #6a11cb, #2575fc);
             color: white;
             border: none;
-            padding: 12px 25px;
+            padding: 10px 20px;
             border-radius: 8px;
-            font-size: 1rem;
+            font-size: 0.9rem;
             cursor: pointer;
             transition: background 0.3s ease;
+            margin: 5px;
+            flex: 1 1 auto; /* Гибкие кнопки */
         }
 
-        .roll-button:hover {
+        .action-button:hover {
             background: linear-gradient(135deg, #2575fc, #6a11cb);
         }
 
         /* Адаптация для мобильных устройств */
         @media (max-width: 600px) {
-            .menu-container {
-                padding: 20px;
-                border-radius: 15px;
+            .dice-controls {
+                flex-direction: column;
+                gap: 10px;
             }
 
-            .menu-container h1 {
-                font-size: 2rem;
-            }
-
-            .menu-container button {
-                padding: 12px 25px;
+            .action-button {
+                width: 100%;
+                padding: 12px;
                 font-size: 1rem;
             }
 
-            .cell {
-                font-size: 8px;
-                padding: 1px;
-            }
-
-            .corner {
-                font-size: 10px;
-            }
-
-            .board-container {
-                max-width: 100%;
-                border-radius: 0;
-                margin-top: 10px;
+            .roll-button {
+                width: 100%;
+                padding: 12px;
+                font-size: 1rem;
             }
 
             .dice {
@@ -304,17 +299,6 @@
                 font-size: 20px;
                 line-height: 40px;
             }
-
-            .roll-button {
-                padding: 10px 20px;
-                font-size: 0.9rem;
-            }
-
-            .dice-controls {
-                gap: 10px;
-                margin-top: 10px;
-                margin-bottom: 10px;
-            }
         }
     </style>
 </head>
@@ -322,16 +306,18 @@
     <!-- Меню -->
     <div class="menu-container" id="menu">
         <h1>Modern Monopoly</h1>
-        <label for="mode">Выберите режим:</label>
-        <select id="mode">
-            <option value="classic">Классический</option>
-            <option value="fast">Быстрый</option>
-        </select>
+        <div class="menu-content">
+            <label for="mode">Выберите режим:</label>
+            <select id="mode">
+                <option value="classic">Классический</option>
+                <option value="fast">Быстрый</option>
+            </select>
 
-        <label for="players">Количество игроков (включая ботов):</label>
-        <input type="number" id="players" min="1" max="4" value="2">
+            <label for="players">Количество игроков (включая ботов):</label>
+            <input type="number" id="players" min="1" max="4" value="2">
 
-        <button onclick="startGame()">Начать игру</button>
+            <button onclick="startGame()">Начать игру</button>
+        </div>
     </div>
 
     <!-- Игровое поле -->
@@ -346,7 +332,7 @@
             <!-- Остальные клетки -->
             <div class="cell property" style="grid-column: 3 / 4; grid-row: 12 / 13;">Улица 1 (60$)</div>
             <div class="cell property" style="grid-column: 4 / 5; grid-row: 12 / 13;">Улица 2 (60$)</div>
-            <div class="cell property" style="grid-column: 5 / 6; grid-row: 12 / 13;">Улица 3 (100$)</div>
+            <div class="cell property lottery" style="grid-column: 5 / 6; grid-row: 12 / 13;">Улица 3 (100$)</div> <!-- Фиксированная клетка "Лотерея" -->
             <div class="cell property" style="grid-column: 6 / 7; grid-row: 12 / 13;">Улица 4 (100$)</div>
             <div class="cell property" style="grid-column: 7 / 8; grid-row: 12 / 13;">Улица 5 (140$)</div>
             <div class="cell property" style="grid-column: 8 / 9; grid-row: 12 / 13;">Улица 6 (140$)</div>
@@ -391,11 +377,16 @@
         </div>
     </div>
 
-    <!-- Кубики и кнопка броска -->
+    <!-- Кубики и кнопки -->
     <div class="dice-controls" id="dice-controls">
         <div id="dice1" class="dice">1</div>
         <div id="dice2" class="dice">1</div>
         <button class="roll-button" onclick="rollDice()">Бросить кубики</button>
+        <button class="action-button" id="buy-button" onclick="buyProperty()">Купить</button>
+        <button class="action-button" id="skip-button" onclick="skipTurn()">Пропустить</button>
+        <button class="action-button" id="trade-button" onclick="tradeProperty()">Торговать</button>
+        <button class="action-button" id="mortgage-button" onclick="mortgageProperty()">Заложить</button>
+        <button class="action-button" id="end-turn-button" onclick="endTurn()">Завершить ход</button>
     </div>
 
     <script>
@@ -412,19 +403,24 @@
 
         // Начало игры
         function startGame() {
+            const playersInput = document.getElementById('players');
+            const playersCount = parseInt(playersInput.value);
+
+            // Валидация ввода
+            if (isNaN(playersCount) || playersCount < 1 || playersCount > 4) {
+                alert('Пожалуйста, введите количество игроков от 1 до 4.');
+                return;
+            }
+
             const mode = document.getElementById('mode').value;
-            const playersCount = parseInt(document.getElementById('players').value);
 
             // Скрываем меню и показываем поле и кубики
             menu.style.display = 'none';
             boardContainer.style.display = 'block';
-            diceControls.style.display = 'flex'; // Показываем кубики и кнопку
+            diceControls.style.display = 'flex';
 
             // Инициализация игры
             initGame(mode, playersCount);
-
-            // Заменяем случайную клетку на "Лотерея"
-            replaceRandomCellWithLottery();
         }
 
         // Инициализация игры
@@ -518,27 +514,38 @@
         // Обработка действий на клетке
         function handleCellAction(player, position) {
             const cell = getCellData(position);
-            if (cell.type === "property" && !cell.owner) {
+            if (cell.type === "jail") {
+                console.log(`${player.id} попал в тюрьму и пропускает ход.`);
+                alert(`${player.id} попал в тюрьму и пропускает ход.`);
+                nextTurn(); // Пропускаем ход
+            } else if (cell.type === "property" && !cell.owner) {
                 if (player.money >= cell.price) {
                     player.money -= cell.price;
                     player.properties.push(cell);
                     cell.owner = player;
                     console.log(`${player.id} купил ${cell.name} за ${cell.price}$`);
+                    alert(`${player.id} купил ${cell.name} за ${cell.price}$`);
+                } else {
+                    alert("Недостаточно денег для покупки!");
                 }
             } else if (cell.type === "property" && cell.owner && cell.owner !== player) {
                 const rent = cell.rent;
                 player.money -= rent;
                 cell.owner.money += rent;
                 console.log(`${player.id} заплатил аренду ${cell.owner.id} в размере ${rent}$`);
+                alert(`${player.id} заплатил аренду ${cell.owner.id} в размере ${rent}$`);
             } else if (cell.type === "tax") {
                 player.money -= cell.amount;
                 console.log(`${player.id} заплатил налог в размере ${cell.amount}$`);
+                alert(`${player.id} заплатил налог в размере ${cell.amount}$`);
             } else if (cell.type === "chance") {
                 const chanceCard = drawChanceCard();
                 console.log(`${player.id} вытянул карточку Шанс: ${chanceCard}`);
+                alert(`${player.id} вытянул карточку Шанс: ${chanceCard}`);
             } else if (cell.type === "community_chest") {
                 const communityChestCard = drawCommunityChestCard();
                 console.log(`${player.id} вытянул карточку Общественной казны: ${communityChestCard}`);
+                alert(`${player.id} вытянул карточку Общественной казны: ${communityChestCard}`);
             }
         }
 
@@ -608,17 +615,6 @@
             return positions[index];
         }
 
-        // Функция для замены случайной клетки на "Лотерея"
-        function replaceRandomCellWithLottery() {
-            const cells = document.querySelectorAll('.cell:not(.corner)'); // Все клетки, кроме угловых
-            const randomIndex = Math.floor(Math.random() * cells.length); // Случайный индекс
-            const randomCell = cells[randomIndex];
-
-            // Заменяем содержимое клетки
-            randomCell.classList.add('lottery');
-            randomCell.textContent = 'Лотерея';
-        }
-
         // Функция для обработки попадания на клетку "Лотерея"
         function handleLotteryCell(player) {
             const outcomes = [
@@ -640,23 +636,103 @@
         // Карточки Шанс
         function drawChanceCard() {
             const cards = [
-                "Получите 100$",
-                "Перейдите на старт",
-                "Отправьтесь в тюрьму",
-                "Заплатите 50$",
+                { text: "Получите 100$!", effect: (player) => { player.money += 100; } },
+                { text: "Заплатите 50$!", effect: (player) => { player.money -= 50; } },
+                { text: "Перейдите на старт!", effect: (player) => { player.position = 0; } },
+                { text: "Отправьтесь в тюрьму!", effect: (player) => { player.position = 10; } },
             ];
-            return cards[Math.floor(Math.random() * cards.length)];
+            const card = cards[Math.floor(Math.random() * cards.length)];
+            card.effect(players[currentPlayerIndex]);
+            return card.text;
         }
 
         // Карточки Общественной казны
         function drawCommunityChestCard() {
             const cards = [
-                "Получите 200$",
-                "Заплатите 100$",
-                "Перейдите на старт",
-                "Отправьтесь в тюрьму",
+                { text: "Получите 200$!", effect: (player) => { player.money += 200; } },
+                { text: "Заплатите 100$!", effect: (player) => { player.money -= 100; } },
+                { text: "Перейдите на старт!", effect: (player) => { player.position = 0; } },
+                { text: "Отправьтесь в тюрьму!", effect: (player) => { player.position = 10; } },
             ];
-            return cards[Math.floor(Math.random() * cards.length)];
+            const card = cards[Math.floor(Math.random() * cards.length)];
+            card.effect(players[currentPlayerIndex]);
+            return card.text;
+        }
+
+        // Функция для покупки клетки
+        function buyProperty() {
+            const currentPlayer = players[currentPlayerIndex];
+            const currentCell = getCellData(currentPlayer.position);
+
+            if (currentCell.type === "property" && !currentCell.owner) {
+                if (currentPlayer.money >= currentCell.price) {
+                    currentPlayer.money -= currentCell.price;
+                    currentPlayer.properties.push(currentCell);
+                    currentCell.owner = currentPlayer;
+                    console.log(`${currentPlayer.id} купил ${currentCell.name} за ${currentCell.price}$`);
+                    alert(`${currentPlayer.id} купил ${currentCell.name} за ${currentCell.price}$`);
+                } else {
+                    alert("Недостаточно денег для покупки!");
+                }
+            } else {
+                alert("Эта клетка не может быть куплена!");
+            }
+        }
+
+        // Функция для пропуска хода
+        function skipTurn() {
+            console.log(`${players[currentPlayerIndex].id} пропускает ход.`);
+            nextTurn();
+        }
+
+        // Функция для торговли (заглушка)
+        function tradeProperty() {
+            alert("Торговля пока не реализована.");
+        }
+
+        // Функция для залога недвижимости
+        function mortgageProperty() {
+            const currentPlayer = players[currentPlayerIndex];
+            if (currentPlayer.properties.length > 0) {
+                const property = currentPlayer.properties[0]; // Заложить первую недвижимость
+                currentPlayer.money += property.price / 2; // Получаем половину стоимости
+                property.mortgaged = true;
+                console.log(`${currentPlayer.id} заложил ${property.name} за ${property.price / 2}$`);
+                alert(`${currentPlayer.id} заложил ${property.name} за ${property.price / 2}$`);
+            } else {
+                alert("Нет недвижимости для залога!");
+            }
+        }
+
+        // Функция для завершения хода
+        function endTurn() {
+            console.log(`${players[currentPlayerIndex].id} завершает ход.`);
+            nextTurn();
+        }
+
+        // Проверка условий победы и банкротства
+        function checkWinCondition() {
+            players.forEach(player => {
+                if (player.money <= 0) {
+                    console.log(`${player.id} обанкротился и выбывает из игры!`);
+                    alert(`${player.id} обанкротился и выбывает из игры!`);
+                    players = players.filter(p => p !== player); // Удаляем игрока из игры
+                }
+            });
+
+            if (players.length === 1) {
+                console.log(`${players[0].id} побеждает!`);
+                alert(`${players[0].id} побеждает!`);
+            }
+        }
+
+        // Вызываем checkWinCondition после каждого хода
+        function nextTurn() {
+            checkWinCondition();
+            currentPlayerIndex = (currentPlayerIndex + 1) % players.length;
+            if (players[currentPlayerIndex].isBot) {
+                botTurn();
+            }
         }
     </script>
 </body>
