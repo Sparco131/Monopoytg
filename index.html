@@ -283,9 +283,10 @@
         /* Контейнер для кнопок */
         .controls {
             display: none;
-            flex-direction: column;
-            align-items: center;
-            gap: 10px;
+            flex-direction: row; /* Кнопки теперь в строку */
+            flex-wrap: wrap; /* Если кнопки не помещаются, они переносятся на новую строку */
+            justify-content: center; /* Центрируем кнопки */
+            gap: 8px; /* Расстояние между кнопками */
             margin-top: 20px;
             margin-bottom: 20px;
             width: 90%;
@@ -302,8 +303,8 @@
             font-size: 0.8rem;
             cursor: pointer;
             transition: background 0.3s ease;
-            flex: 1 1 auto;
-            min-width: 80px;
+            flex: 1 1 auto; /* Кнопки растягиваются, чтобы заполнить доступное пространство */
+            min-width: 80px; /* Минимальная ширина кнопки */
             text-align: center;
         }
 
