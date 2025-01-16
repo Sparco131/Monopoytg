@@ -512,6 +512,7 @@
         <button class="roll-button" onclick="rollDice()">Бросить кубики</button>
         <button onclick="buyProperty()">Купить</button>
         <button onclick="skipTurn()">Пропустить</button>
+        <button onclick="endTurn()">Завершить ход</button>
         <button onclick="trade()">Торговать</button>
         <button onclick="buildHouses()">Строить дома</button>
         <button onclick="mortgageProperty()">Заложить</button>
@@ -609,20 +610,20 @@
                 addLogMessage(`Бот ${bot.id} бросил кубики: ${dice1} и ${dice2}, шаги: ${steps}`);
 
                 // Логика для ботов в зависимости от сложности
-                if (bot.botDifficulty === "easy") {
-                    if (Math.random() < 0.3) {
+                const currentCell = getCellData(bot.position);
+                if (currentCell.type === "property" && !currentCell.owner) {
+                    if (bot.botDifficulty === "easy" && Math.random() < 0.3) {
+                        buyProperty();
+                    } else if (bot.botDifficulty === "medium" && Math.random() < 0.6) {
+                        buyProperty();
+                    } else if (bot.botDifficulty === "hard") {
                         buyProperty();
                     }
-                } else if (bot.botDifficulty === "medium") {
-                    if (Math.random() < 0.6) {
-                        buyProperty();
-                    }
-                } else if (bot.botDifficulty === "hard") {
-                    buyProperty();
                 }
 
-                nextTurn();
-            }, 1000);
+                // Бот автоматически завершает ход
+                endTurn();
+            }, 3000); // Задержка хода бота: 3 секунды
         }
 
         // Переход хода
@@ -631,7 +632,16 @@
             highlightActivePlayer();
             if (players[currentPlayerIndex].isBot) {
                 botTurn();
+            } else {
+                addLogMessage(`Ход игрока ${players[currentPlayerIndex].id}.`);
             }
+        }
+
+        // Функция для завершения хода
+        function endTurn() {
+            const currentPlayer = players[currentPlayerIndex];
+            addLogMessage(`${currentPlayer.id} завершил ход.`);
+            nextTurn();
         }
 
         // Функция для броска кубиков
@@ -652,7 +662,15 @@
                 const steps = dice1 + dice2;
                 movePlayer(currentPlayer, steps);
                 addLogMessage(`Игрок ${currentPlayer.id} бросил кубики: ${dice1} и ${dice2}, шаги: ${steps}`);
-                nextTurn();
+
+                // Проверяем, можно ли купить клетку
+                const currentCell = getCellData(currentPlayer.position);
+                if (currentCell.type === "property" && !currentCell.owner) {
+                    addLogMessage(`${currentPlayer.id}, вы можете купить ${currentCell.name} за ${currentCell.price}$. Нажмите "Купить", чтобы приобрести.`);
+                } else {
+                    // Если клетка не для покупки, предлагаем завершить ход
+                    addLogMessage(`${currentPlayer.id}, нажмите "Завершить ход", чтобы закончить ход.`);
+                }
             }, 2000);
         }
 
@@ -679,14 +697,7 @@
         // Обработка действий на клетке
         function handleCellAction(player, position) {
             const cell = getCellData(position);
-            if (cell.type === "property" && !cell.owner) {
-                if (player.money >= cell.price) {
-                    player.money -= cell.price;
-                    player.properties.push(cell);
-                    cell.owner = player;
-                    addLogMessage(`${player.id} купил ${cell.name} за ${cell.price}$`);
-                }
-            } else if (cell.type === "property" && cell.owner && cell.owner !== player) {
+            if (cell.type === "property" && cell.owner && cell.owner !== player) {
                 const rent = cell.rent;
                 if (player.money >= rent) {
                     player.money -= rent;
@@ -851,6 +862,8 @@
                 } else {
                     addLogMessage(`${currentPlayer.id} не хватает денег для покупки ${currentCell.name}`);
                 }
+            } else {
+                addLogMessage(`${currentPlayer.id} не может купить эту клетку.`);
             }
         }
 
