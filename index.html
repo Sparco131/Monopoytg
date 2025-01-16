@@ -485,7 +485,7 @@
 
             <!-- Правая сторона (сверху вниз) -->
             <div class="cell property" style="grid-column: 12 / 13; grid-row: 3 / 4;">Шанс</div>
-            <div class="cell property" style="grid-column: 12 / 13; grid-row: 4 / 5;">Общественная казна</div>
+            <div class="cell lottery" style="grid-column: 12 / 13; grid-row: 4 / 5;">Лотерея</div> <!-- Заменено на Лотерею -->
             <div class="cell property" style="grid-column: 12 / 13; grid-row: 5 / 6;">Электростанция (150$)</div>
             <div class="cell property" style="grid-column: 12 / 13; grid-row: 6 / 7;">Водоканал (150$)</div>
             <div class="cell property" style="grid-column: 12 / 13; grid-row: 7 / 8;">Железная дорога 1 (200$)</div>
@@ -565,9 +565,6 @@
 
             // Инициализация игры с настройками
             initGame(mode, playersCount);
-
-            // Заменяем случайную клетку на "Лотерея"
-            replaceRandomCellWithLottery();
         }
 
         // Инициализация игры
@@ -735,7 +732,7 @@
                 { type: "utility", name: "Электростанция", price: 150, rent: 25 },
                 { type: "utility", name: "Водоканал", price: 150, rent: 25 },
                 { type: "chance", name: "Шанс" },
-                { type: "community_chest", name: "Общественная казна" },
+                { type: "lottery", name: "Лотерея" }, // Заменено на Лотерею
                 { type: "tax", name: "Налог", amount: 200 },
                 { type: "tax", name: "Налог", amount: 100 },
                 { type: "jail", name: "Тюрьма" },
@@ -781,16 +778,6 @@
                 { x: 5, y: 10 },
             ];
             return positions[index];
-        }
-
-        // Функция для замены случайной клетки на "Лотерея"
-        function replaceRandomCellWithLottery() {
-            const cells = document.querySelectorAll('.cell:not(.corner)');
-            const randomIndex = Math.floor(Math.random() * cells.length);
-            const randomCell = cells[randomIndex];
-
-            randomCell.classList.add('lottery');
-            randomCell.textContent = 'Лотерея';
         }
 
         // Функция для обработки попадания на клетку "Лотерея"
