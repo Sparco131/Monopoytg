@@ -466,6 +466,7 @@
             <div class="cell corner" style="grid-column: 12 / 13; grid-row: 12 / 13;">Бесплатная парковка</div>
             <div class="cell corner" style="grid-column: 1 / 2; grid-row: 12 / 13;">Тюрьма</div>
             <div class="cell empty" style="grid-column: 2 / 3; grid-row: 12 / 13;">Дорога</div> <!-- Новая клетка справа от Тюрьмы -->
+            <div class="cell empty" style="grid-column: 1 / 2; grid-row: 11 / 12;">Дорога</div> <!-- Новая клетка над Тюрьмой -->
 
             <!-- Остальные клетки -->
             <div class="cell property" style="grid-column: 3 / 4; grid-row: 12 / 13;">Улица 1 (60$)</div>
@@ -762,6 +763,7 @@
                 { type: "tax", name: "Налог", amount: 100 },
                 { type: "jail", name: "Тюрьма" },
                 { type: "empty", name: "Дорога" }, // Новая клетка справа от Тюрьмы
+                { type: "empty", name: "Дорога" }, // Новая клетка над Тюрьмой
                 { type: "free_parking", name: "Бесплатная парковка" },
                 { type: "go_to_jail", name: "Идите в тюрьму" },
                 { type: "empty", name: "Дорога" }, // Новая клетка слева от Идите в тюрьму
@@ -803,6 +805,7 @@
                 { x: 11, y: 7 }, // Налог
                 { x: 11, y: 8 }, // Тюрьма
                 { x: 12, y: 8 }, // Новая клетка справа от Тюрьмы
+                { x: 11, y: 7 }, // Новая клетка над Тюрьмой
                 { x: 11, y: 9 }, // Бесплатная парковка
                 { x: 10, y: 9 }, // Идите в тюрьму
                 { x: 9, y: 9 }, // Новая клетка слева от Идите в тюрьму
