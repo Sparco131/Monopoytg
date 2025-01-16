@@ -458,9 +458,11 @@
         <div class="board">
             <!-- Угловые клетки -->
             <div class="cell corner" style="grid-column: 1 / 2; grid-row: 1 / 2;">Старт</div>
-            <div class="cell empty" style="grid-column: 2 / 3; grid-row: 1 / 2;">Дорога</div> <!-- Новая клетка -->
-            <div class="cell empty" style="grid-column: 1 / 2; grid-row: 2 / 3;">Дорога</div> <!-- Существующая клетка -->
+            <div class="cell empty" style="grid-column: 2 / 3; grid-row: 1 / 2;">Дорога</div> <!-- Новая клетка справа от Старта -->
+            <div class="cell empty" style="grid-column: 1 / 2; grid-row: 2 / 3;">Дорога</div> <!-- Существующая клетка под Стартом -->
+            <div class="cell empty" style="grid-column: 11 / 12; grid-row: 1 / 2;">Дорога</div> <!-- Новая клетка слева от Идите в тюрьму -->
             <div class="cell corner" style="grid-column: 12 / 13; grid-row: 1 / 2;">Идите в тюрьму</div>
+            <div class="cell empty" style="grid-column: 12 / 13; grid-row: 2 / 3;">Дорога</div> <!-- Новая клетка под Идите в тюрьму -->
             <div class="cell corner" style="grid-column: 12 / 13; grid-row: 12 / 13;">Бесплатная парковка</div>
             <div class="cell corner" style="grid-column: 1 / 2; grid-row: 12 / 13;">Тюрьма</div>
 
@@ -731,8 +733,8 @@
         function getCellData(index) {
             const cells = [
                 { type: "start", name: "Старт" },
-                { type: "empty", name: "Дорога" }, // Новая клетка
-                { type: "empty", name: "Дорога" }, // Существующая клетка
+                { type: "empty", name: "Дорога" }, // Новая клетка справа от Старта
+                { type: "empty", name: "Дорога" }, // Существующая клетка под Стартом
                 { type: "property", name: "Улица 1", price: 60, rent: 10 },
                 { type: "property", name: "Улица 2", price: 60, rent: 10 },
                 { type: "property", name: "Улица 3", price: 100, rent: 20 },
@@ -753,6 +755,8 @@
                 { type: "jail", name: "Тюрьма" },
                 { type: "free_parking", name: "Бесплатная парковка" },
                 { type: "go_to_jail", name: "Идите в тюрьму" },
+                { type: "empty", name: "Дорога" }, // Новая клетка слева от Идите в тюрьму
+                { type: "empty", name: "Дорога" }, // Новая клетка под Идите в тюрьму
                 { type: "property", name: "Улица 8", price: 220, rent: 45 },
                 { type: "property", name: "Улица 9", price: 240, rent: 50 },
                 { type: "property", name: "Улица 10", price: 260, rent: 55 },
@@ -766,8 +770,8 @@
         function getCellPosition(index) {
             const positions = [
                 { x: 0, y: 0 }, // Старт
-                { x: 1, y: 0 }, // Новая клетка "Дорога"
-                { x: 0, y: 1 }, // Существующая клетка "Дорога"
+                { x: 1, y: 0 }, // Новая клетка справа от Старта
+                { x: 0, y: 1 }, // Существующая клетка под Стартом
                 { x: 2, y: 0 }, // Улица 1
                 { x: 3, y: 0 }, // Улица 2
                 { x: 4, y: 0 }, // Улица 3
@@ -788,11 +792,13 @@
                 { x: 11, y: 8 }, // Тюрьма
                 { x: 11, y: 9 }, // Бесплатная парковка
                 { x: 10, y: 9 }, // Идите в тюрьму
-                { x: 9, y: 9 }, // Улица 8
-                { x: 8, y: 9 }, // Улица 9
-                { x: 7, y: 9 }, // Улица 10
-                { x: 6, y: 9 }, // Улица 11
-                { x: 5, y: 9 }, // Улица 12
+                { x: 9, y: 9 }, // Новая клетка слева от Идите в тюрьму
+                { x: 10, y: 1 }, // Новая клетка под Идите в тюрьму
+                { x: 8, y: 9 }, // Улица 8
+                { x: 7, y: 9 }, // Улица 9
+                { x: 6, y: 9 }, // Улица 10
+                { x: 5, y: 9 }, // Улица 11
+                { x: 4, y: 9 }, // Улица 12
             ];
             return positions[index];
         }
