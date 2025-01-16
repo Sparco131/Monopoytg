@@ -244,23 +244,15 @@
             background: #ff9f43;
         }
 
-        /* Контейнер для кубиков и кнопок */
-        .controls {
-            display: none;
-            flex-direction: column;
-            align-items: center;
-            gap: 10px;
-            margin-top: 20px;
-            margin-bottom: 20px;
-            width: 90%;
-            max-width: 400px;
-        }
-
+        /* Контейнер для кубиков */
         .dice-container {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
             display: flex;
             gap: 10px;
-            justify-content: center;
-            margin-bottom: 10px;
+            z-index: 10;
         }
 
         /* Кубики */
@@ -286,6 +278,18 @@
             100% {
                 transform: rotate(360deg);
             }
+        }
+
+        /* Контейнер для кнопок */
+        .controls {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+            margin-top: 20px;
+            margin-bottom: 20px;
+            width: 90%;
+            max-width: 400px;
         }
 
         /* Кнопки */
@@ -476,15 +480,17 @@
             <div id="player2" class="player"></div>
             <div id="player3" class="player"></div>
             <div id="player4" class="player"></div>
+
+            <!-- Кубики -->
+            <div class="dice-container">
+                <div id="dice1" class="dice">1</div>
+                <div id="dice2" class="dice">1</div>
+            </div>
         </div>
     </div>
 
-    <!-- Кубики и кнопки -->
+    <!-- Кнопки и лог -->
     <div class="controls" id="controls">
-        <div class="dice-container">
-            <div id="dice1" class="dice">1</div>
-            <div id="dice2" class="dice">1</div>
-        </div>
         <button class="roll-button" onclick="rollDice()">Бросить кубики</button>
         <button onclick="buyProperty()">Купить</button>
         <button onclick="skipTurn()">Пропустить</button>
