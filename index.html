@@ -167,7 +167,6 @@
             background: white;
             color: #333;
             transition: background 0.3s ease;
-            cursor: pointer; /* Добавляем курсор для клика */
         }
 
         .cell:hover {
@@ -266,38 +265,6 @@
 
         .roll-button:hover {
             background: linear-gradient(135deg, #2575fc, #6a11cb);
-        }
-
-        /* Всплывающее окно */
-        .modal {
-            display: none;
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background: white;
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
-            z-index: 1000;
-            color: #333;
-            text-align: center;
-        }
-
-        .modal-overlay {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.5);
-            z-index: 999;
-        }
-
-        .modal.show,
-        .modal-overlay.show {
-            display: block;
         }
 
         /* Адаптация для мобильных устройств */
@@ -431,14 +398,6 @@
         <button class="roll-button" onclick="rollDice()">Бросить кубики</button>
     </div>
 
-    <!-- Всплывающее окно -->
-    <div class="modal" id="cellModal">
-        <h2 id="modalTitle"></h2>
-        <p id="modalDescription"></p>
-        <button onclick="closeModal()">Закрыть</button>
-    </div>
-    <div class="modal-overlay" id="modalOverlay"></div>
-
     <script>
         // Элементы меню и поля
         const menu = document.getElementById('menu');
@@ -446,10 +405,6 @@
         const diceControls = document.getElementById('dice-controls');
         const dice1Element = document.getElementById('dice1');
         const dice2Element = document.getElementById('dice2');
-        const cellModal = document.getElementById('cellModal');
-        const modalOverlay = document.getElementById('modalOverlay');
-        const modalTitle = document.getElementById('modalTitle');
-        const modalDescription = document.getElementById('modalDescription');
 
         // Игроки и боты
         let players = [];
@@ -470,35 +425,125 @@
 
             // Заменяем случайную клетку на "Лотерея"
             replaceRandomCellWithLottery();
+        }
 
-            // Добавляем обработчики кликов на клетки
-            const cells = document.querySelectorAll('.cell');
-            cells.forEach(cell => {
-                cell.addEventListener('click', () => {
-                    if (window.innerWidth <= 600) { // Только для мобильных устройств
-                        showCellInfo(cell);
-                    }
+        // Инициализация игры
+        function initGame(mode, playersCount) {
+            players = [];
+            for (let i = 1; i <= playersCount; i++) {
+                players.push({
+                    id: `player${i}`,
+                    position: 0,
+                    money: 1500,
+                    isBot: i > 1, // Первый игрок — человек, остальные — боты
+                    properties: [],
                 });
-            });
+            }
+
+            // Начинаем игру с первого игрока
+            currentPlayerIndex = 0;
+            if (players[currentPlayerIndex].isBot) {
+                botTurn();
+            }
         }
 
-        // Показ информации о клетке
-        function showCellInfo(cell) {
-            const cellData = getCellDataByElement(cell);
-            modalTitle.textContent = cellData.name;
-            modalDescription.textContent = `Тип: ${cellData.type}\nЦена: ${cellData.price || 'Н/Д'}$\nАренда: ${cellData.rent || 'Н/Д'}$`;
-            cellModal.classList.add('show');
-            modalOverlay.classList.add('show');
+        // Ход бота
+        function botTurn() {
+            setTimeout(() => {
+                const bot = players[currentPlayerIndex];
+                const dice1 = Math.floor(Math.random() * 6) + 1;
+                const dice2 = Math.floor(Math.random() * 6) + 1;
+                const steps = dice1 + dice2;
+
+                movePlayer(bot, steps);
+                console.log(`Бот ${bot.id} бросил кубики: ${dice1} и ${dice2}, шаги: ${steps}`);
+
+                // Переход хода
+                nextTurn();
+            }, 1000); // Задержка для имитации "думающего" бота
         }
 
-        // Закрытие модального окна
-        function closeModal() {
-            cellModal.classList.remove('show');
-            modalOverlay.classList.remove('show');
+        // Переход хода
+        function nextTurn() {
+            currentPlayerIndex = (currentPlayerIndex + 1) % players.length;
+            if (players[currentPlayerIndex].isBot) {
+                botTurn();
+            }
         }
 
-        // Получение данных о клетке по элементу
-        function getCellDataByElement(cell) {
+        // Функция для броска кубиков
+        function rollDice() {
+            const currentPlayer = players[currentPlayerIndex];
+            if (currentPlayer.isBot) return; // Человек не может ходить за бота
+
+            let dice1 = 0, dice2 = 0;
+            const interval = setInterval(() => {
+                dice1 = Math.floor(Math.random() * 6) + 1;
+                dice2 = Math.floor(Math.random() * 6) + 1;
+                dice1Element.textContent = dice1;
+                dice2Element.textContent = dice2;
+            }, 100);
+
+            setTimeout(() => {
+                clearInterval(interval);
+                const steps = dice1 + dice2;
+                movePlayer(currentPlayer, steps);
+                console.log(`Игрок ${currentPlayer.id} бросил кубики: ${dice1} и ${dice2}, шаги: ${steps}`);
+                nextTurn();
+            }, 2000);
+        }
+
+        // Функция для перемещения игрока
+        function movePlayer(player, steps) {
+            const newPosition = (player.position + steps) % 40;
+            player.position = newPosition;
+
+            // Обновляем позицию на поле
+            const playerElement = document.getElementById(player.id);
+            const board = document.querySelector('.board');
+            const cellSize = board.offsetWidth / 12;
+            const cell = getCellPosition(newPosition);
+            playerElement.style.left = `${cell.x * cellSize}px`;
+            playerElement.style.top = `${cell.y * cellSize}px`;
+
+            // Обработка клетки
+            const currentCell = document.querySelector(`.cell[style*="grid-column: ${cell.x + 1} / ${cell.x + 2}"][style*="grid-row: ${cell.y + 1} / ${cell.y + 2}"]`);
+            if (currentCell.classList.contains('lottery')) {
+                handleLotteryCell(player);
+            } else {
+                handleCellAction(player, newPosition);
+            }
+        }
+
+        // Обработка действий на клетке
+        function handleCellAction(player, position) {
+            const cell = getCellData(position);
+            if (cell.type === "property" && !cell.owner) {
+                if (player.money >= cell.price) {
+                    player.money -= cell.price;
+                    player.properties.push(cell);
+                    cell.owner = player;
+                    console.log(`${player.id} купил ${cell.name} за ${cell.price}$`);
+                }
+            } else if (cell.type === "property" && cell.owner && cell.owner !== player) {
+                const rent = cell.rent;
+                player.money -= rent;
+                cell.owner.money += rent;
+                console.log(`${player.id} заплатил аренду ${cell.owner.id} в размере ${rent}$`);
+            } else if (cell.type === "tax") {
+                player.money -= cell.amount;
+                console.log(`${player.id} заплатил налог в размере ${cell.amount}$`);
+            } else if (cell.type === "chance") {
+                const chanceCard = drawChanceCard();
+                console.log(`${player.id} вытянул карточку Шанс: ${chanceCard}`);
+            } else if (cell.type === "community_chest") {
+                const communityChestCard = drawCommunityChestCard();
+                console.log(`${player.id} вытянул карточку Общественной казны: ${communityChestCard}`);
+            }
+        }
+
+        // Получение данных о клетке
+        function getCellData(index) {
             const cells = [
                 { type: "start", name: "Старт" },
                 { type: "property", name: "Улица 1", price: 60, rent: 10 },
@@ -527,13 +572,92 @@
                 { type: "property", name: "Улица 11", price: 280, rent: 60 },
                 { type: "property", name: "Улица 12", price: 300, rent: 65 },
             ];
-
-            // Находим индекс клетки
-            const index = Array.from(document.querySelectorAll('.cell')).indexOf(cell);
-            return cells[index] || { type: "unknown", name: "Неизвестная клетка" };
+            return cells[index];
         }
 
-        // Остальная логика игры...
+        // Получение координат клетки
+        function getCellPosition(index) {
+            const positions = [
+                { x: 0, y: 0 },    // Старт (верхний левый угол)
+                { x: 1, y: 0 },    // Улица 1
+                { x: 2, y: 0 },    // Улица 2
+                { x: 3, y: 0 },    // Улица 3
+                { x: 4, y: 0 },    // Улица 4
+                { x: 5, y: 0 },    // Улица 5
+                { x: 6, y: 0 },    // Улица 6
+                { x: 7, y: 0 },    // Улица 7
+                { x: 8, y: 0 },    // Железная дорога 1
+                { x: 9, y: 0 },    // Железная дорога 2
+                { x: 10, y: 0 },   // Железная дорога 3
+                { x: 11, y: 0 },   // Железная дорога 4
+                { x: 11, y: 1 },   // Электростанция
+                { x: 11, y: 2 },   // Водоканал
+                { x: 11, y: 3 },   // Шанс
+                { x: 11, y: 4 },   // Общественная казна
+                { x: 11, y: 5 },   // Налог (200$)
+                { x: 11, y: 6 },   // Налог (100$)
+                { x: 11, y: 7 },   // Идите в тюрьму (верхний правый угол)
+                { x: 11, y: 10 },  // Бесплатная парковка (правый нижний угол)
+                { x: 0, y: 10 },   // Тюрьма (левый нижний угол)
+                { x: 9, y: 10 },   // Улица 8
+                { x: 8, y: 10 },   // Улица 9
+                { x: 7, y: 10 },   // Улица 10
+                { x: 6, y: 10 },   // Улица 11
+                { x: 5, y: 10 },   // Улица 12
+            ];
+            return positions[index];
+        }
+
+        // Функция для замены случайной клетки на "Лотерея"
+        function replaceRandomCellWithLottery() {
+            const cells = document.querySelectorAll('.cell:not(.corner)'); // Все клетки, кроме угловых
+            const randomIndex = Math.floor(Math.random() * cells.length); // Случайный индекс
+            const randomCell = cells[randomIndex];
+
+            // Заменяем содержимое клетки
+            randomCell.classList.add('lottery');
+            randomCell.textContent = 'Лотерея';
+        }
+
+        // Функция для обработки попадания на клетку "Лотерея"
+        function handleLotteryCell(player) {
+            const outcomes = [
+                { text: "Вы выиграли 100$!", amount: 100 },
+                { text: "Вы выиграли 200$!", amount: 200 },
+                { text: "Вы проиграли 50$!", amount: -50 },
+                { text: "Вы проиграли 100$!", amount: -100 },
+            ];
+
+            // Выбираем случайный исход
+            const outcome = outcomes[Math.floor(Math.random() * outcomes.length)];
+            player.money += outcome.amount;
+
+            // Выводим сообщение
+            console.log(`${player.id} попал на Лотерею: ${outcome.text}`);
+            alert(`${player.id} попал на Лотерею: ${outcome.text}`);
+        }
+
+        // Карточки Шанс
+        function drawChanceCard() {
+            const cards = [
+                "Получите 100$",
+                "Перейдите на старт",
+                "Отправьтесь в тюрьму",
+                "Заплатите 50$",
+            ];
+            return cards[Math.floor(Math.random() * cards.length)];
+        }
+
+        // Карточки Общественной казны
+        function drawCommunityChestCard() {
+            const cards = [
+                "Получите 200$",
+                "Заплатите 100$",
+                "Перейдите на старт",
+                "Отправьтесь в тюрьму",
+            ];
+            return cards[Math.floor(Math.random() * cards.length)];
+        }
     </script>
 </body>
 </html>
