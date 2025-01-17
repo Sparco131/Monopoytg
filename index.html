@@ -475,30 +475,50 @@
         </div>
     </div>
 
+    <!-- Модальное окно для торговли -->
+    <div id="trade-modal" class="modal">
+        <div class="modal-content">
+            <h2>Торговля</h2>
+            <label for="trade-player">Выберите игрока:</label>
+            <select id="trade-player">
+                <!-- Опции будут заполнены динамически -->
+            </select>
+
+            <label for="trade-offer">Ваше предложение:</label>
+            <input type="text" id="trade-offer" placeholder="Например, 200$ за Улицу 2">
+
+            <label for="trade-request">Ваш запрос:</label>
+            <input type="text" id="trade-request" placeholder="Например, Улица 3">
+
+            <button onclick="proposeTrade()">Предложить сделку</button>
+            <button onclick="closeTradeModal()">Закрыть</button>
+        </div>
+    </div>
+
     <!-- Игровое поле -->
     <div class="board-container" id="board-container">
         <div class="board">
             <!-- Угловые клетки -->
             <div class="cell corner" style="grid-column: 1 / 2; grid-row: 1 / 2;">Старт</div>
-            <div class="cell empty" style="grid-column: 2 / 3; grid-row: 1 / 2;">Дорога</div> <!-- Новая клетка справа от Старта -->
-            <div class="cell empty" style="grid-column: 1 / 2; grid-row: 2 / 3;">Дорога</div> <!-- Существующая клетка под Стартом -->
-            <div class="cell empty" style="grid-column: 11 / 12; grid-row: 1 / 2;">Дорога</div> <!-- Новая клетка слева от Идите в тюрьму -->
+            <div class="cell empty" style="grid-column: 2 / 3; grid-row: 1 / 2;">Дорога</div>
+            <div class="cell empty" style="grid-column: 1 / 2; grid-row: 2 / 3;">Дорога</div>
+            <div class="cell empty" style="grid-column: 11 / 12; grid-row: 1 / 2;">Дорога</div>
             <div class="cell corner" style="grid-column: 12 / 13; grid-row: 1 / 2;">Идите в тюрьму</div>
-            <div class="cell empty" style="grid-column: 12 / 13; grid-row: 2 / 3;">Дорога</div> <!-- Новая клетка под Идите в тюрьму -->
+            <div class="cell empty" style="grid-column: 12 / 13; grid-row: 2 / 3;">Дорога</div>
             <div class="cell corner" style="grid-column: 12 / 13; grid-row: 12 / 13;">Бесплатная парковка</div>
             <div class="cell corner" style="grid-column: 1 / 2; grid-row: 12 / 13;">Тюрьма</div>
-            <div class="cell empty" style="grid-column: 2 / 3; grid-row: 12 / 13;">Дорога</div> <!-- Новая клетка справа от Тюрьмы -->
-            <div class="cell empty" style="grid-column: 1 / 2; grid-row: 11 / 12;">Дорога</div> <!-- Новая клетка над Тюрьмой -->
+            <div class="cell empty" style="grid-column: 2 / 3; grid-row: 12 / 13;">Дорога</div>
+            <div class="cell empty" style="grid-column: 1 / 2; grid-row: 11 / 12;">Дорога</div>
 
-            <!-- Остальные клетки -->
-            <div class="cell property" style="grid-column: 3 / 4; grid-row: 12 / 13;">Завод ЖБК (60$)</div>
-            <div class="cell property" style="grid-column: 4 / 5; grid-row: 12 / 13;">Улица 2 (60$)</div>
-            <div class="cell property" style="grid-column: 5 / 6; grid-row: 12 / 13;">Улица 3 (100$)</div>
-            <div class="cell property" style="grid-column: 6 / 7; grid-row: 12 / 13;">Улица 4 (100$)</div>
-            <div class="cell property" style="grid-column: 7 / 8; grid-row: 12 / 13;">Улица 5 (140$)</div>
-            <div class="cell property" style="grid-column: 8 / 9; grid-row: 12 / 13;">Улица 6 (140$)</div>
-            <div class="cell property" style="grid-column: 9 / 10; grid-row: 12 / 13;">Улица 7 (180$)</div>
-            <div class="cell property" style="grid-column: 10 / 11; grid-row: 12 / 13;">Улица 8 (220$)</div>
+            <!-- Верхняя сторона (справа налево) -->
+            <div class="cell property" style="grid-column: 3 / 4; grid-row: 1 / 2;">Завод ЖБК (60$)</div>
+            <div class="cell property" style="grid-column: 4 / 5; grid-row: 1 / 2;">Улица 2 (60$)</div>
+            <div class="cell property" style="grid-column: 5 / 6; grid-row: 1 / 2;">Улица 3 (100$)</div>
+            <div class="cell property" style="grid-column: 6 / 7; grid-row: 1 / 2;">Улица 4 (100$)</div>
+            <div class="cell property" style="grid-column: 7 / 8; grid-row: 1 / 2;">Улица 5 (140$)</div>
+            <div class="cell property" style="grid-column: 8 / 9; grid-row: 1 / 2;">Улица 6 (140$)</div>
+            <div class="cell property" style="grid-column: 9 / 10; grid-row: 1 / 2;">Улица 7 (180$)</div>
+            <div class="cell property" style="grid-column: 10 / 11; grid-row: 1 / 2;">Улица 8 (220$)</div>
 
             <!-- Левая сторона (снизу вверх) -->
             <div class="cell property" style="grid-column: 1 / 2; grid-row: 10 / 11;">Железная дорога 1 (200$)</div>
@@ -510,15 +530,15 @@
             <div class="cell property" style="grid-column: 1 / 2; grid-row: 4 / 5;">Шанс</div>
             <div class="cell property" style="grid-column: 1 / 2; grid-row: 3 / 4;">Общественная казна</div>
 
-            <!-- Верхняя сторона (справа налево) -->
-            <div class="cell property" style="grid-column: 3 / 4; grid-row: 1 / 2;">Улица 9 (240$)</div>
-            <div class="cell property" style="grid-column: 4 / 5; grid-row: 1 / 2;">Улица 10 (260$)</div>
-            <div class="cell property" style="grid-column: 5 / 6; grid-row: 1 / 2;">Улица 11 (280$)</div>
-            <div class="cell property" style="grid-column: 6 / 7; grid-row: 1 / 2;">Улица 12 (300$)</div>
-            <div class="cell property" style="grid-column: 7 / 8; grid-row: 1 / 2;">Налог (200$)</div>
-            <div class="cell property" style="grid-column: 8 / 9; grid-row: 1 / 2;">Налог (100$)</div>
-            <div class="cell property" style="grid-column: 9 / 10; grid-row: 1 / 2;">Улица 13 (320$)</div>
-            <div class="cell property" style="grid-column: 10 / 11; grid-row: 1 / 2;">Улица 14 (350$)</div>
+            <!-- Нижняя сторона (слева направо) -->
+            <div class="cell property" style="grid-column: 3 / 4; grid-row: 12 / 13;">Улица 9 (240$)</div>
+            <div class="cell property" style="grid-column: 4 / 5; grid-row: 12 / 13;">Улица 10 (260$)</div>
+            <div class="cell property" style="grid-column: 5 / 6; grid-row: 12 / 13;">Улица 11 (280$)</div>
+            <div class="cell property" style="grid-column: 6 / 7; grid-row: 12 / 13;">Улица 12 (300$)</div>
+            <div class="cell property" style="grid-column: 7 / 8; grid-row: 12 / 13;">Налог (200$)</div>
+            <div class="cell property" style="grid-column: 8 / 9; grid-row: 12 / 13;">Налог (100$)</div>
+            <div class="cell property" style="grid-column: 9 / 10; grid-row: 12 / 13;">Улица 13 (320$)</div>
+            <div class="cell property" style="grid-column: 10 / 11; grid-row: 12 / 13;">Улица 14 (350$)</div>
 
             <!-- Правая сторона (сверху вниз) -->
             <div class="cell property" style="grid-column: 12 / 13; grid-row: 3 / 4;">Шанс</div>
@@ -534,8 +554,8 @@
             <div class="cell empty" style="grid-column: 12 / 13; grid-row: 11 / 12;">Дорога</div>
 
             <!-- Новая клетка слева от Бесплатной парковки -->
-            <div class="cell property" style="grid-column: 10 / 11; grid-row: 12 / 13;">Улица 15 (400$)</div> <!-- Новая клетка с улицей -->
-            <div class="cell empty" style="grid-column: 11 / 12; grid-row: 12 / 13;">Дорога</div> <!-- Сдвинутая клетка "Дорога" -->
+            <div class="cell property" style="grid-column: 10 / 11; grid-row: 12 / 13;">Улица 15 (400$)</div>
+            <div class="cell empty" style="grid-column: 11 / 12; grid-row: 12 / 13;">Дорога</div>
 
             <!-- Игроки -->
             <div id="player1" class="player"></div>
@@ -787,6 +807,21 @@
             setTimeout(() => {
                 clearInterval(interval);
                 const steps = dice1 + dice2;
+
+                // Проверяем, выпал ли дубль
+                if (dice1 === dice2) {
+                    doubleCount++;
+                    addLogMessage(`Игрок ${currentPlayer.id} выбросил дубль: ${dice1} и ${dice2}.`);
+                    if (doubleCount === 3) {
+                        // Если три дубля подряд, отправляем игрока в тюрьму
+                        sendToJail(currentPlayer);
+                        doubleCount = 0; // Сбрасываем счетчик дублей
+                        return;
+                    }
+                } else {
+                    doubleCount = 0; // Сбрасываем счетчик дублей, если дубль не выпал
+                }
+
                 addLogMessage(`Игрок ${currentPlayer.id} бросил кубики: ${dice1} и ${dice2}, шаги: ${steps}`);
                 movePlayer(currentPlayer, steps);
 
@@ -798,7 +833,23 @@
                     // Если клетка не для покупки, предлагаем завершить ход
                     addLogMessage(`${currentPlayer.id}, нажмите "Завершить ход", чтобы закончить ход.`);
                 }
+
+                // Если выпал дубль, даем игроку возможность бросить кубики еще раз
+                if (dice1 === dice2) {
+                    addLogMessage(`${currentPlayer.id}, выпал дубль! Вы можете бросить кубики еще раз.`);
+                } else {
+                    // Если дубль не выпал, завершаем ход
+                    endTurn();
+                }
             }, 2000);
+        }
+
+        // Функция для отправки игрока в тюрьму
+        function sendToJail(player) {
+            player.position = 19; // Позиция тюрьмы
+            addLogMessage(`${player.id} выбросил три дубля подряд и отправляется в тюрьму!`);
+            movePlayerSmoothly(player, 19); // Плавное перемещение в тюрьму
+            endTurn();
         }
 
         // Функция для пошагового перемещения
@@ -1037,9 +1088,9 @@
                     currentPlayer.money -= currentCell.price;
                     currentPlayer.properties.push(currentCell);
                     currentCell.owner = currentPlayer;
-                    addLogMessage(`${currentPlayer.id} купил ${currentCell.name} за ${currentCell.price}$`);
+                    addLogMessage(`${currentPlayer.id} купил ${currentCell.name} за ${currentCell.price}$.`);
                 } else {
-                    addLogMessage(`${currentPlayer.id} не хватает денег для покупки ${currentCell.name}`);
+                    addLogMessage(`${currentPlayer.id} не хватает денег для покупки ${currentCell.name}.`);
                 }
             } else {
                 addLogMessage(`${currentPlayer.id} не может купить эту клетку.`);
@@ -1053,7 +1104,35 @@
 
         // Кнопка "Торговать"
         function trade() {
-            addLogMessage("Торговля пока не реализована.");
+            const tradeModal = document.getElementById('trade-modal');
+            tradeModal.style.display = 'flex';
+
+            const tradePlayerSelect = document.getElementById('trade-player');
+            tradePlayerSelect.innerHTML = ''; // Очищаем предыдущие опции
+
+            // Заполняем список игроков, с которыми можно торговать
+            players.forEach(player => {
+                if (player.id !== players[currentPlayerIndex].id) {
+                    const option = document.createElement('option');
+                    option.value = player.id;
+                    option.textContent = player.id;
+                    tradePlayerSelect.appendChild(option);
+                }
+            });
+        }
+
+        function proposeTrade() {
+            const tradePlayer = document.getElementById('trade-player').value;
+            const tradeOffer = document.getElementById('trade-offer').value;
+            const tradeRequest = document.getElementById('trade-request').value;
+
+            addLogMessage(`Предложена сделка: ${tradeOffer} для ${tradePlayer} в обмен на ${tradeRequest}.`);
+            closeTradeModal();
+        }
+
+        function closeTradeModal() {
+            const tradeModal = document.getElementById('trade-modal');
+            tradeModal.style.display = 'none';
         }
 
         // Кнопка "Строить дома"
