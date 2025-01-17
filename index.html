@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ru">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -240,8 +240,9 @@
             width: 4%;
             height: 4%;
             border-radius: 50%;
-            transition: all 0.5s ease;
+            transition: all 0.5s ease; /* Плавное перемещение */
             box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
+            transform: translate(-50%, -50%); /* Центрирование маркера */
         }
 
         .player.active {
@@ -490,7 +491,7 @@
             <div class="cell empty" style="grid-column: 1 / 2; grid-row: 11 / 12;">Дорога</div> <!-- Новая клетка над Тюрьмой -->
 
             <!-- Остальные клетки -->
-            <div class="cell property" style="grid-column: 3 / 4; grid-row: 12 / 13;">Улица 1 (60$)</div>
+            <div class="cell property" style="grid-column: 3 / 4; grid-row: 12 / 13;">Завод ЖБК (60$)</div>
             <div class="cell property" style="grid-column: 4 / 5; grid-row: 12 / 13;">Улица 2 (60$)</div>
             <div class="cell property" style="grid-column: 5 / 6; grid-row: 12 / 13;">Улица 3 (100$)</div>
             <div class="cell property" style="grid-column: 6 / 7; grid-row: 12 / 13;">Улица 4 (100$)</div>
@@ -732,8 +733,8 @@
                 const dice2 = Math.floor(Math.random() * 6) + 1;
                 const steps = dice1 + dice2;
 
-                movePlayer(bot, steps);
                 addLogMessage(`Бот ${bot.id} бросил кубики: ${dice1} и ${dice2}, шаги: ${steps}`);
+                movePlayer(bot, steps);
 
                 // Логика для ботов в зависимости от сложности
                 const currentCell = getCellData(bot.position);
@@ -786,8 +787,8 @@
             setTimeout(() => {
                 clearInterval(interval);
                 const steps = dice1 + dice2;
-                movePlayer(currentPlayer, steps);
                 addLogMessage(`Игрок ${currentPlayer.id} бросил кубики: ${dice1} и ${dice2}, шаги: ${steps}`);
+                movePlayer(currentPlayer, steps);
 
                 // Проверяем, можно ли купить клетку
                 const currentCell = getCellData(currentPlayer.position);
@@ -800,74 +801,106 @@
             }, 2000);
         }
 
-        // Функция для перемещения игрока
-        function movePlayer(player, steps) {
-            const newPosition = (player.position + steps) % 40; // Всего 40 клеток
-            player.position = newPosition;
+        // Функция для пошагового перемещения
+        function movePlayerStepByStep(player, steps) {
+            let currentStep = 0;
 
+            function moveNextStep() {
+                if (currentStep < steps) {
+                    const nextPosition = (player.position + 1) % 40; // Переход на следующую клетку
+                    movePlayerSmoothly(player, nextPosition, 300); // Плавное перемещение на одну клетку
+                    currentStep++;
+                    setTimeout(moveNextStep, 300); // Задержка между шагами
+                } else {
+                    // После завершения всех шагов обрабатываем действие на клетке
+                    handleCellAction(player, player.position);
+                }
+            }
+
+            moveNextStep();
+        }
+
+        // Функция для плавного перемещения на одну клетку
+        function movePlayerSmoothly(player, targetPosition, duration = 300) {
             const playerElement = document.getElementById(player.id);
             const board = document.querySelector('.board');
             const cellSize = board.offsetWidth / 12; // Размер клетки
 
-            // Получаем координаты клетки
-            const cell = getCellPosition(newPosition);
-            const cellX = cell.x;
-            const cellY = cell.y;
+            // Получаем текущие координаты маркера
+            const startX = parseFloat(playerElement.style.left) || 0;
+            const startY = parseFloat(playerElement.style.top) || 0;
 
-            // Рассчитываем позицию маркера внутри клетки
-            const offsetX = cellSize * 0.25; // Смещение от края клетки
-            const offsetY = cellSize * 0.25;
+            // Получаем координаты целевой клетки
+            const targetCell = getCellPosition(targetPosition);
+            const targetX = targetCell.x * cellSize + cellSize * 0.5; // Центр клетки
+            const targetY = targetCell.y * cellSize + cellSize * 0.5;
 
-            // Позиционируем маркер
-            playerElement.style.left = `${cellX * cellSize + offsetX}px`;
-            playerElement.style.top = `${cellY * cellSize + offsetY}px`;
+            const startTime = performance.now();
 
-            // Обрабатываем действия на клетке
-            const currentCell = document.querySelector(`.cell[style*="grid-column: ${cell.x + 1} / ${cell.x + 2}"][style*="grid-row: ${cell.y + 1} / ${cell.y + 2}"]`);
-            if (currentCell.classList.contains('lottery')) {
-                handleLotteryCell(player);
-            } else {
-                handleCellAction(player, newPosition);
+            function animate(currentTime) {
+                const elapsedTime = currentTime - startTime;
+                const progress = Math.min(elapsedTime / duration, 1);
+
+                // Интерполяция позиции
+                const newX = startX + (targetX - startX) * progress;
+                const newY = startY + (targetY - startY) * progress;
+
+                // Применяем новую позицию
+                playerElement.style.left = `${newX}px`;
+                playerElement.style.top = `${newY}px`;
+
+                if (progress < 1) {
+                    requestAnimationFrame(animate);
+                } else {
+                    // После завершения анимации обновляем позицию игрока
+                    player.position = targetPosition;
+                }
             }
+
+            requestAnimationFrame(animate);
+        }
+
+        // Функция для перемещения игрока
+        function movePlayer(player, steps) {
+            movePlayerStepByStep(player, steps);
         }
 
         // Получение координат клетки
         function getCellPosition(index) {
             const positions = [
-                { x: 0, y: 0 }, // Старт
-                { x: 1, y: 0 }, // Новая клетка справа от Старта
-                { x: 2, y: 0 }, // Завод ЖБК
-                { x: 3, y: 0 }, // Улица 2
-                { x: 4, y: 0 }, // Улица 3
-                { x: 5, y: 0 }, // Улица 4
-                { x: 6, y: 0 }, // Улица 5
-                { x: 7, y: 0 }, // Улица 6
-                { x: 8, y: 0 }, // Улица 7
-                { x: 9, y: 0 }, // Железная дорога 1
-                { x: 10, y: 0 }, // Железная дорога 2
-                { x: 11, y: 0 }, // Железная дорога 3
-                { x: 11, y: 1 }, // Железная дорога 4
-                { x: 11, y: 2 }, // Электростанция
-                { x: 11, y: 3 }, // Водоканал
-                { x: 11, y: 4 }, // Шанс
-                { x: 11, y: 5 }, // Лотерея
-                { x: 11, y: 6 }, // Налог
-                { x: 11, y: 7 }, // Налог
-                { x: 11, y: 8 }, // Тюрьма
-                { x: 12, y: 8 }, // Новая клетка справа от Тюрьмы
-                { x: 11, y: 7 }, // Новая клетка над Тюрьмой
-                { x: 11, y: 9 }, // Бесплатная парковка
-                { x: 10, y: 9 }, // Идите в тюрьму
-                { x: 9, y: 9 }, // Новая клетка слева от Идите в тюрьму
-                { x: 10, y: 1 }, // Новая клетка под Идите в тюрьму
-                { x: 8, y: 9 }, // Улица 8
-                { x: 7, y: 9 }, // Улица 9
-                { x: 6, y: 9 }, // Улица 10
-                { x: 5, y: 9 }, // Улица 11
-                { x: 4, y: 9 }, // Улица 12
-                { x: 12, y: 11 }, // Новая клетка над Бесплатной парковкой
-                { x: 10, y: 12 }, // Новая клетка с улицей
-                { x: 11, y: 12 }, // Сдвинутая клетка "Дорога"
+                { x: 0, y: 0 }, // Старт (0)
+                { x: 1, y: 0 }, // Завод ЖБК (1)
+                { x: 2, y: 0 }, // Улица 2 (2)
+                { x: 3, y: 0 }, // Улица 3 (3)
+                { x: 4, y: 0 }, // Улица 4 (4)
+                { x: 5, y: 0 }, // Улица 5 (5)
+                { x: 6, y: 0 }, // Улица 6 (6)
+                { x: 7, y: 0 }, // Улица 7 (7)
+                { x: 8, y: 0 }, // Улица 8 (8)
+                { x: 9, y: 0 }, // Железная дорога 1 (9)
+                { x: 10, y: 0 }, // Железная дорога 2 (10)
+                { x: 11, y: 0 }, // Железная дорога 3 (11)
+                { x: 11, y: 1 }, // Железная дорога 4 (12)
+                { x: 11, y: 2 }, // Электростанция (13)
+                { x: 11, y: 3 }, // Водоканал (14)
+                { x: 11, y: 4 }, // Шанс (15)
+                { x: 11, y: 5 }, // Лотерея (16)
+                { x: 11, y: 6 }, // Налог (17)
+                { x: 11, y: 7 }, // Налог (18)
+                { x: 11, y: 8 }, // Тюрьма (19)
+                { x: 12, y: 8 }, // Дорога (20)
+                { x: 11, y: 7 }, // Дорога (21)
+                { x: 11, y: 9 }, // Бесплатная парковка (22)
+                { x: 10, y: 9 }, // Идите в тюрьму (23)
+                { x: 9, y: 9 }, // Дорога (24)
+                { x: 8, y: 9 }, // Дорога (25)
+                { x: 7, y: 9 }, // Улица 9 (26)
+                { x: 6, y: 9 }, // Улица 10 (27)
+                { x: 5, y: 9 }, // Улица 11 (28)
+                { x: 4, y: 9 }, // Улица 12 (29)
+                { x: 3, y: 9 }, // Дорога (30)
+                { x: 2, y: 9 }, // Улица 15 (31)
+                { x: 1, y: 9 }, // Дорога (32)
             ];
             return positions[index];
         }
@@ -882,7 +915,7 @@
                 if (player.money >= rent) {
                     player.money -= rent;
                     cell.owner.money += rent;
-                    addLogMessage(`${player.id} заплатил аренду ${cell.owner.id} в размере ${rent}$`);
+                    addLogMessage(`${player.id} заплатил аренду ${cell.owner.id} за ${cell.name} в размере ${rent}$`);
                 } else {
                     addLogMessage(`${player.id} объявил банкротство!`);
                     handleBankruptcy(player);
@@ -894,47 +927,47 @@
                 const card = drawCard(cell.type);
                 addLogMessage(`${player.id} вытянул карточку: ${card}`);
                 handleCardEffect(player, card);
+            } else if (cell.type === "property" && !cell.owner) {
+                addLogMessage(`${player.id} попал на ${cell.name}.`);
             }
         }
 
         // Получение данных о клетке
         function getCellData(index) {
             const cells = [
-                { type: "start", name: "Старт" },
-                { type: "empty", name: "Дорога" }, // Новая клетка справа от Старта
-                { type: "empty", name: "Дорога" }, // Существующая клетка под Стартом
-                { type: "property", name: "Завод ЖБК", price: 60, rent: 10 },
-                { type: "property", name: "Улица 2", price: 60, rent: 10 },
-                { type: "property", name: "Улица 3", price: 100, rent: 20 },
-                { type: "property", name: "Улица 4", price: 100, rent: 20 },
-                { type: "property", name: "Улица 5", price: 140, rent: 30 },
-                { type: "property", name: "Улица 6", price: 140, rent: 30 },
-                { type: "property", name: "Улица 7", price: 180, rent: 40 },
-                { type: "railroad", name: "Железная дорога 1", price: 200, rent: 50 },
-                { type: "railroad", name: "Железная дорога 2", price: 200, rent: 50 },
-                { type: "railroad", name: "Железная дорога 3", price: 200, rent: 50 },
-                { type: "railroad", name: "Железная дорога 4", price: 200, rent: 50 },
-                { type: "utility", name: "Электростанция", price: 150, rent: 25 },
-                { type: "utility", name: "Водоканал", price: 150, rent: 25 },
-                { type: "chance", name: "Шанс" },
-                { type: "lottery", name: "Лотерея" },
-                { type: "tax", name: "Налог", amount: 200 },
-                { type: "tax", name: "Налог", amount: 100 },
-                { type: "jail", name: "Тюрьма" },
-                { type: "empty", name: "Дорога" }, // Новая клетка справа от Тюрьмы
-                { type: "empty", name: "Дорога" }, // Новая клетка над Тюрьмой
-                { type: "free_parking", name: "Бесплатная парковка" },
-                { type: "go_to_jail", name: "Идите в тюрьму" },
-                { type: "empty", name: "Дорога" }, // Новая клетка слева от Идите в тюрьму
-                { type: "empty", name: "Дорога" }, // Новая клетка под Идите в тюрьму
-                { type: "property", name: "Улица 8", price: 220, rent: 45 },
-                { type: "property", name: "Улица 9", price: 240, rent: 50 },
-                { type: "property", name: "Улица 10", price: 260, rent: 55 },
-                { type: "property", name: "Улица 11", price: 280, rent: 60 },
-                { type: "property", name: "Улица 12", price: 300, rent: 65 },
-                { type: "empty", name: "Дорога" }, // Новая клетка над Бесплатной парковкой
-                { type: "property", name: "Улица 15", price: 400, rent: 80 }, // Новая клетка с улицей
-                { type: "empty", name: "Дорога" }, // Сдвинутая клетка "Дорога"
+                { type: "start", name: "Старт" }, // 0
+                { type: "property", name: "Завод ЖБК", price: 60, rent: 10 }, // 1
+                { type: "property", name: "Улица 2", price: 60, rent: 10 }, // 2
+                { type: "property", name: "Улица 3", price: 100, rent: 20 }, // 3
+                { type: "property", name: "Улица 4", price: 100, rent: 20 }, // 4
+                { type: "property", name: "Улица 5", price: 140, rent: 30 }, // 5
+                { type: "property", name: "Улица 6", price: 140, rent: 30 }, // 6
+                { type: "property", name: "Улица 7", price: 180, rent: 40 }, // 7
+                { type: "property", name: "Улица 8", price: 220, rent: 45 }, // 8
+                { type: "railroad", name: "Железная дорога 1", price: 200, rent: 50 }, // 9
+                { type: "railroad", name: "Железная дорога 2", price: 200, rent: 50 }, // 10
+                { type: "railroad", name: "Железная дорога 3", price: 200, rent: 50 }, // 11
+                { type: "railroad", name: "Железная дорога 4", price: 200, rent: 50 }, // 12
+                { type: "utility", name: "Электростанция", price: 150, rent: 25 }, // 13
+                { type: "utility", name: "Водоканал", price: 150, rent: 25 }, // 14
+                { type: "chance", name: "Шанс" }, // 15
+                { type: "lottery", name: "Лотерея" }, // 16
+                { type: "tax", name: "Налог", amount: 200 }, // 17
+                { type: "tax", name: "Налог", amount: 100 }, // 18
+                { type: "jail", name: "Тюрьма" }, // 19
+                { type: "empty", name: "Дорога" }, // 20
+                { type: "empty", name: "Дорога" }, // 21
+                { type: "free_parking", name: "Бесплатная парковка" }, // 22
+                { type: "go_to_jail", name: "Идите в тюрьму" }, // 23
+                { type: "empty", name: "Дорога" }, // 24
+                { type: "empty", name: "Дорога" }, // 25
+                { type: "property", name: "Улица 9", price: 240, rent: 50 }, // 26
+                { type: "property", name: "Улица 10", price: 260, rent: 55 }, // 27
+                { type: "property", name: "Улица 11", price: 280, rent: 60 }, // 28
+                { type: "property", name: "Улица 12", price: 300, rent: 65 }, // 29
+                { type: "empty", name: "Дорога" }, // 30
+                { type: "property", name: "Улица 15", price: 400, rent: 80 }, // 31
+                { type: "empty", name: "Дорога" }, // 32
             ];
             return cells[index];
         }
